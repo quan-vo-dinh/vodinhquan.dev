@@ -63,8 +63,8 @@ export function ProgressSummary({ questions, category }: ProgressSummaryProps) {
       <div className="flex shrink-0 items-center justify-center">
         <TechIcon
           iconKey={meta.iconKey}
-          className="size-8 sm:size-10 md:size-16"
-          iconClassName="size-8 sm:size-10 md:size-16 text-foreground"
+          className="size-12 sm:size-14 md:size-16"
+          iconClassName="size-12 sm:size-14 md:size-16"
         />
       </div>
     </div>
