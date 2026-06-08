@@ -1,9 +1,34 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useSyncExternalStore } from "react";
 
 const LEARNED_STORAGE_KEY = "interview-practice:v1:learned";
 const BOOKMARK_STORAGE_KEY = "interview-practice:v1:bookmarks";
+const LOCAL_LEARNING_STATE_EVENT = "interview-practice:local-learning-state";
+
+type LocalLearningSnapshot = {
+  bookmarkedIds: Set<number>;
+  isReady: boolean;
+  learnedIds: Set<number>;
+};
+
+const serverSnapshot: LocalLearningSnapshot = {
+  bookmarkedIds: new Set(),
+  isReady: false,
+  learnedIds: new Set(),
+};
+
+let cachedLearnedValue: string | null = null;
+let cachedBookmarkValue: string | null = null;
+let cachedSnapshot: LocalLearningSnapshot | null = null;
+
+function readLocalLearningState() {
+  return {
+    bookmarkedIds: readNumberSet(BOOKMARK_STORAGE_KEY),
+    isReady: typeof window !== "undefined",
+    learnedIds: readNumberSet(LEARNED_STORAGE_KEY),
+  };
+}
 
 function readNumberSet(key: string) {
   if (typeof window === "undefined") {
@@ -29,51 +54,76 @@ function readNumberSet(key: string) {
 function writeNumberSet(key: string, value: Set<number>) {
   try {
     window.localStorage.setItem(key, JSON.stringify(Array.from(value)));
+    queueMicrotask(() => {
+      window.dispatchEvent(new Event(LOCAL_LEARNING_STATE_EVENT));
+    });
   } catch {
     return;
   }
 }
 
-export function useLocalLearningState() {
-  const [isReady, setIsReady] = useState(false);
-  const [learnedIds, setLearnedIds] = useState<Set<number>>(new Set());
-  const [bookmarkedIds, setBookmarkedIds] = useState<Set<number>>(new Set());
+function subscribeToLocalLearningState(onStoreChange: () => void) {
+  window.addEventListener(LOCAL_LEARNING_STATE_EVENT, onStoreChange);
+  window.addEventListener("storage", onStoreChange);
 
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setLearnedIds(readNumberSet(LEARNED_STORAGE_KEY));
-    setBookmarkedIds(readNumberSet(BOOKMARK_STORAGE_KEY));
-    setIsReady(true);
-  }, []);
+  return () => {
+    window.removeEventListener(LOCAL_LEARNING_STATE_EVENT, onStoreChange);
+    window.removeEventListener("storage", onStoreChange);
+  };
+}
+
+function getLocalLearningSnapshot() {
+  if (typeof window === "undefined") {
+    return serverSnapshot;
+  }
+
+  const learnedValue = window.localStorage.getItem(LEARNED_STORAGE_KEY);
+  const bookmarkValue = window.localStorage.getItem(BOOKMARK_STORAGE_KEY);
+
+  if (
+    cachedSnapshot &&
+    cachedLearnedValue === learnedValue &&
+    cachedBookmarkValue === bookmarkValue
+  ) {
+    return cachedSnapshot;
+  }
+
+  cachedLearnedValue = learnedValue;
+  cachedBookmarkValue = bookmarkValue;
+  cachedSnapshot = readLocalLearningState();
+
+  return cachedSnapshot;
+}
+
+export function useLocalLearningState() {
+  const { bookmarkedIds, isReady, learnedIds } = useSyncExternalStore(
+    subscribeToLocalLearningState,
+    getLocalLearningSnapshot,
+    () => serverSnapshot
+  );
 
   const toggleLearned = useCallback((id: number) => {
-    setLearnedIds((currentIds) => {
-      const nextIds = new Set(currentIds);
+    const nextIds = new Set(readNumberSet(LEARNED_STORAGE_KEY));
 
-      if (nextIds.has(id)) {
-        nextIds.delete(id);
-      } else {
-        nextIds.add(id);
-      }
+    if (nextIds.has(id)) {
+      nextIds.delete(id);
+    } else {
+      nextIds.add(id);
+    }
 
-      writeNumberSet(LEARNED_STORAGE_KEY, nextIds);
-      return nextIds;
-    });
+    writeNumberSet(LEARNED_STORAGE_KEY, nextIds);
   }, []);
 
   const toggleBookmark = useCallback((id: number) => {
-    setBookmarkedIds((currentIds) => {
-      const nextIds = new Set(currentIds);
+    const nextIds = new Set(readNumberSet(BOOKMARK_STORAGE_KEY));
 
-      if (nextIds.has(id)) {
-        nextIds.delete(id);
-      } else {
-        nextIds.add(id);
-      }
+    if (nextIds.has(id)) {
+      nextIds.delete(id);
+    } else {
+      nextIds.add(id);
+    }
 
-      writeNumberSet(BOOKMARK_STORAGE_KEY, nextIds);
-      return nextIds;
-    });
+    writeNumberSet(BOOKMARK_STORAGE_KEY, nextIds);
   }, []);
 
   return useMemo(
