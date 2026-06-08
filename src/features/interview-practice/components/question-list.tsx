@@ -72,7 +72,7 @@ export function QuestionList({ questions }: QuestionListProps) {
 
   if (questions.length === 0) {
     return (
-      <div className="rounded-2xl border border-dashed bg-background/60 p-8 text-center text-sm text-muted-foreground">
+      <div className="rounded-xl border border-dashed bg-background/60 p-5 text-center text-sm text-muted-foreground sm:rounded-2xl sm:p-8">
         No questions match the current filters.{" "}
         <span className="block mt-1 text-xs">
           Try adjusting the category, topic, or level filter.
@@ -82,7 +82,7 @@ export function QuestionList({ questions }: QuestionListProps) {
   }
 
   return (
-    <Accordion type="single" collapsible className="grid gap-3">
+    <Accordion type="single" collapsible className="grid gap-2 sm:gap-3">
       {questions.map((question, index) => {
         const isLearned = isReady && learnedIds.has(question.id);
         const isBookmarked = isReady && bookmarkedIds.has(question.id);
@@ -93,14 +93,14 @@ export function QuestionList({ questions }: QuestionListProps) {
             id={`question-${question.id}`}
             value={String(question.id)}
             className={cn(
-              "rounded-2xl border bg-background/70 px-4 transition-all duration-200",
+              "rounded-xl border bg-background/70 px-2 transition-all duration-200 sm:rounded-2xl sm:px-4",
               isLearned && "border-primary/20 bg-primary/[0.02]",
               isBookmarked && "border-amber-500/50 bg-amber-500/[0.02] dark:border-amber-500/30 shadow-md"
             )}
           >
-            <AccordionTrigger className="gap-3 py-4 hover:no-underline [&>svg]:hidden">
-              <div className="flex w-full min-w-0 flex-col gap-3 text-left">
-                <div className="flex flex-wrap items-center gap-2">
+            <AccordionTrigger className="gap-2 py-3 hover:no-underline sm:gap-3 sm:py-4 [&>svg]:hidden">
+              <div className="flex w-full min-w-0 flex-col gap-2 text-left sm:gap-3">
+                <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
                   <span className="font-mono text-xs text-muted-foreground">
                     #{String(index + 1).padStart(2, "0")}
                   </span>
@@ -132,7 +132,7 @@ export function QuestionList({ questions }: QuestionListProps) {
                 </div>
                 <span
                   className={cn(
-                    "text-base md:text-lg font-bold text-zinc-950 dark:text-zinc-50",
+                    "break-words text-[15px] font-bold leading-snug text-zinc-950 dark:text-zinc-50 sm:text-base md:text-lg",
                     isLearned &&
                       "text-muted-foreground line-through decoration-muted-foreground/50"
                   )}
@@ -141,9 +141,9 @@ export function QuestionList({ questions }: QuestionListProps) {
                 </span>
               </div>
             </AccordionTrigger>
-            <AccordionContent className="space-y-4 pb-4">
+            <AccordionContent className="space-y-3 pb-3 sm:space-y-4 sm:pb-4">
               <InterviewMarkdown>{question.answer}</InterviewMarkdown>
-              <div className="flex flex-wrap gap-2 border-t pt-3">
+              <div className="flex flex-wrap gap-1.5 border-t pt-3 sm:gap-2">
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
@@ -192,7 +192,7 @@ export function QuestionList({ questions }: QuestionListProps) {
                     setTimeout(() => setCopiedId(null), 2000);
                   }}
                   aria-label="Copy question text"
-                  className="w-20 transition-all"
+                  className="w-[4.75rem] transition-all sm:w-20"
                 >
                   {copiedId === question.id ? (
                     <>
@@ -217,7 +217,7 @@ export function QuestionList({ questions }: QuestionListProps) {
                     setTimeout(() => setLinkedId(null), 2000);
                   }}
                   aria-label="Copy share link"
-                  className="w-20 transition-all"
+                  className="w-[4.75rem] transition-all sm:w-20"
                 >
                   {linkedId === question.id ? (
                     <>

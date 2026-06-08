@@ -39,7 +39,7 @@ export function FlashcardDeck({ questions }: FlashcardDeckProps) {
 
   if (!currentQuestion) {
     return (
-      <div className="rounded-2xl border border-dashed bg-background/60 p-8 text-center text-sm text-muted-foreground">
+      <div className="rounded-xl border border-dashed bg-background/60 p-5 text-center text-sm text-muted-foreground sm:rounded-2xl sm:p-8">
         No flashcards match the current filters.
         <span className="block mt-1 text-xs">
           Try adjusting the category, topic, or level filter.
@@ -66,11 +66,11 @@ export function FlashcardDeck({ questions }: FlashcardDeckProps) {
   return (
     <Card
       className={cn(
-        "border bg-background/70 transition-all duration-200",
+        "rounded-xl border bg-background/70 transition-all duration-200 sm:rounded-2xl",
         isBookmarked && "border-amber-500/50 bg-amber-500/[0.02] dark:border-amber-500/30 shadow-md"
       )}
     >
-      <CardHeader className="gap-3 p-5">
+      <CardHeader className="gap-3 p-3 sm:p-5">
         <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground">
           <span>{progressLabel}</span>
           <span className="capitalize">
@@ -78,12 +78,12 @@ export function FlashcardDeck({ questions }: FlashcardDeckProps) {
             {currentQuestion.level}
           </span>
         </div>
-        <CardTitle className="text-2xl font-bold leading-snug text-zinc-950 dark:text-zinc-50">
+        <CardTitle className="text-lg font-bold leading-snug text-zinc-950 dark:text-zinc-50 sm:text-2xl">
           {currentQuestion.question}
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-5 p-5 pt-0">
-        <div className="min-h-40 rounded-2xl border bg-card p-5 transition-all">
+      <CardContent className="space-y-3 p-3 pt-0 sm:space-y-5 sm:p-5 sm:pt-0">
+        <div className="min-h-36 rounded-xl border bg-card p-3 transition-all sm:min-h-40 sm:rounded-2xl sm:p-5">
           {isAnswerVisible ? (
             <InterviewMarkdown>{currentQuestion.answer}</InterviewMarkdown>
           ) : (
@@ -93,7 +93,7 @@ export function FlashcardDeck({ questions }: FlashcardDeckProps) {
           )}
         </div>
 
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-1.5 sm:gap-2">
           <Button
             type="button"
             variant="outline"

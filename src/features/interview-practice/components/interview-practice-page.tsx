@@ -52,10 +52,27 @@ export function InterviewPracticePage({
     return () => clearTimeout(timer);
   }, []);
 
+  useEffect(() => {
+    if (!isMobileCategoryOpen) {
+      return;
+    }
+
+    const originalOverflow = document.body.style.overflow;
+    const originalOverscrollBehavior = document.body.style.overscrollBehavior;
+
+    document.body.style.overflow = "hidden";
+    document.body.style.overscrollBehavior = "none";
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      document.body.style.overscrollBehavior = originalOverscrollBehavior;
+    };
+  }, [isMobileCategoryOpen]);
+
   const mainContent = (
-    <main className="relative left-1/2 flex w-screen max-w-7xl -translate-x-1/2 flex-col gap-6 px-4 sm:px-6">
+    <main className="relative left-1/2 flex w-screen max-w-7xl -translate-x-1/2 flex-col gap-4 px-2 sm:gap-6 sm:px-6">
       <BlurFade delay={BLUR_FADE_DELAY}>
-        <section className="relative overflow-hidden rounded-3xl border bg-card/80 p-5 shadow-[0_0_10px_3px] shadow-primary/5 backdrop-blur">
+        <section className="relative overflow-hidden rounded-2xl border bg-card/80 p-4 shadow-[0_0_10px_3px] shadow-primary/5 backdrop-blur sm:rounded-3xl sm:p-5">
           <AnimatedGridPattern
             numSquares={28}
             maxOpacity={0.08}
@@ -132,7 +149,7 @@ export function InterviewPracticePage({
           </aside>
         </BlurFade>
 
-        <div className="flex min-w-0 flex-col gap-4 rounded-2xl border bg-card/70 p-4">
+        <div className="flex min-w-0 flex-col gap-3 rounded-xl border bg-card/70 p-2 sm:gap-4 sm:rounded-2xl sm:p-4">
           <BlurFade delay={BLUR_FADE_DELAY * 4} yOffset={10}>
             <div className="flex items-center justify-between gap-4">
               <div className="flex flex-col gap-0.5">
@@ -212,8 +229,12 @@ export function InterviewPracticePage({
           </BlurFade>
 
           {/* Sticky Progress Summary Wrapper */}
-          <BlurFade delay={BLUR_FADE_DELAY * 7} yOffset={10}>
-            <div className="sticky top-0 lg:top-6 z-20 -mx-4 px-4 py-2 bg-background/80 backdrop-blur-md border-b border-border/40 shadow-sm lg:-mx-0 lg:px-0 lg:border-none lg:shadow-none lg:pb-0 lg:pt-0 lg:bg-transparent lg:backdrop-blur-none transition-all duration-200">
+          <BlurFade
+            delay={BLUR_FADE_DELAY * 7}
+            yOffset={10}
+            className="sticky top-0 z-40 -mx-2 px-2 py-2 bg-background/90 backdrop-blur-md border-b border-border/40 shadow-sm sm:-mx-4 sm:px-4 lg:top-6 lg:z-20 lg:-mx-0 lg:px-0 lg:border-none lg:shadow-none lg:pb-0 lg:pt-0 lg:bg-transparent lg:backdrop-blur-none transition-all duration-200"
+          >
+            <div>
               <ProgressSummary questions={questions} category={filterState.category} />
             </div>
           </BlurFade>
@@ -231,15 +252,15 @@ export function InterviewPracticePage({
   );
 
   const drawerContent = isMobileCategoryOpen && (
-    <div className="fixed inset-0 z-[100] lg:hidden">
+    <div className="fixed inset-0 z-[100] overflow-hidden overscroll-none lg:hidden">
       {/* Backdrop Overlay */}
       <div
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300"
+        className="fixed inset-0 touch-none bg-black/60 backdrop-blur-sm transition-opacity duration-300"
         onClick={() => setIsMobileCategoryOpen(false)}
       />
 
       {/* Drawer Content Panel */}
-      <div className="fixed inset-y-0 left-0 w-[300px] max-w-[85vw] bg-card border-r border-border/40 p-4 shadow-2xl flex flex-col gap-4 animate-in slide-in-from-left duration-200">
+      <div className="fixed inset-y-0 left-0 flex w-[300px] max-w-[85vw] touch-pan-y flex-col gap-4 overflow-hidden overscroll-contain border-r border-border/40 bg-card p-4 shadow-2xl animate-in slide-in-from-left duration-200">
         <div className="flex items-center justify-between border-b pb-3">
           <span className="text-sm font-semibold text-foreground">Categories</span>
           <Button

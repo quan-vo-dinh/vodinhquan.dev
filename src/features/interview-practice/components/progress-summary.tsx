@@ -31,9 +31,9 @@ export function ProgressSummary({ questions, category }: ProgressSummaryProps) {
       : 0;
 
   return (
-    <div className="grid gap-4 rounded-2xl border bg-background/90 dark:bg-background/95 backdrop-blur-md p-4 shadow-sm grid-cols-[1fr_auto] items-center">
+    <div className="grid grid-cols-[1fr_auto] items-center gap-2 rounded-xl border bg-background/95 p-2.5 shadow-sm backdrop-blur-md dark:bg-background/95 sm:gap-4 sm:rounded-2xl sm:p-4">
       {/* Left Column: Progress Info */}
-      <div className="grid gap-3 min-w-0">
+      <div className="grid min-w-0 gap-2 sm:gap-3">
         <div className="flex items-center justify-between gap-3">
           <div>
             <p className="text-sm font-medium">Local progress</p>
@@ -60,11 +60,11 @@ export function ProgressSummary({ questions, category }: ProgressSummaryProps) {
       </div>
 
       {/* Right Column: Large Tech Logo */}
-      <div className="flex shrink-0">
+      <div className="hidden shrink-0 min-[380px]:flex">
         <TechIcon
           iconKey={meta.iconKey}
-          className="size-12 md:size-16"
-          iconClassName="size-12 md:size-16 text-foreground"
+          className="size-10 md:size-16"
+          iconClassName="size-10 md:size-16 text-foreground"
         />
       </div>
     </div>
