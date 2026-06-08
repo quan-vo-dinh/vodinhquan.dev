@@ -93,7 +93,7 @@ export function QuestionList({ questions }: QuestionListProps) {
             id={`question-${question.id}`}
             value={String(question.id)}
             className={cn(
-              "rounded-xl border bg-background/70 px-2 transition-all duration-200 sm:rounded-2xl sm:px-4",
+              "rounded-none border-x-0 border-t bg-background/70 px-2.5 transition-all duration-200 first:border-t-0 sm:rounded-2xl sm:border-x sm:px-4",
               isLearned && "border-primary/20 bg-primary/[0.02]",
               isBookmarked && "border-amber-500/50 bg-amber-500/[0.02] dark:border-amber-500/30 shadow-md"
             )}
@@ -142,7 +142,9 @@ export function QuestionList({ questions }: QuestionListProps) {
               </div>
             </AccordionTrigger>
             <AccordionContent className="space-y-3 pb-3 sm:space-y-4 sm:pb-4">
-              <InterviewMarkdown>{question.answer}</InterviewMarkdown>
+              <InterviewMarkdown className="[&_.group]:-mx-1 [&_.group]:rounded-lg sm:[&_.group]:mx-0 sm:[&_.group]:rounded-xl">
+                {question.answer}
+              </InterviewMarkdown>
               <div className="flex flex-wrap gap-1.5 border-t pt-3 sm:gap-2">
                 <Tooltip>
                   <TooltipTrigger asChild>
