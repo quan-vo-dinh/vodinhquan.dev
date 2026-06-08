@@ -1,10 +1,14 @@
 import type { SVGProps } from "react";
 
+const MASK_ID = "nextjs-icon-dark-mask";
+const GRADIENT_A_ID = "nextjs-icon-dark-gradient-a";
+const GRADIENT_B_ID = "nextjs-icon-dark-gradient-b";
+
 const NextjsIconDark = (props: SVGProps<SVGSVGElement>) => (
   <svg {...props} viewBox="0 0 180 180">
     <mask
       height="180"
-      id=":r8:mask0_408_134"
+      id={MASK_ID}
       maskUnits="userSpaceOnUse"
       width="180"
       x="0"
@@ -13,14 +17,14 @@ const NextjsIconDark = (props: SVGProps<SVGSVGElement>) => (
     >
       <circle cx="90" cy="90" fill="black" r="90" />
     </mask>
-    <g mask="url(#:r8:mask0_408_134)">
-      <circle cx="90" cy="90" data-circle="true" fill="black" r="90" />
+    <g mask={`url(#${MASK_ID})`}>
+      <circle cx="90" cy="90" fill="black" r="90" />
       <path
         d="M149.508 157.52L69.142 54H54V125.97H66.1136V69.3836L139.999 164.845C143.333 162.614 146.509 160.165 149.508 157.52Z"
-        fill="url(#:r8:paint0_linear_408_134)"
+        fill={`url(#${GRADIENT_A_ID})`}
       />
       <rect
-        fill="url(#:r8:paint1_linear_408_134)"
+        fill={`url(#${GRADIENT_B_ID})`}
         height="72"
         width="12"
         x="115"
@@ -30,7 +34,7 @@ const NextjsIconDark = (props: SVGProps<SVGSVGElement>) => (
     <defs>
       <linearGradient
         gradientUnits="userSpaceOnUse"
-        id=":r8:paint0_linear_408_134"
+        id={GRADIENT_A_ID}
         x1="109"
         x2="144.5"
         y1="116.5"
@@ -41,7 +45,7 @@ const NextjsIconDark = (props: SVGProps<SVGSVGElement>) => (
       </linearGradient>
       <linearGradient
         gradientUnits="userSpaceOnUse"
-        id=":r8:paint1_linear_408_134"
+        id={GRADIENT_B_ID}
         x1="121"
         x2="120.799"
         y1="54"

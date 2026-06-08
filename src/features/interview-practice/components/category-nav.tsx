@@ -22,9 +22,14 @@ import { TechIcon } from "./tech-icon";
 type CategoryNavProps = {
   categories: InterviewCategorySummary[];
   filterState: InterviewFilterState;
+  onCategorySelect?: () => void;
 };
 
-export function CategoryNav({ categories, filterState }: CategoryNavProps) {
+export function CategoryNav({
+  categories,
+  filterState,
+  onCategorySelect,
+}: CategoryNavProps) {
   const [searchQuery, setSearchQuery] = useState("");
 
   const filteredCategories = categories.filter((category) =>
@@ -84,6 +89,7 @@ export function CategoryNav({ categories, filterState }: CategoryNavProps) {
                           { category: category.name, subcategory: "all" },
                           filterState
                         )}
+                        onClick={onCategorySelect}
                         className={cn(
                           "group flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all select-none",
                           isActive

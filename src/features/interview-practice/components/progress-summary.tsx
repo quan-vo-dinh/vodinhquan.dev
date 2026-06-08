@@ -59,12 +59,12 @@ export function ProgressSummary({ questions, category }: ProgressSummaryProps) {
         </div>
       </div>
 
-      {/* Right Column: Large Tech Logo */}
-      <div className="hidden shrink-0 min-[380px]:flex">
+      {/* Right Column: Tech Logo */}
+      <div className="flex shrink-0 items-center justify-center">
         <TechIcon
           iconKey={meta.iconKey}
-          className="size-10 md:size-16"
-          iconClassName="size-10 md:size-16 text-foreground"
+          className="size-8 sm:size-10 md:size-16"
+          iconClassName="size-8 sm:size-10 md:size-16 text-foreground"
         />
       </div>
     </div>

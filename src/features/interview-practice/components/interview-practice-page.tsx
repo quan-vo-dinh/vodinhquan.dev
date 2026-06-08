@@ -274,7 +274,11 @@ export function InterviewPracticePage({
           </Button>
         </div>
         <div className="flex-1 min-h-0">
-          <CategoryNav categories={categories} filterState={filterState} />
+          <CategoryNav
+            categories={categories}
+            filterState={filterState}
+            onCategorySelect={() => setIsMobileCategoryOpen(false)}
+          />
         </div>
       </div>
     </div>
