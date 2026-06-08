@@ -9,8 +9,10 @@ import { AnimatedGridPattern } from "@/components/ui/animated-grid-pattern";
 import { BorderBeam } from "@/components/ui/border-beam";
 import { NumberTicker } from "@/components/ui/number-ticker";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Icons } from "@/components/icons";
 import { DATA } from "@/data/resume";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 import type {
   InterviewCategorySummary,
@@ -92,13 +94,23 @@ export function InterviewPracticePage({
                   <AvatarImage alt={DATA.name} src={DATA.avatarUrl} />
                   <AvatarFallback>{DATA.initials}</AvatarFallback>
                 </Avatar>
-                <div className="min-w-0">
+                <div className="flex min-w-0 flex-col gap-1">
                   <h3 className="truncate text-sm font-semibold leading-none tracking-tight text-foreground">
                     {DATA.name}
                   </h3>
                   <p className="mt-1.5 truncate text-xs leading-none text-muted-foreground">
                     Creator & Developer
                   </p>
+                  <Link
+                    href={DATA.contact.social.GitHub.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-1 inline-flex w-fit items-center gap-1.5 text-xs text-muted-foreground underline underline-offset-2 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                    aria-label="Visit Vo Dinh Quan GitHub profile"
+                  >
+                    <Icons.github className="size-3.5" aria-hidden />
+                    <span>GitHub Profile</span>
+                  </Link>
                 </div>
               </div>
             </BlurFade>

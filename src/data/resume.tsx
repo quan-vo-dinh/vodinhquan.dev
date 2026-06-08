@@ -57,6 +57,12 @@ export const DATA = {
     email: "vodinhquan2707.it@gmail.com",
     tel: "033 277 0502",
     social: {
+      GitHub: {
+        name: "GitHub",
+        url: "https://github.com/quan-vo-dinh",
+        icon: Icons.github,
+        navbar: false,
+      },
       LinkedIn: {
         name: "LinkedIn",
         url: "https://www.linkedin.com/in/vodinhquan27/",
