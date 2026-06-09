@@ -74,7 +74,7 @@ export function FlashcardDeck({ questions }: FlashcardDeckProps) {
         <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground">
           <span>{progressLabel}</span>
           <span className="capitalize">
-            {currentQuestion.category} · {currentQuestion.subcategory} ·{" "}
+            ID: {currentQuestion.id} · {currentQuestion.category} · {currentQuestion.subcategory} ·{" "}
             {currentQuestion.level}
           </span>
         </div>

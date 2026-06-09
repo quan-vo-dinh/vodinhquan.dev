@@ -104,6 +104,9 @@ export function QuestionList({ questions }: QuestionListProps) {
                   <span className="font-mono text-xs text-muted-foreground">
                     #{String(index + 1).padStart(2, "0")}
                   </span>
+                  <Badge variant="outline" className="font-mono text-[10px] text-muted-foreground/80">
+                    ID: {question.id}
+                  </Badge>
                   <Badge
                     variant="outline"
                     className={levelClassName(question.level)}
