@@ -51,6 +51,7 @@ export type InterviewIconKey =
   | "kafka"
   | "rabbitmq"
   | "default"
+  | "database"
   | "dsa"
   | "os"
   | "network"
@@ -103,7 +104,7 @@ export const INTERVIEW_CATEGORY_META: Record<string, InterviewCategoryMeta> = {
   PostgreSQL: { group: "Data", iconKey: "postgresql" },
   MongoDB: { group: "Data", iconKey: "mongodb" },
   Redis: { group: "Data", iconKey: "redis" },
-  Database: { group: "Data", iconKey: "postgresql" },
+  Database: { group: "Data", iconKey: "database" },
   "Docker & Kubernetes": { group: "DevOps", iconKey: "docker" },
   "AWS & Cloud": { group: "DevOps", iconKey: "aws" },
   "CI/CD": { group: "DevOps", iconKey: "git" },

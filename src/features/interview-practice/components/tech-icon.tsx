@@ -155,6 +155,7 @@ const fallbackRegistry: Record<InterviewIconKey, IconComponent> = {
   kafka: Database,
   rabbitmq: Database,
   default: BrainCircuit,
+  database: Database,
   dsa: Binary,
   os: Cpu,
   network: Globe,
@@ -172,6 +173,7 @@ const fallbackRegistry: Record<InterviewIconKey, IconComponent> = {
 
 const iconColors: Partial<Record<InterviewIconKey, string>> = {
   dsa: "text-blue-500 dark:text-blue-400",
+  database: "text-blue-600 dark:text-blue-500",
   os: "text-cyan-500 dark:text-cyan-400",
   network: "text-indigo-500 dark:text-indigo-400",
   "system-design": "text-violet-500 dark:text-violet-400",
