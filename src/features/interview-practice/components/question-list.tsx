@@ -69,6 +69,7 @@ export function QuestionList({ questions }: QuestionListProps) {
 
   const [copiedId, setCopiedId] = useState<number | null>(null);
   const [linkedId, setLinkedId] = useState<number | null>(null);
+  const [openValue, setOpenValue] = useState<string>("");
 
   if (questions.length === 0) {
     return (
@@ -82,7 +83,13 @@ export function QuestionList({ questions }: QuestionListProps) {
   }
 
   return (
-    <Accordion type="single" collapsible className="grid gap-2 sm:gap-3">
+    <Accordion
+      type="single"
+      collapsible
+      value={openValue}
+      onValueChange={setOpenValue}
+      className="grid gap-2 sm:gap-3"
+    >
       {questions.map((question, index) => {
         const isLearned = isReady && learnedIds.has(question.id);
         const isBookmarked = isReady && bookmarkedIds.has(question.id);
@@ -145,9 +152,11 @@ export function QuestionList({ questions }: QuestionListProps) {
               </div>
             </AccordionTrigger>
             <AccordionContent className="space-y-3 pb-3 sm:space-y-4 sm:pb-4">
-              <InterviewMarkdown className="[&_.group]:-mx-1 [&_.group]:rounded-lg sm:[&_.group]:mx-0 sm:[&_.group]:rounded-xl">
-                {question.answer}
-              </InterviewMarkdown>
+              {openValue === String(question.id) && (
+                <InterviewMarkdown className="[&_.group]:-mx-1 [&_.group]:rounded-lg sm:[&_.group]:mx-0 sm:[&_.group]:rounded-xl">
+                  {question.answer}
+                </InterviewMarkdown>
+              )}
               <div className="flex flex-wrap gap-1.5 border-t pt-3 sm:gap-2">
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -155,7 +164,35 @@ export function QuestionList({ questions }: QuestionListProps) {
                       type="button"
                       size="sm"
                       variant={isLearned ? "default" : "outline"}
-                      onClick={() => toggleLearned(question.id)}
+                      onClick={() => {
+                        toggleLearned(question.id);
+                        const willBeLearned = !learnedIds.has(question.id);
+                        if (willBeLearned) {
+                          setOpenValue("");
+                          // Smoothly scroll back to the collapsed item's header after collapse animation completes
+                          setTimeout(() => {
+                            const el = document.getElementById(`question-${question.id}`);
+                            if (el) {
+                              const stickyHeader = document.querySelector(".sticky-progress-summary");
+                              let offset = 80; // Fallback offset
+                              if (stickyHeader) {
+                                const rect = stickyHeader.getBoundingClientRect();
+                                const isMobile = window.innerWidth < 1024;
+                                const stickyTopOffset = isMobile ? 0 : 24; // top-0 on mobile, top-6 (24px) on desktop
+                                offset = stickyTopOffset + rect.height + 12; // 12px extra spacing buffer
+                              }
+                              
+                              const elementRect = el.getBoundingClientRect();
+                              const absoluteElementTop = elementRect.top + window.pageYOffset;
+                              
+                              window.scrollTo({
+                                top: absoluteElementTop - offset,
+                                behavior: "smooth",
+                              });
+                            }
+                          }, 250);
+                        }
+                      }}
                       aria-label={
                         isLearned ? "Mark as not learned" : "Mark as learned"
                       }

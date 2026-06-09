@@ -232,7 +232,7 @@ export function InterviewPracticePage({
           <BlurFade
             delay={BLUR_FADE_DELAY * 7}
             yOffset={10}
-            className="sticky top-0 z-40 -mx-2 px-2 py-2 bg-background/90 backdrop-blur-md border-b border-border/40 shadow-sm sm:-mx-4 sm:px-4 lg:top-6 lg:z-20 lg:-mx-0 lg:px-0 lg:border-none lg:shadow-none lg:pb-0 lg:pt-0 lg:bg-transparent lg:backdrop-blur-none transition-all duration-200"
+            className="sticky-progress-summary sticky top-0 z-40 -mx-2 px-2 py-2 bg-background/90 backdrop-blur-md border-b border-border/40 shadow-sm sm:-mx-4 sm:px-4 lg:top-6 lg:z-20 lg:-mx-0 lg:px-0 lg:border-none lg:shadow-none lg:pb-0 lg:pt-0 lg:bg-transparent lg:backdrop-blur-none transition-all duration-200"
           >
             <div>
               <ProgressSummary questions={questions} category={filterState.category} />
