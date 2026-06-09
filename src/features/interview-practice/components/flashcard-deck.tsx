@@ -67,6 +67,7 @@ export function FlashcardDeck({ questions }: FlashcardDeckProps) {
     <Card
       className={cn(
         "rounded-xl border bg-background/70 transition-all duration-200 sm:rounded-2xl",
+        isLearned && "border-emerald-500/30 bg-emerald-500/[0.02] dark:border-emerald-500/20",
         isBookmarked && "border-amber-500/50 bg-amber-500/[0.02] dark:border-amber-500/30 shadow-md"
       )}
     >
@@ -127,6 +128,9 @@ export function FlashcardDeck({ questions }: FlashcardDeckProps) {
             variant={isLearned ? "default" : "outline"}
             onClick={() => toggleLearned(currentQuestion.id)}
             aria-label={isLearned ? "Mark as not learned" : "Mark as learned"}
+            className={cn(
+              isLearned && "bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-600 dark:bg-emerald-700 dark:hover:bg-emerald-800 dark:border-emerald-700"
+            )}
           >
             <CheckCircle2 className="mr-2 size-4" />
             {isLearned ? "Learned" : "Mark learned"}

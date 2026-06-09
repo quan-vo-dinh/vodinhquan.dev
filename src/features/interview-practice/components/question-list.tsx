@@ -94,7 +94,7 @@ export function QuestionList({ questions }: QuestionListProps) {
             value={String(question.id)}
             className={cn(
               "rounded-none border-x-0 border-t bg-background/70 px-2.5 transition-all duration-200 first:border-t-0 sm:rounded-2xl sm:border-x sm:px-4",
-              isLearned && "border-primary/20 bg-primary/[0.02]",
+              isLearned && "border-emerald-500/30 bg-emerald-500/[0.02] dark:border-emerald-500/20",
               isBookmarked && "border-amber-500/50 bg-amber-500/[0.02] dark:border-amber-500/30 shadow-md"
             )}
           >
@@ -117,7 +117,7 @@ export function QuestionList({ questions }: QuestionListProps) {
                   {isLearned && isReady ? (
                     <Badge
                       variant="outline"
-                      className="border-primary/20 bg-primary/10 text-primary text-[10px]"
+                      className="border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px]"
                     >
                       <CheckCircle2 className="mr-1 size-3" />
                       Learned
@@ -159,6 +159,9 @@ export function QuestionList({ questions }: QuestionListProps) {
                       aria-label={
                         isLearned ? "Mark as not learned" : "Mark as learned"
                       }
+                      className={cn(
+                        isLearned && "bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-600 dark:bg-emerald-700 dark:hover:bg-emerald-800 dark:border-emerald-700"
+                      )}
                     >
                       <CheckCircle2 className="mr-2 size-4" />
                       {isLearned ? "Learned" : "Mark learned"}
