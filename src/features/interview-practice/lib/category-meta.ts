@@ -50,7 +50,20 @@ export type InterviewIconKey =
   | "dotnet"
   | "kafka"
   | "rabbitmq"
-  | "default";
+  | "default"
+  | "dsa"
+  | "os"
+  | "network"
+  | "system-design"
+  | "design-patterns"
+  | "problem-solving"
+  | "coding-interview"
+  | "ai"
+  | "build-tools"
+  | "code-quality"
+  | "debugging"
+  | "seo"
+  | "performance";
 
 export type InterviewCategoryMeta = {
   group: InterviewCategoryGroup;
@@ -82,7 +95,6 @@ export const INTERVIEW_CATEGORY_META: Record<string, InterviewCategoryMeta> = {
   Rails: { group: "Backend", iconKey: "rails", isNew: true },
   "Spring Boot": { group: "Backend", iconKey: "springboot", isNew: true },
   "ASP.NET": { group: "Backend", iconKey: "dotnet", isNew: true },
-  "Entity Framework": { group: "Backend", iconKey: "dotnet", isNew: true },
   "C++": { group: "Backend", iconKey: "cpp", isNew: true },
   Kotlin: { group: "Mobile", iconKey: "kotlin", isNew: true },
   Dart: { group: "Mobile", iconKey: "dart", isNew: true },
@@ -97,29 +109,25 @@ export const INTERVIEW_CATEGORY_META: Record<string, InterviewCategoryMeta> = {
   "CI/CD": { group: "DevOps", iconKey: "git" },
   Android: { group: "Mobile", iconKey: "android" },
   Flutter: { group: "Mobile", iconKey: "flutter" },
-  "Flutter State": { group: "Mobile", iconKey: "flutter" },
-  "Flutter Widgets": { group: "Mobile", iconKey: "flutter" },
   "React Native": { group: "Mobile", iconKey: "react-native" },
   "Jetpack Compose": { group: "Mobile", iconKey: "android", isNew: true },
-  "Operating System": { group: "Computer Science", iconKey: "system" },
-  Network: { group: "Computer Science", iconKey: "system" },
-  DSA: { group: "Computer Science", iconKey: "system" },
-  "System Design": { group: "Computer Science", iconKey: "system" },
-  JVM: { group: "Backend", iconKey: "java" },
-  "Java Collections": { group: "Backend", iconKey: "java" },
+  "Operating System": { group: "Computer Science", iconKey: "os" },
+  Network: { group: "Computer Science", iconKey: "network" },
+  DSA: { group: "Computer Science", iconKey: "dsa" },
+  "System Design": { group: "Computer Science", iconKey: "system-design" },
   Security: { group: "Computer Science", iconKey: "security" },
   Testing: { group: "Other", iconKey: "testing" },
   Git: { group: "Other", iconKey: "git" },
   "Career & Non-Tech": { group: "Career", iconKey: "career" },
-  "AI Engineering": { group: "Other", iconKey: "default" },
-  "Build Tools": { group: "Other", iconKey: "default" },
-  "Code Quality": { group: "Other", iconKey: "default" },
-  "Coding Interview": { group: "Career", iconKey: "career" },
-  Debugging: { group: "Other", iconKey: "default" },
-  "Design Patterns": { group: "Computer Science", iconKey: "system" },
-  Performance: { group: "Other", iconKey: "default" },
-  "Problem Solving": { group: "Computer Science", iconKey: "system" },
-  SEO: { group: "Other", iconKey: "default" },
+  "AI Engineering": { group: "Other", iconKey: "ai" },
+  "Build Tools": { group: "Other", iconKey: "build-tools" },
+  "Code Quality": { group: "Other", iconKey: "code-quality" },
+  "Coding Interview": { group: "Career", iconKey: "coding-interview" },
+  Debugging: { group: "Other", iconKey: "debugging" },
+  "Design Patterns": { group: "Computer Science", iconKey: "design-patterns" },
+  Performance: { group: "Other", iconKey: "performance" },
+  "Problem Solving": { group: "Computer Science", iconKey: "problem-solving" },
+  SEO: { group: "Other", iconKey: "seo" },
   "Trade-offs": { group: "Other", iconKey: "default" },
 };
 

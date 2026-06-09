@@ -1,21 +1,32 @@
 import type { ComponentType, SVGProps } from "react";
 import {
+  Award,
+  Binary,
   BookOpen,
   Boxes,
   BrainCircuit,
   BriefcaseBusiness,
+  Bug,
   Cloud,
   Code2,
+  Cpu,
   Database,
   FileCode2,
+  Gauge,
   GitBranch,
+  GitMerge,
+  Globe,
+  Hammer,
   Layers3,
   MonitorCog,
   Network,
   PackageCheck,
   ShieldCheck,
   Smartphone,
+  Sparkles,
+  Terminal,
   TestTube2,
+  Wrench,
 } from "lucide-react";
 
 import { Angular } from "@/components/ui/svgs/angular";
@@ -141,6 +152,39 @@ const fallbackRegistry: Record<InterviewIconKey, IconComponent> = {
   kafka: Database,
   rabbitmq: Database,
   default: BrainCircuit,
+  dsa: Binary,
+  os: Cpu,
+  network: Globe,
+  "system-design": GitMerge,
+  "design-patterns": Boxes,
+  "problem-solving": Wrench,
+  "coding-interview": Terminal,
+  ai: Sparkles,
+  "build-tools": Hammer,
+  "code-quality": Award,
+  debugging: Bug,
+  seo: Globe,
+  performance: Gauge,
+};
+
+const iconColors: Partial<Record<InterviewIconKey, string>> = {
+  dsa: "text-blue-500 dark:text-blue-400",
+  os: "text-cyan-500 dark:text-cyan-400",
+  network: "text-indigo-500 dark:text-indigo-400",
+  "system-design": "text-violet-500 dark:text-violet-400",
+  "design-patterns": "text-emerald-500 dark:text-emerald-400",
+  "problem-solving": "text-amber-500 dark:text-amber-400",
+  security: "text-red-500 dark:text-red-400",
+  career: "text-rose-500 dark:text-rose-400",
+  "coding-interview": "text-purple-500 dark:text-purple-400",
+  ai: "text-fuchsia-500 dark:text-fuchsia-400",
+  "build-tools": "text-zinc-500 dark:text-zinc-400",
+  "code-quality": "text-teal-500 dark:text-teal-400",
+  debugging: "text-orange-500 dark:text-orange-400",
+  seo: "text-lime-500 dark:text-lime-400",
+  performance: "text-yellow-500 dark:text-yellow-400",
+  testing: "text-pink-500 dark:text-pink-400",
+  git: "text-orange-600 dark:text-orange-500",
 };
 
 type TechIconProps = {
@@ -151,10 +195,11 @@ type TechIconProps = {
 
 export function TechIcon({ iconKey, className, iconClassName }: TechIconProps) {
   const Icon = iconRegistry[iconKey] ?? fallbackRegistry[iconKey] ?? BookOpen;
+  const colorClass = iconColors[iconKey];
 
   return (
     <span className={cn("flex size-5 shrink-0 items-center justify-center bg-transparent", className)}>
-      <Icon className={cn("size-4", iconClassName)} aria-hidden />
+      <Icon className={cn("size-4", colorClass, iconClassName)} aria-hidden />
     </span>
   );
 }
