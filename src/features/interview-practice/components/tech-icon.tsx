@@ -27,6 +27,7 @@ import {
   Terminal,
   TestTube2,
   Wrench,
+
 } from "lucide-react";
 
 import { Angular } from "@/components/ui/svgs/angular";
@@ -49,6 +50,7 @@ import { ReactLight } from "@/components/ui/svgs/reactLight";
 import { Redis } from "@/components/ui/svgs/redis";
 import { Typescript } from "@/components/ui/svgs/typescript";
 import { Vue } from "@/components/ui/svgs/vue";
+import { Redux } from "@/components/ui/svgs/redux";
 import { PHP } from "@/components/ui/svgs/php";
 import { Laravel } from "@/components/ui/svgs/laravel";
 import { Ruby } from "@/components/ui/svgs/ruby";
@@ -79,6 +81,7 @@ const iconRegistry: Partial<Record<InterviewIconKey, IconComponent>> = {
   nextjs: NextjsIconDark,
   vue: Vue,
   angular: Angular,
+  state: Redux,
   nodejs: Nodejs,
   nestjs: Nestjs,
   python: Python,
