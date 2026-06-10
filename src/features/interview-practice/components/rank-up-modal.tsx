@@ -53,7 +53,7 @@ export function RankUpModal({ oldRank, newRank, category, onClose }: RankUpModal
     }
   > = {
     iron: {
-      bgGlow: "from-zinc-500/20 via-zinc-800/10 to-transparent",
+      bgGlow: "from-zinc-500/8 via-zinc-800/5 to-transparent",
       borderCard: "border-zinc-500/20",
       borderCorner: "border-zinc-500/50",
       shadow: "shadow-[0_0_20px_rgba(113,113,122,0.15)]",
@@ -61,7 +61,7 @@ export function RankUpModal({ oldRank, newRank, category, onClose }: RankUpModal
       buttonBg: "from-zinc-600 to-zinc-800 hover:from-zinc-500 hover:to-zinc-700",
     },
     bronze: {
-      bgGlow: "from-amber-900/35 via-amber-800/10 to-transparent",
+      bgGlow: "from-amber-900/15 via-amber-800/5 to-transparent",
       borderCard: "border-amber-800/20",
       borderCorner: "border-amber-800/60",
       shadow: "shadow-[0_0_20px_rgba(180,83,9,0.2)]",
@@ -69,7 +69,7 @@ export function RankUpModal({ oldRank, newRank, category, onClose }: RankUpModal
       buttonBg: "from-amber-800 to-amber-950 hover:from-amber-700 hover:to-amber-900",
     },
     silver: {
-      bgGlow: "from-slate-400/25 via-slate-600/10 to-transparent",
+      bgGlow: "from-slate-400/10 via-slate-600/5 to-transparent",
       borderCard: "border-slate-400/20",
       borderCorner: "border-slate-400/50",
       shadow: "shadow-[0_0_20px_rgba(148,163,184,0.2)]",
@@ -77,7 +77,7 @@ export function RankUpModal({ oldRank, newRank, category, onClose }: RankUpModal
       buttonBg: "from-slate-500 to-slate-700 hover:from-slate-400 hover:to-slate-600",
     },
     gold: {
-      bgGlow: "from-yellow-600/30 via-yellow-800/10 to-transparent",
+      bgGlow: "from-yellow-600/12 via-yellow-800/5 to-transparent",
       borderCard: "border-yellow-500/20",
       borderCorner: "border-yellow-500/70",
       shadow: "shadow-[0_0_25px_rgba(234,179,8,0.25)]",
@@ -85,7 +85,7 @@ export function RankUpModal({ oldRank, newRank, category, onClose }: RankUpModal
       buttonBg: "from-yellow-600 to-yellow-800 hover:from-yellow-500 hover:to-yellow-700",
     },
     platinum: {
-      bgGlow: "from-teal-500/25 via-teal-800/10 to-transparent",
+      bgGlow: "from-teal-500/10 via-teal-800/5 to-transparent",
       borderCard: "border-teal-500/20",
       borderCorner: "border-teal-500/70",
       shadow: "shadow-[0_0_25px_rgba(20,184,166,0.25)]",
@@ -93,7 +93,7 @@ export function RankUpModal({ oldRank, newRank, category, onClose }: RankUpModal
       buttonBg: "from-teal-600 to-teal-800 hover:from-teal-500 hover:to-teal-700",
     },
     emerald: {
-      bgGlow: "from-emerald-500/25 via-emerald-800/10 to-transparent",
+      bgGlow: "from-emerald-500/10 via-emerald-800/5 to-transparent",
       borderCard: "border-emerald-500/20",
       borderCorner: "border-emerald-500/70",
       shadow: "shadow-[0_0_25px_rgba(16,185,129,0.25)]",
@@ -101,7 +101,7 @@ export function RankUpModal({ oldRank, newRank, category, onClose }: RankUpModal
       buttonBg: "from-emerald-600 to-emerald-800 hover:from-emerald-500 hover:to-emerald-700",
     },
     diamond: {
-      bgGlow: "from-blue-500/30 via-blue-800/10 to-transparent",
+      bgGlow: "from-blue-500/12 via-blue-800/5 to-transparent",
       borderCard: "border-blue-500/20",
       borderCorner: "border-blue-500/80",
       shadow: "shadow-[0_0_30px_rgba(59,130,246,0.3)]",
@@ -109,7 +109,7 @@ export function RankUpModal({ oldRank, newRank, category, onClose }: RankUpModal
       buttonBg: "from-blue-600 to-blue-800 hover:from-blue-500 hover:to-blue-700",
     },
     master: {
-      bgGlow: "from-purple-500/30 via-purple-800/10 to-transparent",
+      bgGlow: "from-purple-500/12 via-purple-800/5 to-transparent",
       borderCard: "border-purple-500/25",
       borderCorner: "border-purple-500/80",
       shadow: "shadow-[0_0_30px_rgba(147,51,234,0.35)]",
@@ -117,7 +117,7 @@ export function RankUpModal({ oldRank, newRank, category, onClose }: RankUpModal
       buttonBg: "from-purple-600 to-purple-800 hover:from-purple-500 hover:to-purple-700",
     },
     grandmaster: {
-      bgGlow: "from-rose-500/30 via-rose-800/10 to-transparent",
+      bgGlow: "from-rose-500/12 via-rose-800/5 to-transparent",
       borderCard: "border-rose-500/25",
       borderCorner: "border-rose-500/80",
       shadow: "shadow-[0_0_30px_rgba(225,29,72,0.4)]",
@@ -125,7 +125,7 @@ export function RankUpModal({ oldRank, newRank, category, onClose }: RankUpModal
       buttonBg: "from-rose-600 to-rose-800 hover:from-rose-500 hover:to-rose-700",
     },
     challenger: {
-      bgGlow: "from-amber-500/40 via-red-800/20 to-transparent",
+      bgGlow: "from-amber-500/15 via-red-800/8 to-transparent",
       borderCard: "border-amber-500/25",
       borderCorner: "border-amber-500/80",
       shadow: "shadow-[0_0_40px_rgba(245,158,11,0.45)]",
@@ -137,7 +137,7 @@ export function RankUpModal({ oldRank, newRank, category, onClose }: RankUpModal
   const currentColors = themeColors[newRank.colorTheme] || themeColors.iron;
 
   return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/85 backdrop-blur-md animate-in fade-in duration-500">
+    <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/35 animate-in fade-in duration-500">
       {/* Background Radial Glow */}
       <div className={cn("absolute inset-0 bg-gradient-to-b pointer-events-none z-0", currentColors.bgGlow)} />
 
@@ -219,7 +219,7 @@ export function RankUpModal({ oldRank, newRank, category, onClose }: RankUpModal
               )}
             >
               {/* Radial glow behind the new logo */}
-              <div className={cn("absolute size-48 sm:size-64 bg-gradient-to-r blur-3xl opacity-30 rounded-full animate-pulse", currentColors.bgGlow)} />
+              <div className={cn("absolute size-48 sm:size-64 bg-gradient-to-r blur-3xl opacity-15 rounded-full animate-pulse", currentColors.bgGlow)} />
               
               <div className="relative h-32 w-32 sm:h-48 sm:w-48 flex items-center justify-center filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.6)] animate-bounce duration-1000">
                 <img
