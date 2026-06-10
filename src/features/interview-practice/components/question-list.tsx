@@ -144,7 +144,7 @@ export function QuestionList({ questions }: QuestionListProps) {
                   className={cn(
                     "break-words text-[15px] font-bold leading-snug text-zinc-950 dark:text-zinc-50 sm:text-base md:text-lg",
                     isLearned &&
-                      "text-muted-foreground line-through decoration-muted-foreground/50"
+                      "text-muted-foreground line-through decoration-muted-foreground decoration-[1.5px]"
                   )}
                 >
                   {question.question}

@@ -203,8 +203,8 @@ export function TechIcon({ iconKey, className, iconClassName }: TechIconProps) {
   const colorClass = iconColors[iconKey];
 
   return (
-    <span className={cn("flex size-5 shrink-0 items-center justify-center bg-transparent", className)}>
-      <Icon className={cn("size-4", colorClass, iconClassName)} aria-hidden />
+    <span className={cn("flex shrink-0 items-center justify-center bg-transparent", className || "size-5")}>
+      <Icon className={cn(colorClass, iconClassName || "size-4")} aria-hidden />
     </span>
   );
 }
