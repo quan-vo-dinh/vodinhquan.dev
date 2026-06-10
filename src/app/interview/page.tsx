@@ -7,6 +7,7 @@ import {
   getInterviewCategories,
   getInterviewQuestionTotal,
   getInterviewSubcategories,
+  getInterviewCategoryQuestionIds,
 } from "@/features/interview-practice/lib/question-repository";
 import { parseInterviewSearchParams } from "@/features/interview-practice/lib/question-url-state";
 
@@ -38,10 +39,12 @@ export default async function InterviewPage({
   const state = withResolvedTaxonomy(rawState, categories, initialSubcategories);
   const subcategories = getInterviewSubcategories(state.category);
   const questions = getFilteredInterviewQuestions(state);
+  const categoryQuestionIds = getInterviewCategoryQuestionIds();
 
   return (
     <InterviewPracticePage
       categories={categories}
+      categoryQuestionIds={categoryQuestionIds}
       filterState={state}
       questions={questions}
       subcategories={subcategories}

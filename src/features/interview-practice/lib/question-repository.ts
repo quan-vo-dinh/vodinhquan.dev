@@ -108,3 +108,16 @@ export function getFilteredInterviewQuestions(state: InterviewFilterState) {
     })
     .map((question) => toQuestionView(question, state.locale));
 }
+
+export function getInterviewCategoryQuestionIds(): Record<string, number[]> {
+  const mapping: Record<string, number[]> = {};
+
+  for (const question of questions) {
+    if (!mapping[question.category]) {
+      mapping[question.category] = [];
+    }
+    mapping[question.category].push(question.id);
+  }
+
+  return mapping;
+}

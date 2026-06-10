@@ -21,6 +21,7 @@ import type {
   InterviewSubcategorySummary,
 } from "../types";
 import { CategoryNav } from "./category-nav";
+import { CategoryProgressVertical } from "./category-progress-vertical";
 import { FlashcardDeck } from "./flashcard-deck";
 import { ProgressSummary } from "./progress-summary";
 import { QuestionFilters } from "./question-filters";
@@ -28,6 +29,7 @@ import { QuestionList } from "./question-list";
 
 type InterviewPracticePageProps = {
   categories: InterviewCategorySummary[];
+  categoryQuestionIds: Record<string, number[]>;
   filterState: InterviewFilterState;
   questions: InterviewQuestionView[];
   subcategories: InterviewSubcategorySummary[];
@@ -38,6 +40,7 @@ const BLUR_FADE_DELAY = 0.04;
 
 export function InterviewPracticePage({
   categories,
+  categoryQuestionIds,
   filterState,
   questions,
   subcategories,
@@ -57,7 +60,8 @@ export function InterviewPracticePage({
     try {
       const stored = window.localStorage.getItem("interview-practice:v1:pinned-categories");
       if (stored) {
-        setPinnedCategories(JSON.parse(stored));
+        const parsed = JSON.parse(stored);
+        setTimeout(() => setPinnedCategories(parsed), 0);
       }
     } catch {
       // Silently fail
@@ -278,7 +282,19 @@ export function InterviewPracticePage({
             )}
           </BlurFade>
         </div>
+
       </section>
+
+      {/* Floating Category Progress Vertical Sidebar */}
+      <div className="absolute left-[calc(100%+16px)] top-[244px] bottom-6 z-50 hidden 2xl:block w-[52px]">
+        <aside className="sticky top-24 flex flex-col items-center rounded-2xl border bg-card/70 p-2 text-sm w-[52px] max-h-[80vh] overflow-y-auto scrollbar-none shadow-sm backdrop-blur-md">
+          <CategoryProgressVertical
+            categories={categories}
+            categoryQuestionIds={categoryQuestionIds}
+            filterState={filterState}
+          />
+        </aside>
+      </div>
     </main>
   );
 
