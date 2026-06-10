@@ -42,6 +42,12 @@ type InterviewPracticePageProps = {
 };
 
 const BLUR_FADE_DELAY = 0.04;
+const RANK_MILESTONES = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100] as const;
+
+function getCategoryProgressPercent(learnedCount: number, total: number): number {
+  if (total === 0) return 0;
+  return Math.round((learnedCount / total) * 100);
+}
 
 function getLoLProfileStyles(percentage: number, learnedCount: number) {
   const tier = getRankTier(percentage);
@@ -63,10 +69,24 @@ function getLoLProfileStyles(percentage: number, learnedCount: number) {
         cornerBorder: "border-zinc-400/30 dark:border-zinc-500/30",
         levelText,
       };
+    case "silver":
+      return {
+        rankName: "Silver IV",
+        rankSvg: "/ranked/sliver.svg",
+        avatarRing: "ring-slate-400 dark:ring-slate-300 shadow-[0_0_8px_rgba(148,163,184,0.2)]",
+        wingColor: "bg-slate-400/10 border-slate-400/30 text-slate-500",
+        badgeClass: "bg-slate-400/10 text-slate-700 dark:text-slate-300 border-slate-400/20",
+        hasWings: true,
+        hasCrown: false,
+        hoverGlow: "hover:shadow-[0_0_15px_rgba(148,163,184,0.15)] border-slate-400/30",
+        ambientBgGlow: "bg-slate-400/10 blur-xl opacity-0 group-hover/card:opacity-30",
+        cornerBorder: "border-slate-400/60 dark:border-slate-500/50",
+        levelText,
+      };
     case "bronze":
       return {
         rankName: "Bronze IV",
-        rankSvg: "/ranked/sliver.svg",
+        rankSvg: "/ranked/bronze.svg",
         avatarRing: "ring-slate-400 dark:ring-slate-300 shadow-[0_0_8px_rgba(148,163,184,0.2)]",
         wingColor: "bg-slate-400/10 border-slate-400/30 text-slate-500",
         badgeClass: "bg-slate-400/10 text-slate-700 dark:text-slate-300 border-slate-400/20",
@@ -196,6 +216,7 @@ export function InterviewPracticePage({
 
   const [rankUpData, setRankUpData] = useState<{ oldRank: RankTier; newRank: RankTier } | null>(null);
   const prevCategoryLearnedCountRef = useRef<Record<string, number>>({});
+  const hasHydratedCategoryProgressRef = useRef<Record<string, boolean>>({});
 
   const currentCategoryQuestionIds = categoryQuestionIds[filterState.category] || [];
   const categoryLearnedCount = isReady
@@ -210,22 +231,33 @@ export function InterviewPracticePage({
 
   useEffect(() => {
     if (!isReady) return;
+
     const currentCategoryName = filterState.category;
     const currentCount = categoryLearnedCount;
+    const totalInCategory = currentCategoryQuestionIds.length;
 
-    if (prevCategoryLearnedCountRef.current[currentCategoryName] !== undefined) {
-      const prevCount = prevCategoryLearnedCountRef.current[currentCategoryName];
+    if (!hasHydratedCategoryProgressRef.current[currentCategoryName]) {
+      hasHydratedCategoryProgressRef.current[currentCategoryName] = true;
+      prevCategoryLearnedCountRef.current[currentCategoryName] = currentCount;
+      return;
+    }
 
-      if (currentCount > prevCount) {
-        const prevProgress = Math.round((prevCount / currentCategoryQuestionIds.length) * 100);
-        const newProgress = Math.round((currentCount / currentCategoryQuestionIds.length) * 100);
+    const prevCount = prevCategoryLearnedCountRef.current[currentCategoryName] ?? currentCount;
 
-        const oldTier = getRankTier(prevProgress);
-        const newTier = getRankTier(newProgress);
+    if (currentCount > prevCount && totalInCategory > 0) {
+      const prevProgress = getCategoryProgressPercent(prevCount, totalInCategory);
+      const newProgress = getCategoryProgressPercent(currentCount, totalInCategory);
+      const crossedMilestone = RANK_MILESTONES.find(
+        (milestone) => prevProgress < milestone && newProgress >= milestone
+      );
 
-        if (oldTier.colorTheme !== newTier.colorTheme && newProgress > prevProgress) {
-          setRankUpData({ oldRank: oldTier, newRank: newTier });
-        }
+      if (crossedMilestone) {
+        queueMicrotask(() => {
+          setRankUpData({
+            oldRank: getRankTier(prevProgress),
+            newRank: getRankTier(newProgress),
+          });
+        });
       }
     }
 
@@ -608,13 +640,15 @@ export function InterviewPracticePage({
     <>
       {mainContent}
       {mounted && typeof document !== "undefined" && createPortal(drawerContent, document.body)}
-      {rankUpData && (
-        <RankUpModal
-          oldRank={rankUpData.oldRank}
-          newRank={rankUpData.newRank}
-          onClose={() => setRankUpData(null)}
-        />
-      )}
+      {mounted && rankUpData && typeof document !== "undefined" &&
+        createPortal(
+          <RankUpModal
+            oldRank={rankUpData.oldRank}
+            newRank={rankUpData.newRank}
+            onClose={() => setRankUpData(null)}
+          />,
+          document.body
+        )}
     </>
   );
 }

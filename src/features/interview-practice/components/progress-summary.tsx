@@ -107,13 +107,20 @@ export function ProgressSummary({ questions, category }: ProgressSummaryProps) {
 
   const prevProgressRef = useRef(progressValue);
   const lastCategoryRef = useRef(category);
+  const hasHydratedProgressRef = useRef(false);
 
   useEffect(() => {
     if (!isReady) return;
 
-    // If category has changed, do not trigger celebration
     if (lastCategoryRef.current !== category) {
       lastCategoryRef.current = category;
+      prevProgressRef.current = progressValue;
+      hasHydratedProgressRef.current = true;
+      return;
+    }
+
+    if (!hasHydratedProgressRef.current) {
+      hasHydratedProgressRef.current = true;
       prevProgressRef.current = progressValue;
       return;
     }

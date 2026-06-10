@@ -174,12 +174,35 @@ function formatTextSegment(text: string): string {
     .join("\n\n");
 }
 
+function joinFormattedParts(parts: Array<{ fenced: boolean; content: string }>): string {
+  const formattedParts = parts.map((part) =>
+    part.fenced ? part.content : formatTextSegment(part.content)
+  );
+
+  let formatted = "";
+
+  for (let i = 0; i < formattedParts.length; i++) {
+    if (i > 0) {
+      const previous = formattedParts[i - 1];
+      const current = formattedParts[i];
+      const needsBoundaryNewline =
+        previous.endsWith("```") && current.length > 0 && !current.startsWith("\n");
+
+      if (needsBoundaryNewline) {
+        formatted += "\n";
+      }
+    }
+
+    formatted += formattedParts[i];
+  }
+
+  return formatted;
+}
+
 export function formatInterviewAnswer(raw: string): string {
   if (!raw?.trim()) return raw;
 
-  const formatted = splitByFences(raw)
-    .map((part) => (part.fenced ? part.content : formatTextSegment(part.content)))
-    .join("");
+  const formatted = joinFormattedParts(splitByFences(raw));
 
   return formatted.replace(/\n{3,}/g, "\n\n").trim();
 }

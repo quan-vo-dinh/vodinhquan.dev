@@ -5,6 +5,7 @@ import { Copy, Check } from "lucide-react";
 import { Button } from "../ui/button";
 import { codeToHtml } from "shiki/bundle/web";
 import { cn } from "@/lib/utils";
+import { normalizeShikiLanguage } from "@/lib/normalize-shiki-language";
 
 type CodeBlockProps = ComponentProps<"pre">;
 
@@ -29,12 +30,12 @@ export function CodeBlock({ children, ...props }: CodeBlockProps) {
     if (!pre || !codeEl) return;
 
     const codeText = codeEl.textContent || "";
-    const lang = extractLanguage(codeEl.className);
+    const lang = normalizeShikiLanguage(extractLanguage(codeEl.className));
     const nextTitle = codeEl.getAttribute("data-title");
     const nextClassName = codeEl.className || "";
 
     void codeToHtml(codeText, {
-      lang: lang as any,
+      lang,
       themes: {
         light: "github-light",
         dark: "github-dark",
