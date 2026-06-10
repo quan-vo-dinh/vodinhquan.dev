@@ -308,15 +308,11 @@ export function InterviewPracticePage({
       </section>
 
       {/* Floating Category Progress Vertical Sidebar */}
-      <div className="absolute left-[calc(100%+16px)] top-[244px] bottom-6 z-50 hidden 2xl:block w-[52px]">
-        <aside className="sticky top-24 flex flex-col items-center rounded-2xl border bg-card/70 p-2 text-sm w-[52px] max-h-[80vh] overflow-y-auto scrollbar-none shadow-sm backdrop-blur-md">
-          <CategoryProgressVertical
-            categories={categories}
-            categoryQuestionIds={categoryQuestionIds}
-            filterState={filterState}
-          />
-        </aside>
-      </div>
+      <CategoryProgressVertical
+        categories={categories}
+        categoryQuestionIds={categoryQuestionIds}
+        filterState={filterState}
+      />
     </main>
   );
 
