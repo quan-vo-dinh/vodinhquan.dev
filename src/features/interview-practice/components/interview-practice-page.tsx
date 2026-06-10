@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { ChevronDown, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -46,10 +46,36 @@ export function InterviewPracticePage({
   const [isTopicsOpen, setIsTopicsOpen] = useState(false);
   const [isMobileCategoryOpen, setIsMobileCategoryOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [pinnedCategories, setPinnedCategories] = useState<string[]>([]);
 
   useEffect(() => {
     const timer = setTimeout(() => setMounted(true), 0);
     return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    try {
+      const stored = window.localStorage.getItem("interview-practice:v1:pinned-categories");
+      if (stored) {
+        setPinnedCategories(JSON.parse(stored));
+      }
+    } catch {
+      // Silently fail
+    }
+  }, []);
+
+  const togglePinCategory = useCallback((categoryName: string) => {
+    setPinnedCategories((prev) => {
+      const next = prev.includes(categoryName)
+        ? prev.filter((name) => name !== categoryName)
+        : [...prev, categoryName];
+      try {
+        window.localStorage.setItem("interview-practice:v1:pinned-categories", JSON.stringify(next));
+      } catch {
+        // Silently fail
+      }
+      return next;
+    });
   }, []);
 
   useEffect(() => {
@@ -145,7 +171,12 @@ export function InterviewPracticePage({
           className="hidden lg:block"
         >
           <aside className="flex h-[calc(100vh-120px)] max-h-[85vh] flex-col rounded-2xl border bg-card/70 p-4 text-sm lg:sticky lg:top-6">
-            <CategoryNav categories={categories} filterState={filterState} />
+            <CategoryNav
+              categories={categories}
+              filterState={filterState}
+              pinnedCategories={pinnedCategories}
+              onTogglePin={togglePinCategory}
+            />
           </aside>
         </BlurFade>
 
@@ -277,6 +308,8 @@ export function InterviewPracticePage({
           <CategoryNav
             categories={categories}
             filterState={filterState}
+            pinnedCategories={pinnedCategories}
+            onTogglePin={togglePinCategory}
             onCategorySelect={() => setIsMobileCategoryOpen(false)}
           />
         </div>
