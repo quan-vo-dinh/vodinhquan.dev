@@ -13,6 +13,8 @@ import { Icons } from "@/components/icons";
 import { DATA } from "@/data/resume";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { DiaTextReveal } from "@/components/ui/dia-text-reveal";
+import { CardContainer, CardBody, CardItem } from "@/components/ui/3d-card";
 
 import type {
   InterviewCategorySummary,
@@ -120,7 +122,7 @@ export function InterviewPracticePage({
                   Personal Interview Practice
                 </p>
                 <h1 className="text-3xl font-semibold tracking-tight">
-                  Interview Practice
+                  <DiaTextReveal text="Interview Practice" />
                 </h1>
                 <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
                   A focused question bank for reviewing software engineering
@@ -136,30 +138,50 @@ export function InterviewPracticePage({
             </div>
 
             <BlurFade delay={BLUR_FADE_DELAY * 2} yOffset={8}>
-              <div className="flex items-center gap-3.5 rounded-2xl border bg-background/40 p-4 shadow-sm backdrop-blur-md md:w-[280px]">
-                <Avatar className="size-12 border shadow-sm ring-2 ring-muted">
-                  <AvatarImage alt={DATA.name} src={DATA.avatarUrl} />
-                  <AvatarFallback>{DATA.initials}</AvatarFallback>
-                </Avatar>
-                <div className="flex min-w-0 flex-col gap-1">
-                  <h3 className="truncate text-sm font-semibold leading-none tracking-tight text-foreground">
-                    {DATA.name}
-                  </h3>
-                  <p className="mt-1.5 truncate text-xs leading-none text-muted-foreground">
-                    Creator & Developer
-                  </p>
-                  <Link
-                    href={DATA.contact.social.GitHub.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-1 inline-flex w-fit items-center gap-1.5 text-xs text-muted-foreground underline underline-offset-2 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                    aria-label="Visit Vo Dinh Quan GitHub profile"
-                  >
-                    <Icons.github className="size-3.5" aria-hidden />
-                    <span>GitHub Profile</span>
-                  </Link>
-                </div>
-              </div>
+              <CardContainer
+                containerClassName="py-0"
+                className="w-full md:w-[280px]"
+                xDivisor={10}
+                yDivisor={10}
+                perspective={400}
+              >
+                <CardBody className="flex items-center gap-3.5 rounded-2xl border bg-background/90 p-4 shadow-sm w-full h-auto">
+                  <CardItem translateZ={50} className="shrink-0">
+                    <Avatar className="size-12 border shadow-sm ring-2 ring-muted">
+                      <AvatarImage alt={DATA.name} src={DATA.avatarUrl} />
+                      <AvatarFallback>{DATA.initials}</AvatarFallback>
+                    </Avatar>
+                  </CardItem>
+                  <div className="flex min-w-0 flex-col gap-1 [transform-style:preserve-3d]">
+                    <CardItem
+                      translateZ={75}
+                      as="h3"
+                      className="truncate text-sm font-semibold leading-none tracking-tight text-foreground"
+                    >
+                      {DATA.name}
+                    </CardItem>
+                    <CardItem
+                      translateZ={60}
+                      as="p"
+                      className="mt-1.5 truncate text-xs leading-none text-muted-foreground"
+                    >
+                      Creator & Developer
+                    </CardItem>
+                    <CardItem translateZ={90} as="div">
+                      <Link
+                        href={DATA.contact.social.GitHub.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-1 inline-flex w-fit items-center gap-1.5 text-xs text-muted-foreground underline underline-offset-2 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                        aria-label="Visit Vo Dinh Quan GitHub profile"
+                      >
+                        <Icons.github className="size-3.5" aria-hidden />
+                        <span>GitHub Profile</span>
+                      </Link>
+                    </CardItem>
+                  </div>
+                </CardBody>
+              </CardContainer>
             </BlurFade>
           </div>
           <BorderBeam duration={8} size={180} />
