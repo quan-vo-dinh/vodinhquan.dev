@@ -232,11 +232,12 @@ export function QuestionList({ questions }: QuestionListProps) {
                   size="sm"
                   variant="outline"
                   onClick={async () => {
-                    await copyText(question.question);
+                    const copyContent = `Q: ${question.question}\n\nA:\n${question.answer}`;
+                    await copyText(copyContent);
                     setCopiedId(question.id);
                     setTimeout(() => setCopiedId(null), 2000);
                   }}
-                  aria-label="Copy question text"
+                  aria-label="Copy question and answer"
                   className="w-[4.75rem] transition-all sm:w-20"
                 >
                   {copiedId === question.id ? (
