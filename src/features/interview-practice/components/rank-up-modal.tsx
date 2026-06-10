@@ -3,17 +3,20 @@
 import { useEffect, useState } from "react";
 import { triggerConfetti } from "../lib/celebrate";
 import { RankTier } from "../lib/rank-meta";
+import { getInterviewCategoryMeta } from "../lib/category-meta";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
+import { TechIcon } from "./tech-icon";
 
 type RankUpModalProps = {
   oldRank: RankTier;
   newRank: RankTier;
+  category: string;
   onClose: () => void;
 };
 
-export function RankUpModal({ oldRank, newRank, onClose }: RankUpModalProps) {
+export function RankUpModal({ oldRank, newRank, category, onClose }: RankUpModalProps) {
   const [showNewRank, setShowNewRank] = useState(false);
 
   useEffect(() => {
@@ -232,12 +235,26 @@ export function RankUpModal({ oldRank, newRank, onClose }: RankUpModalProps) {
           </div>
         </div>
 
-        {/* Rank Up Message */}
-        <p className="text-sm sm:text-base text-zinc-400 max-w-sm mb-8 leading-relaxed">
-          You have conquered the challenges and ascended to the rank of{" "}
-          <strong className={cn("uppercase tracking-wide", currentColors.text)}>{newRank.name}</strong>.
-          Keep compile-solving to reach the top!
-        </p>
+        {/* Rank Up Message with Category Context */}
+        <div className="flex flex-col items-center gap-2 mb-8">
+          {/* Category pill */}
+          <div className="flex items-center gap-2.5">
+            <TechIcon
+              iconKey={getInterviewCategoryMeta(category).iconKey}
+              className="size-10 shrink-0"
+              iconClassName="size-9"
+            />
+            <span className="text-sm font-semibold text-zinc-300 tracking-wide">{category}</span>
+          </div>
+
+          <p className="text-sm sm:text-base text-zinc-400 max-w-sm leading-relaxed text-center">
+            You conquered{" "}
+            <strong className="text-zinc-200">{category}</strong>{" "}
+            and ascended to{" "}
+            <strong className={cn("uppercase tracking-wide", currentColors.text)}>{newRank.name}</strong>.
+            Keep compile-solving to reach the top!
+          </p>
+        </div>
 
         {/* Continue Button */}
         <Button

@@ -214,7 +214,7 @@ export function InterviewPracticePage({
 
   const { isReady, learnedIds } = useLocalLearningState();
 
-  const [rankUpData, setRankUpData] = useState<{ oldRank: RankTier; newRank: RankTier } | null>(null);
+  const [rankUpData, setRankUpData] = useState<{ oldRank: RankTier; newRank: RankTier; category: string } | null>(null);
   const prevCategoryLearnedCountRef = useRef<Record<string, number>>({});
   const hasHydratedCategoryProgressRef = useRef<Record<string, boolean>>({});
 
@@ -256,6 +256,7 @@ export function InterviewPracticePage({
           setRankUpData({
             oldRank: getRankTier(prevProgress),
             newRank: getRankTier(newProgress),
+            category: currentCategoryName,
           });
         });
       }
@@ -645,6 +646,7 @@ export function InterviewPracticePage({
           <RankUpModal
             oldRank={rankUpData.oldRank}
             newRank={rankUpData.newRank}
+            category={rankUpData.category}
             onClose={() => setRankUpData(null)}
           />,
           document.body
