@@ -28,9 +28,13 @@ export async function GET(request: NextRequest) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error) {
-      return NextResponse.redirect(`${origin}${next}`);
+      const res = NextResponse.redirect(`${origin}${next}`);
+      res.headers.set("Cache-Control", "no-store, max-age=0, must-revalidate");
+      return res;
     }
   }
 
-  return NextResponse.redirect(`${origin}/auth/auth-code-error`);
+  const res = NextResponse.redirect(`${origin}/auth/auth-code-error`);
+  res.headers.set("Cache-Control", "no-store, max-age=0, must-revalidate");
+  return res;
 }

@@ -31,8 +31,12 @@ export async function GET(request: NextRequest) {
   });
 
   if (error || !data.url) {
-    return NextResponse.redirect(`${origin}/auth/auth-code-error`);
+    const res = NextResponse.redirect(`${origin}/auth/auth-code-error`);
+    res.headers.set("Cache-Control", "no-store, max-age=0, must-revalidate");
+    return res;
   }
 
-  return NextResponse.redirect(data.url);
+  const res = NextResponse.redirect(data.url);
+  res.headers.set("Cache-Control", "no-store, max-age=0, must-revalidate");
+  return res;
 }
