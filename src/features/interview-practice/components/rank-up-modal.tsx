@@ -294,7 +294,7 @@ export function RankUpModal({ oldRank, newRank, category, onClose }: RankUpModal
             <span className="text-sm font-semibold text-zinc-300 tracking-wide">{category}</span>
           </div>
 
-          <p className="text-sm sm:text-base text-zinc-400 max-w-sm leading-relaxed text-center">
+          <p className="text-sm sm:text-base text-zinc-400 max-w-md sm:max-w-lg leading-relaxed text-center">
             {getCongratsMessage()}
           </p>
         </div>
