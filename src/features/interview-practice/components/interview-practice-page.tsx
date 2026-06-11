@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef, useTransition } from "react";
 import { createPortal } from "react-dom";
-import { ChevronDown, Menu, X } from "lucide-react";
+import { ChevronDown, Menu, X, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import BlurFade from "@/components/magicui/blur-fade";
@@ -198,7 +198,11 @@ function InterviewPracticePageContent({
   const mainContent = (
     <main className="relative left-1/2 flex w-screen max-w-7xl -translate-x-1/2 flex-col gap-4 px-2 sm:gap-6 sm:px-6">
       {isPending && (
-        <div className="fixed top-0 left-0 right-0 h-0.5 bg-primary/80 animate-pulse z-[200] pointer-events-none" />
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background/10 backdrop-blur-[0.5px] pointer-events-none">
+          <div className="rounded-xl border bg-background/90 p-3 shadow-md flex items-center justify-center pointer-events-auto">
+            <Loader2 className="size-5 animate-spin text-primary" />
+          </div>
+        </div>
       )}
       <BlurFade delay={BLUR_FADE_DELAY}>
         <section className="relative rounded-2xl border bg-card/80 p-4 shadow-[0_0_10px_3px] shadow-primary/5 backdrop-blur sm:rounded-3xl sm:p-5">
