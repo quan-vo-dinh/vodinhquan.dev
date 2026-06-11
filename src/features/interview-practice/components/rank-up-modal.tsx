@@ -136,6 +136,53 @@ export function RankUpModal({ oldRank, newRank, category, onClose }: RankUpModal
 
   const currentColors = themeColors[newRank.colorTheme] || themeColors.iron;
 
+  const getCongratsMessage = () => {
+    const boldCategory = <strong className="text-zinc-200">{category}</strong>;
+    const boldRank = (
+      <strong className={cn("uppercase tracking-wide", currentColors.text)}>
+        {newRank.name}
+      </strong>
+    );
+
+    switch (newRank.colorTheme) {
+      case "bronze":
+      case "silver":
+        return (
+          <>
+            Your journey in {boldCategory} has just leveled up! {"You've"} officially reached {boldRank}. Keep problem-solving and building your momentum!
+          </>
+        );
+      case "gold":
+      case "platinum":
+      case "emerald":
+        return (
+          <>
+            Impressive progress! {"You've"} mastered the core patterns of {boldCategory} and advanced to {boldRank}. Your skills are getting sharper—keep pushing!
+          </>
+        );
+      case "diamond":
+      case "master":
+      case "grandmaster":
+        return (
+          <>
+            Outstanding progress! Reaching {boldRank} in {boldCategory} shows that {"you've"} mastered complex topics and are operating at an elite level.
+          </>
+        );
+      case "challenger":
+        return (
+          <>
+            Absolute masterclass! {"You've"} reached the summit of {boldCategory} as a {boldRank}. The compiler salutes your mastery!
+          </>
+        );
+      default:
+        return (
+          <>
+            Congratulations! {"You've"} unlocked {boldRank} in {boldCategory}. Continue practicing to conquer the next level!
+          </>
+        );
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/35 animate-in fade-in duration-500">
       {/* Background Radial Glow */}
@@ -221,7 +268,7 @@ export function RankUpModal({ oldRank, newRank, category, onClose }: RankUpModal
               {/* Radial glow behind the new logo */}
               <div className={cn("absolute size-48 sm:size-64 bg-gradient-to-r blur-3xl opacity-15 rounded-full animate-pulse", currentColors.bgGlow)} />
               
-              <div className="relative h-32 w-32 sm:h-48 sm:w-48 flex items-center justify-center filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.6)] animate-bounce duration-1000">
+              <div className="relative h-32 w-32 sm:h-48 sm:w-48 flex items-center justify-center filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.6)] animate-float-subtle">
                 <img
                   src={newRank.logoSvg}
                   alt={newRank.name}
@@ -248,11 +295,7 @@ export function RankUpModal({ oldRank, newRank, category, onClose }: RankUpModal
           </div>
 
           <p className="text-sm sm:text-base text-zinc-400 max-w-sm leading-relaxed text-center">
-            You conquered{" "}
-            <strong className="text-zinc-200">{category}</strong>{" "}
-            and ascended to{" "}
-            <strong className={cn("uppercase tracking-wide", currentColors.text)}>{newRank.name}</strong>.
-            Keep compile-solving to reach the top!
+            {getCongratsMessage()}
           </p>
         </div>
 
