@@ -16,6 +16,10 @@ function safeNextPath(value: string | null) {
 
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url);
+  const host = request.headers.get("x-forwarded-host") || requestUrl.host;
+  const proto = request.headers.get("x-forwarded-proto") || requestUrl.protocol.slice(0, -1);
+  const origin = `${proto}://${host}`;
+
   const code = requestUrl.searchParams.get("code");
   const next = safeNextPath(requestUrl.searchParams.get("next"));
 
@@ -24,9 +28,9 @@ export async function GET(request: NextRequest) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error) {
-      return NextResponse.redirect(`${requestUrl.origin}${next}`);
+      return NextResponse.redirect(`${origin}${next}`);
     }
   }
 
-  return NextResponse.redirect(`${requestUrl.origin}/auth/auth-code-error`);
+  return NextResponse.redirect(`${origin}/auth/auth-code-error`);
 }

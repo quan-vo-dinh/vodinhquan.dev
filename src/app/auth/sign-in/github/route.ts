@@ -16,18 +16,22 @@ function safeNextPath(value: string | null) {
 
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url);
+  const host = request.headers.get("x-forwarded-host") || requestUrl.host;
+  const proto = request.headers.get("x-forwarded-proto") || requestUrl.protocol.slice(0, -1);
+  const origin = `${proto}://${host}`;
+
   const next = safeNextPath(requestUrl.searchParams.get("next"));
   const supabase = await createSupabaseServerClient();
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "github",
     options: {
-      redirectTo: `${requestUrl.origin}/auth/callback?next=${encodeURIComponent(next)}`,
+      redirectTo: `${origin}/auth/callback?next=${encodeURIComponent(next)}`,
     },
   });
 
   if (error || !data.url) {
-    return NextResponse.redirect(`${requestUrl.origin}/auth/auth-code-error`);
+    return NextResponse.redirect(`${origin}/auth/auth-code-error`);
   }
 
   return NextResponse.redirect(data.url);
