@@ -1,5 +1,3 @@
-import Link from "next/link";
-
 import { Button } from "@/components/ui/button";
 import { Icons } from "@/components/icons";
 
@@ -12,10 +10,10 @@ export function SignInWithGitHubButton({
 }: SignInWithGitHubButtonProps) {
   return (
     <Button asChild size="sm" variant="outline">
-      <Link href={`/auth/sign-in/github?next=${encodeURIComponent(next)}`}>
+      <a href={`/auth/sign-in/github?next=${encodeURIComponent(next)}`}>
         <Icons.github className="mr-2 size-4" aria-hidden />
         Sign in with GitHub
-      </Link>
+      </a>
     </Button>
   );
 }
