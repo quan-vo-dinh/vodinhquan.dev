@@ -11,6 +11,9 @@ import {
 } from "@/features/interview-practice/lib/question-repository";
 import { parseInterviewSearchParams } from "@/features/interview-practice/lib/question-url-state";
 
+import { getCurrentViewer } from "@/features/auth/lib/get-current-viewer";
+import { getCurrentUserInterviewLearningState } from "@/features/interview-practice/lib/learning-state-repository";
+
 export const metadata: Metadata = {
   title: "Interview Practice",
   description:
@@ -41,14 +44,21 @@ export default async function InterviewPage({
   const questions = getFilteredInterviewQuestions(state);
   const categoryQuestionIds = getInterviewCategoryQuestionIds();
 
+  const [viewer, learningState] = await Promise.all([
+    getCurrentViewer(),
+    getCurrentUserInterviewLearningState(),
+  ]);
+
   return (
     <InterviewPracticePage
       categories={categories}
       categoryQuestionIds={categoryQuestionIds}
       filterState={state}
+      initialLearningState={learningState}
       questions={questions}
       subcategories={subcategories}
       totalQuestions={getInterviewQuestionTotal()}
+      viewer={viewer}
     />
   );
 }

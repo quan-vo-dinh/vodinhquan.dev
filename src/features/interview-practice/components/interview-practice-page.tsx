@@ -18,6 +18,7 @@ import { CardContainer, CardBody, CardItem } from "@/components/ui/3d-card";
 import { getRankTier, RankTier } from "../lib/rank-meta";
 import { RankUpModal } from "./rank-up-modal";
 
+import type { CurrentViewer } from "@/features/auth/types";
 import type {
   InterviewCategorySummary,
   InterviewFilterState,
@@ -30,15 +31,56 @@ import { FlashcardDeck } from "./flashcard-deck";
 import { ProgressSummary } from "./progress-summary";
 import { QuestionFilters } from "./question-filters";
 import { QuestionList } from "./question-list";
-import { useLocalLearningState } from "./local-learning-state";
+import type { InterviewLearningStateSnapshot } from "../lib/learning-state-types";
+import {
+  InterviewLearningStateProvider,
+  useInterviewLearningState,
+} from "./interview-learning-state-provider";
 
 type InterviewPracticePageProps = {
+  categories: InterviewCategorySummary[];
+  categoryQuestionIds: Record<string, number[]>;
+  filterState: InterviewFilterState;
+  initialLearningState: InterviewLearningStateSnapshot;
+  questions: InterviewQuestionView[];
+  subcategories: InterviewSubcategorySummary[];
+  totalQuestions: number;
+  viewer: CurrentViewer | null;
+};
+
+export function InterviewPracticePage({
+  categories,
+  categoryQuestionIds,
+  filterState,
+  initialLearningState,
+  questions,
+  subcategories,
+  totalQuestions,
+  viewer,
+}: InterviewPracticePageProps) {
+  return (
+    <InterviewLearningStateProvider initialState={initialLearningState}>
+      <InterviewPracticePageContent
+        categories={categories}
+        categoryQuestionIds={categoryQuestionIds}
+        filterState={filterState}
+        questions={questions}
+        subcategories={subcategories}
+        totalQuestions={totalQuestions}
+        viewer={viewer}
+      />
+    </InterviewLearningStateProvider>
+  );
+}
+
+type InterviewPracticePageContentProps = {
   categories: InterviewCategorySummary[];
   categoryQuestionIds: Record<string, number[]>;
   filterState: InterviewFilterState;
   questions: InterviewQuestionView[];
   subcategories: InterviewSubcategorySummary[];
   totalQuestions: number;
+  viewer: CurrentViewer | null;
 };
 
 const BLUR_FADE_DELAY = 0.04;
@@ -199,20 +241,25 @@ function getLoLProfileStyles(percentage: number, learnedCount: number) {
   }
 }
 
-export function InterviewPracticePage({
+function InterviewPracticePageContent({
   categories,
   categoryQuestionIds,
   filterState,
   questions,
   subcategories,
   totalQuestions,
-}: InterviewPracticePageProps) {
+  viewer,
+}: InterviewPracticePageContentProps) {
   const [isTopicsOpen, setIsTopicsOpen] = useState(false);
   const [isMobileCategoryOpen, setIsMobileCategoryOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [pinnedCategories, setPinnedCategories] = useState<string[]>([]);
 
-  const { isReady, learnedIds } = useLocalLearningState();
+  const {
+    isReady,
+    learnedIds,
+    pinnedCategories,
+    togglePinCategory,
+  } = useInterviewLearningState();
 
   const [rankUpData, setRankUpData] = useState<{ oldRank: RankTier; newRank: RankTier; category: string } | null>(null);
   const prevCategoryLearnedCountRef = useRef<Record<string, number>>({});
@@ -268,32 +315,6 @@ export function InterviewPracticePage({
   useEffect(() => {
     const timer = setTimeout(() => setMounted(true), 0);
     return () => clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
-    try {
-      const stored = window.localStorage.getItem("interview-practice:v1:pinned-categories");
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        setTimeout(() => setPinnedCategories(parsed), 0);
-      }
-    } catch {
-      // Silently fail
-    }
-  }, []);
-
-  const togglePinCategory = useCallback((categoryName: string) => {
-    setPinnedCategories((prev) => {
-      const next = prev.includes(categoryName)
-        ? prev.filter((name) => name !== categoryName)
-        : [...prev, categoryName];
-      try {
-        window.localStorage.setItem("interview-practice:v1:pinned-categories", JSON.stringify(next));
-      } catch {
-        // Silently fail
-      }
-      return next;
-    });
   }, []);
 
   useEffect(() => {
