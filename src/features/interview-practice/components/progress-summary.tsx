@@ -165,13 +165,11 @@ export function ProgressSummary({ questions, category }: ProgressSummaryProps) {
               </p>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div className="flex shrink-0 items-center justify-center size-6 rounded-full bg-card border border-border/50 shadow-sm overflow-hidden cursor-help hover:scale-105 transition-all">
-                    <img
-                      src={tier.logoSvg}
-                      alt={tier.name}
-                      className="h-4 w-4 object-contain"
-                    />
-                  </div>
+                  <img
+                    src={tier.logoSvg}
+                    alt={tier.name}
+                    className="size-6 object-contain cursor-help hover:scale-110 transition-transform select-none"
+                  />
                 </TooltipTrigger>
                 <TooltipContent>
                   <span className="font-semibold text-xs">{rank.title}</span>
