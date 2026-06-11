@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils";
 
 import type { InterviewQuestionView } from "../types";
 import { InterviewMarkdown } from "./interview-markdown";
-import { useLocalLearningState } from "./local-learning-state";
+import { useInterviewLearningState } from "./interview-learning-state-provider";
 
 type FlashcardDeckProps = {
   questions: InterviewQuestionView[];
@@ -25,7 +25,7 @@ export function FlashcardDeck({ questions }: FlashcardDeckProps) {
   const [index, setIndex] = useState(0);
   const [isAnswerVisible, setIsAnswerVisible] = useState(false);
   const { bookmarkedIds, learnedIds, toggleBookmark, toggleLearned } =
-    useLocalLearningState();
+    useInterviewLearningState();
 
   const currentQuestion = questions[index];
 

@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/tooltip";
 
 import type { InterviewQuestionView } from "../types";
-import { useLocalLearningState } from "./local-learning-state";
+import { useInterviewLearningState } from "./interview-learning-state-provider";
 import { getInterviewCategoryMeta } from "../lib/category-meta";
 import { TechIcon } from "./tech-icon";
 import { triggerConfetti } from "../lib/celebrate";
@@ -90,7 +90,7 @@ function getDeveloperRank(percentage: number) {
 }
 
 export function ProgressSummary({ questions, category }: ProgressSummaryProps) {
-  const { bookmarkedIds, isReady, learnedIds } = useLocalLearningState();
+  const { bookmarkedIds, isAuthenticated, isReady, learnedIds } = useInterviewLearningState();
   const meta = getInterviewCategoryMeta(category);
 
   const visibleIds = new Set(questions.map((q) => q.id));
@@ -159,13 +159,17 @@ export function ProgressSummary({ questions, category }: ProgressSummaryProps) {
         <div className="flex items-center justify-between gap-3">
           <div>
             <div className="flex items-center gap-2 flex-wrap">
-              <p className="text-sm font-medium">Local progress</p>
+              <p className="text-sm font-medium">
+                {isAuthenticated ? "Synced progress" : "Local progress"}
+              </p>
               <span className={cn("inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-medium transition-all duration-300", rank.className)}>
                 {rank.title}
               </span>
             </div>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Stored only in this browser for now.
+              {isAuthenticated
+                ? "Saved to your GitHub-backed account."
+                : "Stored only in this browser until you sign in."}
             </p>
           </div>
           <span className="text-sm font-semibold">{progressValue}%</span>

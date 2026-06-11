@@ -13,7 +13,7 @@ import { getInterviewCategoryMeta } from "../lib/category-meta";
 import { createInterviewHref } from "../lib/question-url-state";
 import { getRankTier } from "../lib/rank-meta";
 import type { InterviewCategorySummary, InterviewFilterState } from "../types";
-import { useLocalLearningState } from "./local-learning-state";
+import { useInterviewLearningState } from "./interview-learning-state-provider";
 import { TechIcon } from "./tech-icon";
 
 type CategoryProgressVerticalProps = {
@@ -27,7 +27,7 @@ export function CategoryProgressVertical({
   categoryQuestionIds,
   filterState,
 }: CategoryProgressVerticalProps) {
-  const { isReady, learnedIds } = useLocalLearningState();
+  const { isReady, learnedIds } = useInterviewLearningState();
 
   const radius = 21;
   const circumference = 2 * Math.PI * radius;

@@ -20,7 +20,7 @@ import { cn } from "@/lib/utils";
 
 import type { InterviewQuestionView } from "../types";
 import { InterviewMarkdown } from "./interview-markdown";
-import { useLocalLearningState } from "./local-learning-state";
+import { useInterviewLearningState } from "./interview-learning-state-provider";
 
 type QuestionListProps = {
   questions: InterviewQuestionView[];
@@ -65,7 +65,7 @@ function createQuestionShareUrl(questionId: number) {
 
 export function QuestionList({ questions }: QuestionListProps) {
   const { bookmarkedIds, isReady, learnedIds, toggleBookmark, toggleLearned } =
-    useLocalLearningState();
+    useInterviewLearningState();
 
   const [copiedId, setCopiedId] = useState<number | null>(null);
   const [linkedId, setLinkedId] = useState<number | null>(null);
@@ -204,7 +204,7 @@ export function QuestionList({ questions }: QuestionListProps) {
                       {isLearned ? "Learned" : "Mark learned"}
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent>Track your local progress</TooltipContent>
+                  <TooltipContent>Track your progress</TooltipContent>
                 </Tooltip>
 
                 <Tooltip>
@@ -224,7 +224,7 @@ export function QuestionList({ questions }: QuestionListProps) {
                       {isBookmarked ? "Saved" : "Bookmark"}
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent>Save this question locally</TooltipContent>
+                  <TooltipContent>Save this question</TooltipContent>
                 </Tooltip>
 
                 <Button
