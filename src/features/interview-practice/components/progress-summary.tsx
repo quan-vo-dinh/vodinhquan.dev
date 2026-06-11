@@ -1,6 +1,6 @@
 "use client";
 
-import { Bookmark, CheckCircle2, Cloud, Database } from "lucide-react";
+import { Bookmark, CheckCircle2 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { useRef, useEffect } from "react";
@@ -158,50 +158,33 @@ export function ProgressSummary({ questions, category }: ProgressSummaryProps) {
       {/* Left Column: Progress Info */}
       <div className="grid min-w-0 gap-2 sm:gap-3">
         <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2.5 min-w-0">
-            {/* Status Sync Icon */}
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div className="flex items-center justify-center size-8 rounded-xl border bg-muted/30 text-muted-foreground shrink-0 select-none">
-                  {isAuthenticated ? (
-                    <Cloud className="size-4 text-blue-500 dark:text-blue-400 animate-pulse" />
-                  ) : (
-                    <Database className="size-4 text-amber-500" />
-                  )}
-                </div>
-              </TooltipTrigger>
-              <TooltipContent side="top">
-                <span className="font-semibold text-xs">
-                  {isAuthenticated ? "Synced progress" : "Local progress"}
-                </span>
-              </TooltipContent>
-            </Tooltip>
-
-            {/* Rank Icon */}
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div className="size-8 rounded-xl border bg-muted/30 flex items-center justify-center overflow-hidden shrink-0 select-none cursor-help">
-                  <img
-                    src={tier.logoSvg}
-                    alt={tier.name}
-                    className="size-5 object-contain"
-                  />
-                </div>
-              </TooltipTrigger>
-              <TooltipContent side="top">
-                <span className="font-semibold text-xs">{rank.title}</span>
-              </TooltipContent>
-            </Tooltip>
-
-            <div className="min-w-0">
-              <p className="text-[11px] text-muted-foreground truncate leading-tight">
-                {isAuthenticated
-                  ? "Saved to GitHub account."
-                  : "Stored only in browser."}
+          <div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <p className="text-sm font-medium">
+                {isAuthenticated ? "Synced progress" : "Local progress"}
               </p>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="flex shrink-0 items-center justify-center size-6 rounded-full bg-card border border-border/50 shadow-sm overflow-hidden cursor-help hover:scale-105 transition-all">
+                    <img
+                      src={tier.logoSvg}
+                      alt={tier.name}
+                      className="h-4 w-4 object-contain"
+                    />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <span className="font-semibold text-xs">{rank.title}</span>
+                </TooltipContent>
+              </Tooltip>
             </div>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              {isAuthenticated
+                ? "Saved to your GitHub-backed account."
+                : "Stored only in this browser until you sign in."}
+            </p>
           </div>
-          <span className="text-sm font-semibold shrink-0">{progressValue}%</span>
+          <span className="text-sm font-semibold">{progressValue}%</span>
         </div>
 
         {/* Progress Bar with Milestones */}
