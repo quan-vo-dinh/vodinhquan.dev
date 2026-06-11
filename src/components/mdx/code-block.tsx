@@ -69,11 +69,11 @@ export function CodeBlock({ children, ...props }: CodeBlockProps) {
   };
 
   return (
-    <div className="group relative rounded-xl overflow-hidden border border-border">
+    <div className="group relative rounded-xl overflow-hidden border border-border w-full max-w-full min-w-0">
       <pre
         ref={preRef}
         {...props}
-        className={cn("p-0! m-0! overflow-x-auto", props.className)}
+        className={cn("p-0! m-0! overflow-x-auto w-full", props.className)}
       >
         {title && (
           <div className="p-3 text-xs font-medium border-b border-border rounded-t-xl bg-muted/50 text-foreground">

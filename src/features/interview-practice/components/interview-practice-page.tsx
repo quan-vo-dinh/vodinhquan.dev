@@ -196,9 +196,9 @@ function InterviewPracticePageContent({
   }, [isMobileCategoryOpen]);
 
   const mainContent = (
-    <main className="relative left-1/2 flex w-screen max-w-7xl -translate-x-1/2 flex-col gap-4 px-2 sm:gap-6 sm:px-6">
+    <main className="relative left-0 translate-x-0 w-[calc(100%+3rem)] -mx-6 flex flex-col gap-4 px-2 sm:gap-6 sm:px-6 sm:w-screen sm:max-w-7xl sm:left-1/2 sm:-translate-x-1/2 sm:mx-0">
       <BlurFade delay={BLUR_FADE_DELAY}>
-        <section className="relative rounded-2xl border bg-card/80 p-4 shadow-[0_0_10px_3px] shadow-primary/5 backdrop-blur sm:rounded-3xl sm:p-5">
+        <section className="relative rounded-2xl border bg-card/80 p-4 shadow-[0_0_10px_3px] shadow-primary/5 backdrop-blur sm:rounded-3xl sm:p-5 overflow-hidden">
           {/* Background Grid Wrapper to clip the grid pattern without clipping the profile card */}
           <div className="absolute inset-0 overflow-hidden rounded-2xl sm:rounded-3xl pointer-events-none z-0">
             <AnimatedGridPattern

@@ -163,18 +163,20 @@ export function ProgressSummary({ questions, category }: ProgressSummaryProps) {
               <p className="text-sm font-medium">
                 {isAuthenticated ? "Synced progress" : "Local progress"}
               </p>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <img
-                    src={tier.logoSvg}
-                    alt={tier.name}
-                    className="size-6 object-contain cursor-help hover:scale-110 transition-transform select-none"
-                  />
-                </TooltipTrigger>
-                <TooltipContent>
-                  <span className="font-semibold text-xs">{rank.title}</span>
-                </TooltipContent>
-              </Tooltip>
+              <div className="relative size-8 flex items-center justify-center">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <img
+                      src={tier.logoSvg}
+                      alt={tier.name}
+                      className="absolute size-[48px] max-w-none object-contain cursor-help hover:scale-115 transition-transform select-none"
+                    />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <span className="font-semibold text-xs">{rank.title}</span>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
             </div>
             <p className="text-xs text-muted-foreground mt-0.5">
               {isAuthenticated

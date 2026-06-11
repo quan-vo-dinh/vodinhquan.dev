@@ -151,9 +151,9 @@ export function QuestionList({ questions }: QuestionListProps) {
                 </span>
               </div>
             </AccordionTrigger>
-            <AccordionContent className="space-y-3 pb-3 sm:space-y-4 sm:pb-4">
+            <AccordionContent className="space-y-3 pb-3 sm:space-y-4 sm:pb-4 w-full max-w-full min-w-0 overflow-hidden">
               {openValue === String(question.id) && (
-                <InterviewMarkdown className="[&_.group]:-mx-1 [&_.group]:rounded-lg sm:[&_.group]:mx-0 sm:[&_.group]:rounded-xl">
+                <InterviewMarkdown className="w-full min-w-0 overflow-hidden [&_.group]:-mx-1 [&_.group]:rounded-lg sm:[&_.group]:mx-0 sm:[&_.group]:rounded-xl">
                   {question.answer}
                 </InterviewMarkdown>
               )}
