@@ -197,13 +197,6 @@ function InterviewPracticePageContent({
 
   const mainContent = (
     <main className="relative left-1/2 flex w-screen max-w-7xl -translate-x-1/2 flex-col gap-4 px-2 sm:gap-6 sm:px-6">
-      {isPending && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background/10 backdrop-blur-[0.5px] pointer-events-none">
-          <div className="rounded-xl border bg-background/90 p-3 shadow-md flex items-center justify-center pointer-events-auto">
-            <Loader2 className="size-5 animate-spin text-primary" />
-          </div>
-        </div>
-      )}
       <BlurFade delay={BLUR_FADE_DELAY}>
         <section className="relative rounded-2xl border bg-card/80 p-4 shadow-[0_0_10px_3px] shadow-primary/5 backdrop-blur sm:rounded-3xl sm:p-5">
           {/* Background Grid Wrapper to clip the grid pattern without clipping the profile card */}
@@ -431,6 +424,15 @@ function InterviewPracticePageContent({
   return (
     <>
       {mainContent}
+      {mounted && isPending && typeof document !== "undefined" &&
+        createPortal(
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background/10 backdrop-blur-[0.5px] pointer-events-none">
+            <div className="rounded-xl border bg-background/90 p-3 shadow-md flex items-center justify-center pointer-events-auto">
+              <Loader2 className="size-5 animate-spin text-primary" />
+            </div>
+          </div>,
+          document.body
+        )}
       {mounted && typeof document !== "undefined" && createPortal(drawerContent, document.body)}
       {mounted && rankUpData && typeof document !== "undefined" &&
         createPortal(
