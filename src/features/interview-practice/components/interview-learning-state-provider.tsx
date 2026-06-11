@@ -4,6 +4,7 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
   useTransition,
@@ -58,6 +59,7 @@ export function InterviewLearningStateProvider({
   initialState,
 }: InterviewLearningStateProviderProps) {
   const [isPending, startTransition] = useTransition();
+  const [isReady, setIsReady] = useState(initialState.isAuthenticated);
   const [learnedIds, setLearnedIds] = useState(() => toSet(initialState.learnedIds));
   const [bookmarkedIds, setBookmarkedIds] = useState(() =>
     toSet(initialState.bookmarkedIds)
@@ -65,17 +67,27 @@ export function InterviewLearningStateProvider({
   const [pinnedCategories, setPinnedCategoriesState] = useState(
     initialState.pinnedCategories
   );
-  const [hasLocalProgressToSync, setHasLocalProgressToSync] = useState(() => {
-    if (!initialState.isAuthenticated || typeof window === "undefined") {
-      return false;
-    }
+  const [hasLocalProgressToSync, setHasLocalProgressToSync] = useState(false);
 
-    return (
-      readLocalNumberArray(LEARNED_STORAGE_KEY).length > 0 ||
-      readLocalNumberArray(BOOKMARK_STORAGE_KEY).length > 0 ||
-      readLocalStringArray(PINNED_CATEGORIES_STORAGE_KEY).length > 0
-    );
-  });
+  useEffect(() => {
+    if (initialState.isAuthenticated) {
+      const hasProgress =
+        readLocalNumberArray(LEARNED_STORAGE_KEY).length > 0 ||
+        readLocalNumberArray(BOOKMARK_STORAGE_KEY).length > 0 ||
+        readLocalStringArray(PINNED_CATEGORIES_STORAGE_KEY).length > 0;
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setHasLocalProgressToSync(hasProgress);
+    } else {
+      const localLearned = readLocalNumberArray(LEARNED_STORAGE_KEY);
+      const localBookmarked = readLocalNumberArray(BOOKMARK_STORAGE_KEY);
+      const localPinned = readLocalStringArray(PINNED_CATEGORIES_STORAGE_KEY);
+
+      setLearnedIds(new Set(localLearned));
+      setBookmarkedIds(new Set(localBookmarked));
+      setPinnedCategoriesState(localPinned);
+    }
+    setIsReady(true);
+  }, [initialState.isAuthenticated]);
 
   const persistLocalLearned = useCallback((nextIds: Set<number>) => {
     writeLocalNumberArray(LEARNED_STORAGE_KEY, Array.from(nextIds));
@@ -196,7 +208,7 @@ export function InterviewLearningStateProvider({
       hasLocalProgressToSync,
       isAuthenticated: initialState.isAuthenticated,
       isPending,
-      isReady: true,
+      isReady,
       learnedIds,
       pinnedCategories,
       syncBrowserProgress,
@@ -209,6 +221,7 @@ export function InterviewLearningStateProvider({
       hasLocalProgressToSync,
       initialState.isAuthenticated,
       isPending,
+      isReady,
       learnedIds,
       pinnedCategories,
       syncBrowserProgress,
