@@ -20,12 +20,14 @@ type CategoryProgressVerticalProps = {
   categories: InterviewCategorySummary[];
   categoryQuestionIds: Record<string, number[]>;
   filterState: InterviewFilterState;
+  onNavigate?: (href: string) => void;
 };
 
 export function CategoryProgressVertical({
   categories,
   categoryQuestionIds,
   filterState,
+  onNavigate,
 }: CategoryProgressVerticalProps) {
   const { isReady, learnedIds } = useInterviewLearningState();
 
@@ -75,6 +77,18 @@ export function CategoryProgressVertical({
                       { category: category.name, subcategory: "all" },
                       filterState
                     )}
+                    onClick={(e) => {
+                      if (onNavigate) {
+                        e.preventDefault();
+                        onNavigate(
+                          createInterviewHref(
+                            { category: category.name, subcategory: "all" },
+                            filterState
+                          )
+                        );
+                      }
+                    }}
+                    prefetch={false}
                     className="group flex flex-col items-center gap-1.5 focus-visible:outline-none"
                   >
                     {/* Circle icon with progress ring + rank badge */}

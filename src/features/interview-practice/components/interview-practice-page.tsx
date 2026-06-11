@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useTransition } from "react";
 import { createPortal } from "react-dom";
 import { ChevronDown, Menu, X } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import BlurFade from "@/components/magicui/blur-fade";
 import { AnimatedGridPattern } from "@/components/ui/animated-grid-pattern";
@@ -99,9 +100,21 @@ function InterviewPracticePageContent({
   totalQuestions,
   viewer,
 }: InterviewPracticePageContentProps) {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+
   const [isTopicsOpen, setIsTopicsOpen] = useState(false);
   const [isMobileCategoryOpen, setIsMobileCategoryOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+
+  const handleNavigate = useCallback(
+    (href: string) => {
+      startTransition(() => {
+        router.push(href);
+      });
+    },
+    [router]
+  );
 
   const {
     isReady,
@@ -184,6 +197,9 @@ function InterviewPracticePageContent({
 
   const mainContent = (
     <main className="relative left-1/2 flex w-screen max-w-7xl -translate-x-1/2 flex-col gap-4 px-2 sm:gap-6 sm:px-6">
+      {isPending && (
+        <div className="fixed top-0 left-0 right-0 h-0.5 bg-primary/80 animate-pulse z-[200] pointer-events-none" />
+      )}
       <BlurFade delay={BLUR_FADE_DELAY}>
         <section className="relative rounded-2xl border bg-card/80 p-4 shadow-[0_0_10px_3px] shadow-primary/5 backdrop-blur sm:rounded-3xl sm:p-5">
           {/* Background Grid Wrapper to clip the grid pattern without clipping the profile card */}
@@ -241,17 +257,24 @@ function InterviewPracticePageContent({
           yOffset={10}
           className="hidden lg:block"
         >
-          <aside className="flex h-[calc(100vh-120px)] max-h-[85vh] flex-col rounded-2xl border bg-card/70 p-4 text-sm lg:sticky lg:top-6">
+          <aside className={cn(
+            "flex h-[calc(100vh-120px)] max-h-[85vh] flex-col rounded-2xl border bg-card/70 p-4 text-sm lg:sticky lg:top-6 transition-all duration-300",
+            isPending && "opacity-60 pointer-events-none cursor-wait"
+          )}>
             <CategoryNav
               categories={categories}
               filterState={filterState}
               pinnedCategories={pinnedCategories}
               onTogglePin={togglePinCategory}
+              onNavigate={handleNavigate}
             />
           </aside>
         </BlurFade>
 
-        <div className="flex min-w-0 flex-col gap-3 rounded-xl border bg-card/70 p-2 sm:gap-4 sm:rounded-2xl sm:p-4">
+        <div className={cn(
+          "flex min-w-0 flex-col gap-3 rounded-xl border bg-card/70 p-2 sm:gap-4 sm:rounded-2xl sm:p-4 transition-all duration-300",
+          isPending && "opacity-60 pointer-events-none cursor-wait"
+        )}>
           <BlurFade delay={BLUR_FADE_DELAY * 4} yOffset={10}>
             <div className="flex items-center justify-between gap-4">
               <div className="flex flex-col gap-0.5">
@@ -281,6 +304,7 @@ function InterviewPracticePageContent({
               resultCount={questions.length}
               subcategories={subcategories}
               variant="filters-only"
+              onNavigate={handleNavigate}
             />
           </BlurFade>
 
@@ -324,6 +348,7 @@ function InterviewPracticePageContent({
                     resultCount={questions.length}
                     subcategories={subcategories}
                     variant="topics-only"
+                    onNavigate={handleNavigate}
                   />
                 </div>
               </div>
@@ -358,6 +383,7 @@ function InterviewPracticePageContent({
         categories={categories}
         categoryQuestionIds={categoryQuestionIds}
         filterState={filterState}
+        onNavigate={handleNavigate}
       />
     </main>
   );
@@ -391,6 +417,7 @@ function InterviewPracticePageContent({
             pinnedCategories={pinnedCategories}
             onTogglePin={togglePinCategory}
             onCategorySelect={() => setIsMobileCategoryOpen(false)}
+            onNavigate={handleNavigate}
           />
         </div>
       </div>

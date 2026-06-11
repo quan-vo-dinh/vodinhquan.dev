@@ -23,6 +23,7 @@ type CategoryNavProps = {
   pinnedCategories: string[];
   onTogglePin: (categoryName: string) => void;
   onCategorySelect?: () => void;
+  onNavigate?: (href: string) => void;
 };
 
 export function CategoryNav({
@@ -31,6 +32,7 @@ export function CategoryNav({
   pinnedCategories,
   onTogglePin,
   onCategorySelect,
+  onNavigate,
 }: CategoryNavProps) {
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -74,7 +76,19 @@ export function CategoryNav({
             { category: category.name, subcategory: "all" },
             filterState
           )}
-          onClick={onCategorySelect}
+          onClick={(e) => {
+            if (onNavigate) {
+              e.preventDefault();
+              onNavigate(
+                createInterviewHref(
+                  { category: category.name, subcategory: "all" },
+                  filterState
+                )
+              );
+            }
+            onCategorySelect?.();
+          }}
+          prefetch={false}
           className="flex flex-1 items-center gap-3 pl-3 pr-9 py-2 text-sm transition-all select-none min-w-0"
           aria-current={isActive ? "page" : undefined}
         >

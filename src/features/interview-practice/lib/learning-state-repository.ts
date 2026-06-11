@@ -1,6 +1,6 @@
 import "server-only";
 
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabaseServerClient, getCachedAuthUser } from "@/lib/supabase/server";
 
 import type { InterviewLearningStateSnapshot } from "./learning-state-types";
 
@@ -12,14 +12,15 @@ export const emptyInterviewLearningState: InterviewLearningStateSnapshot = {
 };
 
 export async function getCurrentUserInterviewLearningState(): Promise<InterviewLearningStateSnapshot> {
-  const supabase = await createSupabaseServerClient();
   const {
     data: { user },
-  } = await supabase.auth.getUser();
+  } = await getCachedAuthUser();
 
   if (!user) {
     return emptyInterviewLearningState;
   }
+
+  const supabase = await createSupabaseServerClient();
 
   const [{ data: rawProgress }, { data: rawPreferences }] = await Promise.all([
     supabase

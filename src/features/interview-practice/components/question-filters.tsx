@@ -25,6 +25,7 @@ type QuestionFiltersProps = {
   resultCount: number;
   subcategories: InterviewSubcategorySummary[];
   variant?: "all" | "topics-only" | "filters-only";
+  onNavigate?: (href: string) => void;
 };
 
 export function QuestionFilters({
@@ -32,7 +33,17 @@ export function QuestionFilters({
   resultCount,
   subcategories,
   variant = "all",
+  onNavigate,
 }: QuestionFiltersProps) {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const q = (formData.get("q") as string) || "";
+    const href = createInterviewHref({ query: q }, filterState);
+    if (onNavigate) {
+      onNavigate(href);
+    }
+  };
   const showTopics = variant === "all" || variant === "topics-only";
   const showFilters = variant === "all" || variant === "filters-only";
 
@@ -43,6 +54,13 @@ export function QuestionFilters({
         <div className="flex flex-wrap gap-2">
           <Link
             href={createInterviewHref({ subcategory: "all" }, filterState)}
+            onClick={(e) => {
+              if (onNavigate) {
+                e.preventDefault();
+                onNavigate(createInterviewHref({ subcategory: "all" }, filterState));
+              }
+            }}
+            prefetch={false}
             className={cn(
               "inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs transition-colors",
               filterState.subcategory === "all"
@@ -55,14 +73,22 @@ export function QuestionFilters({
           </Link>
           {subcategories.map((subcategory) => {
             const isActive = filterState.subcategory === subcategory.name;
+            const subcategoryHref = createInterviewHref(
+              { subcategory: subcategory.name },
+              filterState
+            );
 
             return (
               <Link
                 key={subcategory.name}
-                href={createInterviewHref(
-                  { subcategory: subcategory.name },
-                  filterState
-                )}
+                href={subcategoryHref}
+                onClick={(e) => {
+                  if (onNavigate) {
+                    e.preventDefault();
+                    onNavigate(subcategoryHref);
+                  }
+                }}
+                prefetch={false}
                 className={cn(
                   "inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs transition-colors",
                   isActive
@@ -83,7 +109,7 @@ export function QuestionFilters({
       {showFilters && (
         <div className="flex flex-wrap md:flex-nowrap items-center gap-2 w-full">
           {/* Scoped search — GET form so it works without JS */}
-          <form action="/interview" className="relative flex-1 min-w-[150px] w-full">
+          <form onSubmit={handleSubmit} action="/interview" className="relative flex-1 min-w-[150px] w-full">
             <input type="hidden" name="category" value={filterState.category} />
             {filterState.subcategory !== "all" ? (
               <input
@@ -118,6 +144,10 @@ export function QuestionFilters({
           <div className="flex items-center gap-1 shrink-0 flex-wrap">
             {levelOptions.map((level) => {
               const isActive = filterState.level === level.value;
+              const levelHref = createInterviewHref(
+                { level: level.value },
+                filterState
+              );
 
               return (
                 <Button
@@ -128,10 +158,14 @@ export function QuestionFilters({
                   className="h-8 px-2.5 text-xs font-medium"
                 >
                   <Link
-                    href={createInterviewHref(
-                      { level: level.value },
-                      filterState
-                    )}
+                    href={levelHref}
+                    onClick={(e) => {
+                      if (onNavigate) {
+                        e.preventDefault();
+                        onNavigate(levelHref);
+                      }
+                    }}
+                    prefetch={false}
                   >
                     {level.label}
                   </Link>
@@ -148,7 +182,17 @@ export function QuestionFilters({
               variant={filterState.mode === "list" ? "default" : "outline"}
               className="h-8 px-2.5 text-xs font-medium"
             >
-              <Link href={createInterviewHref({ mode: "list" }, filterState)} className="inline-flex items-center gap-1.5">
+              <Link
+                href={createInterviewHref({ mode: "list" }, filterState)}
+                onClick={(e) => {
+                  if (onNavigate) {
+                    e.preventDefault();
+                    onNavigate(createInterviewHref({ mode: "list" }, filterState));
+                  }
+                }}
+                prefetch={false}
+                className="inline-flex items-center gap-1.5"
+              >
                 <List className="size-3.5" />
                 <span>List</span>
               </Link>
@@ -163,6 +207,13 @@ export function QuestionFilters({
             >
               <Link
                 href={createInterviewHref({ mode: "flashcards" }, filterState)}
+                onClick={(e) => {
+                  if (onNavigate) {
+                    e.preventDefault();
+                    onNavigate(createInterviewHref({ mode: "flashcards" }, filterState));
+                  }
+                }}
+                prefetch={false}
                 className="inline-flex items-center gap-1.5"
               >
                 <SquareStack className="size-3.5" />
@@ -180,6 +231,18 @@ export function QuestionFilters({
                   { locale: filterState.locale === "vi" ? "en" : "vi" },
                   filterState
                 )}
+                onClick={(e) => {
+                  if (onNavigate) {
+                    e.preventDefault();
+                    onNavigate(
+                      createInterviewHref(
+                        { locale: filterState.locale === "vi" ? "en" : "vi" },
+                        filterState
+                      )
+                    );
+                  }
+                }}
+                prefetch={false}
                 className="inline-flex items-center gap-1.5"
               >
                 <Languages className="size-3.5" />

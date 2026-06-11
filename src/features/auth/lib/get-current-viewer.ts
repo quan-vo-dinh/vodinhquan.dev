@@ -1,6 +1,6 @@
 import "server-only";
 
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabaseServerClient, getCachedAuthUser } from "@/lib/supabase/server";
 
 import type { CurrentViewer } from "../types";
 
@@ -20,14 +20,15 @@ function getMetadataString(
 }
 
 export async function getCurrentViewer(): Promise<CurrentViewer | null> {
-  const supabase = await createSupabaseServerClient();
   const {
     data: { user },
-  } = await supabase.auth.getUser();
+  } = await getCachedAuthUser();
 
   if (!user) {
     return null;
   }
+
+  const supabase = await createSupabaseServerClient();
 
   const { data } = await supabase
     .from("profiles")
