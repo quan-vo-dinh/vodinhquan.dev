@@ -308,7 +308,7 @@ export function InterviewProfileCard({
         </div>
 
         {/* Card Details */}
-        <div className="flex min-w-0 flex-col gap-1 [transform-style:preserve-3d] z-10 w-full">
+        <div className={cn("flex min-w-0 flex-col gap-1 [transform-style:preserve-3d] z-10 w-full justify-center", viewer && "pr-16")}>
           <CardItem
             translateZ={75}
             as="h3"
@@ -317,24 +317,35 @@ export function InterviewProfileCard({
             {displayName}
           </CardItem>
 
-          <CardItem translateZ={90} as="div" className="flex flex-col gap-2">
-            {viewer?.profileUrl ? (
+          {viewer?.profileUrl ? (
+            <CardItem translateZ={90}>
               <Link
                 href={viewer.profileUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-1.5 inline-flex w-fit items-center gap-1.5 text-xs text-muted-foreground underline underline-offset-2 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                className="mt-0.5 inline-flex w-fit items-center gap-1.5 text-xs text-muted-foreground underline underline-offset-2 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 aria-label={`Visit ${displayName} GitHub profile`}
               >
                 <Icons.github className="size-3.5" aria-hidden />
                 <span>{viewer.githubUsername ?? "GitHub Profile"}</span>
               </Link>
-            ) : (
+            </CardItem>
+          ) : (
+            <CardItem translateZ={90} as="div" className="mt-1">
               <SignInWithGitHubButton />
-            )}
-            {viewer ? <SignOutButton /> : null}
-          </CardItem>
+            </CardItem>
+          )}
         </div>
+
+        {viewer ? (
+          <CardItem
+            translateZ={90}
+            as="div"
+            className="absolute bottom-2.5 right-2.5 z-20"
+          >
+            <SignOutButton />
+          </CardItem>
+        ) : null}
       </CardBody>
     </CardContainer>
   );
