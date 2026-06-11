@@ -99,9 +99,10 @@ export function InterviewLearningStateProvider({
 
   const toggleLearned = useCallback(
     (id: number) => {
+      let enabled = false;
       setLearnedIds((current) => {
         const next = new Set(current);
-        const enabled = !next.has(id);
+        enabled = !next.has(id);
 
         if (enabled) {
           next.add(id);
@@ -110,8 +111,20 @@ export function InterviewLearningStateProvider({
         }
 
         if (initialState.isAuthenticated) {
-          startTransition(() => {
-            void setQuestionLearned({ questionId: id, enabled });
+          startTransition(async () => {
+            const res = await setQuestionLearned({ questionId: id, enabled });
+            if (!res.ok) {
+              console.error("Failed to save learned progress to Supabase:", res.reason);
+              setLearnedIds((prev) => {
+                const rollback = new Set(prev);
+                if (enabled) {
+                  rollback.delete(id);
+                } else {
+                  rollback.add(id);
+                }
+                return rollback;
+              });
+            }
           });
         } else {
           persistLocalLearned(next);
@@ -125,9 +138,10 @@ export function InterviewLearningStateProvider({
 
   const toggleBookmark = useCallback(
     (id: number) => {
+      let enabled = false;
       setBookmarkedIds((current) => {
         const next = new Set(current);
-        const enabled = !next.has(id);
+        enabled = !next.has(id);
 
         if (enabled) {
           next.add(id);
@@ -136,8 +150,20 @@ export function InterviewLearningStateProvider({
         }
 
         if (initialState.isAuthenticated) {
-          startTransition(() => {
-            void setQuestionBookmarked({ questionId: id, enabled });
+          startTransition(async () => {
+            const res = await setQuestionBookmarked({ questionId: id, enabled });
+            if (!res.ok) {
+              console.error("Failed to save bookmarked progress to Supabase:", res.reason);
+              setBookmarkedIds((prev) => {
+                const rollback = new Set(prev);
+                if (enabled) {
+                  rollback.delete(id);
+                } else {
+                  rollback.add(id);
+                }
+                return rollback;
+              });
+            }
           });
         } else {
           persistLocalBookmarks(next);
@@ -157,8 +183,12 @@ export function InterviewLearningStateProvider({
           : [...current, category];
 
         if (initialState.isAuthenticated) {
-          startTransition(() => {
-            void persistPinnedCategories(next);
+          startTransition(async () => {
+            const res = await persistPinnedCategories(next);
+            if (!res.ok) {
+              console.error("Failed to save pinned categories to Supabase:", res.reason);
+              setPinnedCategoriesState(current);
+            }
           });
         } else {
           writeLocalStringArray(PINNED_CATEGORIES_STORAGE_KEY, next);
