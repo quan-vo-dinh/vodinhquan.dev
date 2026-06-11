@@ -2,8 +2,10 @@
 
 import { useCallback, useMemo, useSyncExternalStore } from "react";
 
-const LEARNED_STORAGE_KEY = "interview-practice:v1:learned";
-const BOOKMARK_STORAGE_KEY = "interview-practice:v1:bookmarks";
+export const LEARNED_STORAGE_KEY = "interview-practice:v1:learned";
+export const BOOKMARK_STORAGE_KEY = "interview-practice:v1:bookmarks";
+export const PINNED_CATEGORIES_STORAGE_KEY =
+  "interview-practice:v1:pinned-categories";
 const LOCAL_LEARNING_STATE_EVENT = "interview-practice:local-learning-state";
 
 type LocalLearningSnapshot = {
@@ -21,6 +23,42 @@ const serverSnapshot: LocalLearningSnapshot = {
 let cachedLearnedValue: string | null = null;
 let cachedBookmarkValue: string | null = null;
 let cachedSnapshot: LocalLearningSnapshot | null = null;
+
+export function readLocalNumberArray(key: string) {
+  return Array.from(readNumberSet(key));
+}
+
+export function writeLocalNumberArray(key: string, ids: number[]) {
+  writeNumberSet(key, new Set(ids));
+}
+
+export function readLocalStringArray(key: string) {
+  if (typeof window === "undefined") {
+    return [];
+  }
+
+  try {
+    const rawValue = window.localStorage.getItem(key);
+    const parsedValue = rawValue ? JSON.parse(rawValue) : [];
+
+    return Array.isArray(parsedValue)
+      ? parsedValue.filter((value): value is string => typeof value === "string")
+      : [];
+  } catch {
+    return [];
+  }
+}
+
+export function writeLocalStringArray(key: string, values: string[]) {
+  try {
+    window.localStorage.setItem(key, JSON.stringify(values));
+    queueMicrotask(() => {
+      window.dispatchEvent(new Event(LOCAL_LEARNING_STATE_EVENT));
+    });
+  } catch {
+    return;
+  }
+}
 
 function readLocalLearningState() {
   return {
@@ -73,12 +111,8 @@ function subscribeToLocalLearningState(onStoreChange: () => void) {
 }
 
 function getLocalLearningSnapshot() {
-  if (typeof window === "undefined") {
-    return serverSnapshot;
-  }
-
-  const learnedValue = window.localStorage.getItem(LEARNED_STORAGE_KEY);
-  const bookmarkValue = window.localStorage.getItem(BOOKMARK_STORAGE_KEY);
+  const learnedValue = typeof window !== "undefined" ? window.localStorage.getItem(LEARNED_STORAGE_KEY) : null;
+  const bookmarkValue = typeof window !== "undefined" ? window.localStorage.getItem(BOOKMARK_STORAGE_KEY) : null;
 
   if (
     cachedSnapshot &&
