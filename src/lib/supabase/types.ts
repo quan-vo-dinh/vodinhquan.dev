@@ -35,6 +35,23 @@ export type Database = {
           profile_url?: string | null;
           updated_at?: string;
         };
+        Relationships: [];
+      };
+      interview_owner_accounts: {
+        Row: {
+          user_id: string;
+          github_username: string;
+          created_at: string;
+        };
+        Insert: {
+          user_id: string;
+          github_username: string;
+          created_at?: string;
+        };
+        Update: {
+          github_username?: string;
+        };
+        Relationships: [];
       };
       interview_question_progress: {
         Row: {
@@ -61,6 +78,7 @@ export type Database = {
           last_reviewed_at?: string | null;
           updated_at?: string;
         };
+        Relationships: [];
       };
       interview_user_preferences: {
         Row: {
@@ -88,7 +106,25 @@ export type Database = {
           last_category?: string | null;
           updated_at?: string;
         };
+        Relationships: [];
       };
     };
+    Views: Record<string, never>;
+    Functions: {
+      is_interview_owner: {
+        Args: Record<PropertyKey, never>;
+        Returns: boolean;
+      };
+      merge_interview_learning_state: {
+        Args: {
+          p_learned_ids: number[];
+          p_bookmarked_ids: number[];
+          p_pinned_categories: string[];
+        };
+        Returns: Json;
+      };
+    };
+    Enums: Record<string, never>;
+    CompositeTypes: Record<string, never>;
   };
 };

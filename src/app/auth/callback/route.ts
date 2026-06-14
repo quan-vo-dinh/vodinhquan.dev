@@ -1,24 +1,22 @@
 import { NextResponse, type NextRequest } from "next/server";
 
+import { isInterviewOwner } from "@/features/auth/lib/auth-authorization";
+import { resolveAuthOrigin, safeNextPath } from "@/features/auth/lib/auth-redirect";
+import { getServerEnv } from "@/lib/env";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-
-function safeNextPath(value: string | null) {
-  if (!value || !value.startsWith("/")) {
-    return "/interview";
-  }
-
-  if (value.startsWith("//")) {
-    return "/interview";
-  }
-
-  return value;
-}
 
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url);
-  const host = request.headers.get("x-forwarded-host") || requestUrl.host;
-  const proto = request.headers.get("x-forwarded-proto") || requestUrl.protocol.slice(0, -1);
-  const origin = `${proto}://${host}`;
+  const {
+    appOrigin,
+    interviewOwnerGitHubUsername,
+    isDevelopment,
+  } = getServerEnv();
+  const origin = resolveAuthOrigin({
+    configuredOrigin: appOrigin,
+    isDevelopment,
+    requestUrl: request.url,
+  });
 
   const code = requestUrl.searchParams.get("code");
   const next = safeNextPath(requestUrl.searchParams.get("next"));
@@ -28,9 +26,36 @@ export async function GET(request: NextRequest) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error) {
-      const res = NextResponse.redirect(`${origin}${next}`);
-      res.headers.set("Cache-Control", "no-store, max-age=0, must-revalidate");
-      return res;
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      const { data: isDatabaseOwner } = await supabase.rpc(
+        "is_interview_owner"
+      );
+
+      if (
+        user &&
+        isDatabaseOwner &&
+        isInterviewOwner(
+          user.user_metadata,
+          interviewOwnerGitHubUsername
+        )
+      ) {
+        const res = NextResponse.redirect(`${origin}${next}`);
+        res.headers.set("Cache-Control", "no-store, max-age=0, must-revalidate");
+        return res;
+      }
+
+      await supabase.auth.signOut();
+
+      const unauthorizedResponse = NextResponse.redirect(
+        `${origin}/auth/auth-code-error?reason=unauthorized`
+      );
+      unauthorizedResponse.headers.set(
+        "Cache-Control",
+        "no-store, max-age=0, must-revalidate"
+      );
+      return unauthorizedResponse;
     }
   }
 

@@ -1,8 +1,8 @@
-export type InterviewLearningStateSnapshot = {
-  learnedIds: number[];
-  bookmarkedIds: number[];
-  pinnedCategories: string[];
+import type { LearningProgressSnapshot } from "./learning-progress";
+
+export type InterviewLearningStateSnapshot = LearningProgressSnapshot & {
   isAuthenticated: boolean;
+  remoteStatus: "available" | "unavailable" | "not-applicable";
 };
 
 export type InterviewLearningStateSets = {
@@ -10,5 +10,6 @@ export type InterviewLearningStateSets = {
   bookmarkedIds: Set<number>;
   pinnedCategories: string[];
   isAuthenticated: boolean;
+  isRemoteAvailable: boolean;
   isReady: boolean;
 };

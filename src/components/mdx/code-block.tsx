@@ -16,12 +16,15 @@ function extractLanguage(className?: string): string {
 }
 
 export function CodeBlock({ children, ...props }: CodeBlockProps) {
-  const [copied, setCopied] = useState(false);
+  const [copyStatus, setCopyStatus] = useState<"error" | "idle" | "success">(
+    "idle"
+  );
   const [{ html, className, title }, setRenderState] = useState<{
     html: string;
     className: string;
     title: string | null;
   }>({ html: "", className: "", title: null });
+  const [sourceCode, setSourceCode] = useState("");
   const preRef = useRef<HTMLPreElement>(null);
 
   useEffect(() => {
@@ -33,6 +36,7 @@ export function CodeBlock({ children, ...props }: CodeBlockProps) {
     const lang = normalizeShikiLanguage(extractLanguage(codeEl.className));
     const nextTitle = codeEl.getAttribute("data-title");
     const nextClassName = codeEl.className || "";
+    setSourceCode(codeText);
 
     void codeToHtml(codeText, {
       lang,
@@ -58,13 +62,23 @@ export function CodeBlock({ children, ...props }: CodeBlockProps) {
   }, [children]);
 
   const handleCopy = async () => {
-    const code = preRef.current?.textContent || "";
+    const code =
+      sourceCode || preRef.current?.querySelector("code")?.textContent || "";
+
+    if (!code) {
+      setCopyStatus("error");
+      setTimeout(() => setCopyStatus("idle"), 2000);
+      return;
+    }
+
     try {
       await navigator.clipboard.writeText(code);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      setCopyStatus("success");
+      setTimeout(() => setCopyStatus("idle"), 2000);
     } catch (error) {
       console.error("Failed to copy code:", error);
+      setCopyStatus("error");
+      setTimeout(() => setCopyStatus("idle"), 2000);
     }
   };
 
@@ -88,8 +102,24 @@ export function CodeBlock({ children, ...props }: CodeBlockProps) {
           className={cn("absolute size-8 text-primary cursor-pointer right-3 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity rounded-md border border-border shadow-none", title ? "top-13" : "top-3", props.className)}
           aria-label="Copy code"
         >
-          {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
+          {copyStatus === "success" ? (
+            <Check className="size-4 text-emerald-500" />
+          ) : (
+            <Copy
+              className={cn(
+                "size-4",
+                copyStatus === "error" && "text-destructive"
+              )}
+            />
+          )}
         </Button>
+        <span className="sr-only" role="status" aria-live="polite">
+          {copyStatus === "success"
+            ? "Code copied."
+            : copyStatus === "error"
+              ? "Unable to copy code."
+              : ""}
+        </span>
         {html && (
           <div className="p-3">
             <code
@@ -108,4 +138,3 @@ export function CodeBlock({ children, ...props }: CodeBlockProps) {
     </div >
   );
 }
-

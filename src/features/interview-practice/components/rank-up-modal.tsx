@@ -7,6 +7,7 @@ import { getInterviewCategoryMeta } from "../lib/category-meta";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
+import { RankImage } from "./rank-image";
 import { TechIcon } from "./tech-icon";
 
 type RankUpModalProps = {
@@ -231,9 +232,11 @@ export function RankUpModal({ oldRank, newRank, category, onClose }: RankUpModal
               )}
             >
               <div className="relative h-32 w-32 sm:h-48 sm:w-48 flex items-center justify-center filter drop-shadow-[0_4px_10px_rgba(0,0,0,0.5)]">
-                <img
+                <RankImage
                   src={oldRank.logoSvg}
                   alt={oldRank.name}
+                  width={192}
+                  height={192}
                   className="h-full w-full object-contain"
                 />
               </div>
@@ -269,9 +272,11 @@ export function RankUpModal({ oldRank, newRank, category, onClose }: RankUpModal
               <div className={cn("absolute size-48 sm:size-64 bg-gradient-to-r blur-3xl opacity-15 rounded-full animate-pulse", currentColors.bgGlow)} />
               
               <div className="relative h-32 w-32 sm:h-48 sm:w-48 flex items-center justify-center filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.6)] animate-float-subtle">
-                <img
+                <RankImage
                   src={newRank.logoSvg}
                   alt={newRank.name}
+                  width={192}
+                  height={192}
                   className="h-full w-full object-contain"
                 />
               </div>

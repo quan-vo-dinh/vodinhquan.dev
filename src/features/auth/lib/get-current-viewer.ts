@@ -1,8 +1,9 @@
 import "server-only";
 
-import { createSupabaseServerClient, getCachedAuthUser } from "@/lib/supabase/server";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 import type { CurrentViewer } from "../types";
+import { getOwnerAuthUser } from "./get-owner-auth-user";
 
 function getMetadataString(
   metadata: Record<string, unknown>,
@@ -20,9 +21,7 @@ function getMetadataString(
 }
 
 export async function getCurrentViewer(): Promise<CurrentViewer | null> {
-  const {
-    data: { user },
-  } = await getCachedAuthUser();
+  const user = await getOwnerAuthUser();
 
   if (!user) {
     return null;

@@ -9,12 +9,11 @@ import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 function getSortedPosts() {
-  return [...allPosts].sort((a, b) => {
-    if (new Date(a.publishedAt) > new Date(b.publishedAt)) {
-      return -1;
-    }
-    return 1;
-  });
+  return [...allPosts].sort(
+    (a, b) =>
+      Date.parse(b.publishedAt) - Date.parse(a.publishedAt) ||
+      a._meta.path.localeCompare(b._meta.path)
+  );
 }
 
 export async function generateStaticParams() {

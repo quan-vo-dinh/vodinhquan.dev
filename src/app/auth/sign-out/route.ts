@@ -1,12 +1,16 @@
 import { NextResponse, type NextRequest } from "next/server";
 
+import { resolveAuthOrigin } from "@/features/auth/lib/auth-redirect";
+import { getServerEnv } from "@/lib/env";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export async function POST(request: NextRequest) {
-  const requestUrl = new URL(request.url);
-  const host = request.headers.get("x-forwarded-host") || requestUrl.host;
-  const proto = request.headers.get("x-forwarded-proto") || requestUrl.protocol.slice(0, -1);
-  const origin = `${proto}://${host}`;
+  const { appOrigin, isDevelopment } = getServerEnv();
+  const origin = resolveAuthOrigin({
+    configuredOrigin: appOrigin,
+    isDevelopment,
+    requestUrl: request.url,
+  });
 
   const supabase = await createSupabaseServerClient();
 
