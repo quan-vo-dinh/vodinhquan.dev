@@ -16,6 +16,7 @@ import { getInterviewCategoryMeta } from "../lib/category-meta";
 import { TechIcon } from "./tech-icon";
 import { triggerConfetti } from "../lib/celebrate";
 import { getRankTier } from "../lib/rank-meta";
+import { RankImage } from "./rank-image";
 
 type ProgressSummaryProps = {
   questions: InterviewQuestionView[];
@@ -90,7 +91,13 @@ function getDeveloperRank(percentage: number) {
 }
 
 export function ProgressSummary({ questions, category }: ProgressSummaryProps) {
-  const { bookmarkedIds, isAuthenticated, isReady, learnedIds } = useInterviewLearningState();
+  const {
+    bookmarkedIds,
+    isAuthenticated,
+    isReady,
+    isRemoteAvailable,
+    learnedIds,
+  } = useInterviewLearningState();
   const meta = getInterviewCategoryMeta(category);
 
   const visibleIds = new Set(questions.map((q) => q.id));
@@ -161,14 +168,18 @@ export function ProgressSummary({ questions, category }: ProgressSummaryProps) {
           <div>
             <div className="flex items-center gap-2 flex-wrap">
               <p className="text-sm font-medium">
-                {isAuthenticated ? "Synced progress" : "Local progress"}
+                {isAuthenticated && isRemoteAvailable
+                  ? "Synced progress"
+                  : "Local progress"}
               </p>
               <div className="relative size-8 flex items-center justify-center">
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <img
+                    <RankImage
                       src={tier.logoSvg}
                       alt={tier.name}
+                      width={48}
+                      height={48}
                       className="absolute size-[48px] max-w-none object-contain cursor-help hover:scale-115 transition-transform select-none"
                     />
                   </TooltipTrigger>
@@ -179,9 +190,11 @@ export function ProgressSummary({ questions, category }: ProgressSummaryProps) {
               </div>
             </div>
             <p className="text-xs text-muted-foreground mt-0.5">
-              {isAuthenticated
+              {isAuthenticated && isRemoteAvailable
                 ? "Saved to your GitHub-backed account."
-                : "Stored only in this browser until you sign in."}
+                : isAuthenticated
+                  ? "Remote unavailable; saved in this browser."
+                  : "Stored only in this browser until you sign in."}
             </p>
           </div>
           <span className="text-sm font-semibold">{progressValue}%</span>

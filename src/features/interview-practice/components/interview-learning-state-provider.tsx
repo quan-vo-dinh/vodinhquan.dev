@@ -6,6 +6,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   useTransition,
   type ReactNode,
@@ -16,7 +17,13 @@ import {
   setQuestionBookmarked,
   setQuestionLearned,
   syncLocalLearningState,
+  type LearningStateActionResult,
 } from "../actions/learning-state-actions";
+import {
+  isLatestMutation,
+  toggleNumberSet,
+  type LearningProgressSnapshot,
+} from "../lib/learning-progress";
 import type { InterviewLearningStateSnapshot } from "../lib/learning-state-types";
 import {
   BOOKMARK_STORAGE_KEY,
@@ -35,6 +42,8 @@ type InterviewLearningStateContextValue = {
   isAuthenticated: boolean;
   isPending: boolean;
   isReady: boolean;
+  isRemoteAvailable: boolean;
+  persistenceError: string | null;
   hasLocalProgressToSync: boolean;
   toggleBookmark: (id: number) => void;
   toggleLearned: (id: number) => void;
@@ -54,13 +63,24 @@ function toSet(ids: number[]) {
   return new Set(ids);
 }
 
+function hasStoredBrowserProgress() {
+  return (
+    readLocalNumberArray(LEARNED_STORAGE_KEY).length > 0 ||
+    readLocalNumberArray(BOOKMARK_STORAGE_KEY).length > 0 ||
+    readLocalStringArray(PINNED_CATEGORIES_STORAGE_KEY).length > 0
+  );
+}
+
 export function InterviewLearningStateProvider({
   children,
   initialState,
 }: InterviewLearningStateProviderProps) {
+  const isRemoteAvailable = initialState.remoteStatus === "available";
   const [isPending, startTransition] = useTransition();
-  const [isReady, setIsReady] = useState(initialState.isAuthenticated);
-  const [learnedIds, setLearnedIds] = useState(() => toSet(initialState.learnedIds));
+  const [isReady, setIsReady] = useState(isRemoteAvailable);
+  const [learnedIds, setLearnedIds] = useState(() =>
+    toSet(initialState.learnedIds)
+  );
   const [bookmarkedIds, setBookmarkedIds] = useState(() =>
     toSet(initialState.bookmarkedIds)
   );
@@ -68,169 +88,183 @@ export function InterviewLearningStateProvider({
     initialState.pinnedCategories
   );
   const [hasLocalProgressToSync, setHasLocalProgressToSync] = useState(false);
+  const [persistenceError, setPersistenceError] = useState<string | null>(
+    initialState.remoteStatus === "unavailable"
+      ? "remote-progress-unavailable"
+      : null
+  );
+
+  const learnedIdsRef = useRef(learnedIds);
+  const bookmarkedIdsRef = useRef(bookmarkedIds);
+  const pinnedCategoriesRef = useRef(pinnedCategories);
+  const confirmedRemoteSnapshotRef = useRef<LearningProgressSnapshot>({
+    learnedIds: initialState.learnedIds,
+    bookmarkedIds: initialState.bookmarkedIds,
+    pinnedCategories: initialState.pinnedCategories,
+  });
+  const mutationVersionRef = useRef(0);
+  const mutationQueueRef = useRef<Promise<void>>(Promise.resolve());
+
+  const applySnapshot = useCallback((snapshot: LearningProgressSnapshot) => {
+    const nextLearnedIds = toSet(snapshot.learnedIds);
+    const nextBookmarkedIds = toSet(snapshot.bookmarkedIds);
+
+    learnedIdsRef.current = nextLearnedIds;
+    bookmarkedIdsRef.current = nextBookmarkedIds;
+    pinnedCategoriesRef.current = snapshot.pinnedCategories;
+
+    setLearnedIds(nextLearnedIds);
+    setBookmarkedIds(nextBookmarkedIds);
+    setPinnedCategoriesState(snapshot.pinnedCategories);
+  }, []);
 
   useEffect(() => {
-    if (initialState.isAuthenticated) {
-      const hasProgress =
-        readLocalNumberArray(LEARNED_STORAGE_KEY).length > 0 ||
-        readLocalNumberArray(BOOKMARK_STORAGE_KEY).length > 0 ||
-        readLocalStringArray(PINNED_CATEGORIES_STORAGE_KEY).length > 0;
+    if (isRemoteAvailable) {
+      // localStorage is an external store and must be inspected after SSR hydration.
       // eslint-disable-next-line react-hooks/set-state-in-effect
-      setHasLocalProgressToSync(hasProgress);
-    } else {
-      const localLearned = readLocalNumberArray(LEARNED_STORAGE_KEY);
-      const localBookmarked = readLocalNumberArray(BOOKMARK_STORAGE_KEY);
-      const localPinned = readLocalStringArray(PINNED_CATEGORIES_STORAGE_KEY);
-
-      setLearnedIds(new Set(localLearned));
-      setBookmarkedIds(new Set(localBookmarked));
-      setPinnedCategoriesState(localPinned);
+      setHasLocalProgressToSync(hasStoredBrowserProgress());
+      setIsReady(true);
+      return;
     }
+
+    applySnapshot({
+      learnedIds: readLocalNumberArray(LEARNED_STORAGE_KEY),
+      bookmarkedIds: readLocalNumberArray(BOOKMARK_STORAGE_KEY),
+      pinnedCategories: readLocalStringArray(PINNED_CATEGORIES_STORAGE_KEY),
+    });
     setIsReady(true);
-  }, [initialState.isAuthenticated]);
+  }, [applySnapshot, isRemoteAvailable]);
 
-  const persistLocalLearned = useCallback((nextIds: Set<number>) => {
-    writeLocalNumberArray(LEARNED_STORAGE_KEY, Array.from(nextIds));
-  }, []);
+  const enqueueRemoteMutation = useCallback(
+    (
+      command: () => Promise<LearningStateActionResult>,
+      onLatestSuccess?: () => void
+    ) => {
+      const mutationVersion = mutationVersionRef.current + 1;
+      mutationVersionRef.current = mutationVersion;
 
-  const persistLocalBookmarks = useCallback((nextIds: Set<number>) => {
-    writeLocalNumberArray(BOOKMARK_STORAGE_KEY, Array.from(nextIds));
-  }, []);
+      const resultPromise = mutationQueueRef.current.then(command);
+      mutationQueueRef.current = resultPromise.then(
+        () => undefined,
+        () => undefined
+      );
+
+      startTransition(async () => {
+        let result: LearningStateActionResult;
+
+        try {
+          result = await resultPromise;
+        } catch {
+          result = {
+            ok: false,
+            reason: "unexpected-persistence-error",
+            snapshot: null,
+          };
+        }
+
+        if (result.snapshot) {
+          confirmedRemoteSnapshotRef.current = result.snapshot;
+        }
+
+        if (!isLatestMutation(mutationVersionRef.current, mutationVersion)) {
+          return;
+        }
+
+        if (result.snapshot) {
+          applySnapshot(result.snapshot);
+        } else if (!result.ok) {
+          applySnapshot(confirmedRemoteSnapshotRef.current);
+        }
+
+        if (result.ok) {
+          setPersistenceError(null);
+          onLatestSuccess?.();
+        } else {
+          setPersistenceError(result.reason);
+        }
+      });
+    },
+    [applySnapshot]
+  );
 
   const toggleLearned = useCallback(
     (id: number) => {
-      let enabled = false;
-      setLearnedIds((current) => {
-        const next = new Set(current);
-        enabled = !next.has(id);
+      const { enabled, next } = toggleNumberSet(learnedIdsRef.current, id);
+      learnedIdsRef.current = next;
+      setLearnedIds(next);
 
-        if (enabled) {
-          next.add(id);
-        } else {
-          next.delete(id);
-        }
+      if (!isRemoteAvailable) {
+        writeLocalNumberArray(LEARNED_STORAGE_KEY, Array.from(next));
+        return;
+      }
 
-        if (initialState.isAuthenticated) {
-          startTransition(async () => {
-            const res = await setQuestionLearned({ questionId: id, enabled });
-            if (!res.ok) {
-              console.error("Failed to save learned progress to Supabase:", res.reason);
-              setLearnedIds((prev) => {
-                const rollback = new Set(prev);
-                if (enabled) {
-                  rollback.delete(id);
-                } else {
-                  rollback.add(id);
-                }
-                return rollback;
-              });
-            }
-          });
-        } else {
-          persistLocalLearned(next);
-        }
-
-        return next;
-      });
+      enqueueRemoteMutation(() =>
+        setQuestionLearned({ questionId: id, enabled })
+      );
     },
-    [initialState.isAuthenticated, persistLocalLearned]
+    [enqueueRemoteMutation, isRemoteAvailable]
   );
 
   const toggleBookmark = useCallback(
     (id: number) => {
-      let enabled = false;
-      setBookmarkedIds((current) => {
-        const next = new Set(current);
-        enabled = !next.has(id);
+      const { enabled, next } = toggleNumberSet(bookmarkedIdsRef.current, id);
+      bookmarkedIdsRef.current = next;
+      setBookmarkedIds(next);
 
-        if (enabled) {
-          next.add(id);
-        } else {
-          next.delete(id);
-        }
+      if (!isRemoteAvailable) {
+        writeLocalNumberArray(BOOKMARK_STORAGE_KEY, Array.from(next));
+        return;
+      }
 
-        if (initialState.isAuthenticated) {
-          startTransition(async () => {
-            const res = await setQuestionBookmarked({ questionId: id, enabled });
-            if (!res.ok) {
-              console.error("Failed to save bookmarked progress to Supabase:", res.reason);
-              setBookmarkedIds((prev) => {
-                const rollback = new Set(prev);
-                if (enabled) {
-                  rollback.delete(id);
-                } else {
-                  rollback.add(id);
-                }
-                return rollback;
-              });
-            }
-          });
-        } else {
-          persistLocalBookmarks(next);
-        }
-
-        return next;
-      });
+      enqueueRemoteMutation(() =>
+        setQuestionBookmarked({ questionId: id, enabled })
+      );
     },
-    [initialState.isAuthenticated, persistLocalBookmarks]
+    [enqueueRemoteMutation, isRemoteAvailable]
   );
 
   const togglePinCategory = useCallback(
     (category: string) => {
-      setPinnedCategoriesState((current) => {
-        const next = current.includes(category)
-          ? current.filter((name) => name !== category)
-          : [...current, category];
+      const current = pinnedCategoriesRef.current;
+      const next = current.includes(category)
+        ? current.filter((name) => name !== category)
+        : [...current, category];
 
-        if (initialState.isAuthenticated) {
-          startTransition(async () => {
-            const res = await persistPinnedCategories(next);
-            if (!res.ok) {
-              console.error("Failed to save pinned categories to Supabase:", res.reason);
-              setPinnedCategoriesState(current);
-            }
-          });
-        } else {
-          writeLocalStringArray(PINNED_CATEGORIES_STORAGE_KEY, next);
-        }
+      pinnedCategoriesRef.current = next;
+      setPinnedCategoriesState(next);
 
-        return next;
-      });
+      if (!isRemoteAvailable) {
+        writeLocalStringArray(PINNED_CATEGORIES_STORAGE_KEY, next);
+        return;
+      }
+
+      enqueueRemoteMutation(() => persistPinnedCategories(next));
     },
-    [initialState.isAuthenticated]
+    [enqueueRemoteMutation, isRemoteAvailable]
   );
 
   const syncBrowserProgress = useCallback(() => {
-    const localLearnedIds = readLocalNumberArray(LEARNED_STORAGE_KEY);
-    const localBookmarkedIds = readLocalNumberArray(BOOKMARK_STORAGE_KEY);
-    const localPinnedCategories = readLocalStringArray(
-      PINNED_CATEGORIES_STORAGE_KEY
-    );
+    if (!isRemoteAvailable) {
+      return;
+    }
 
-    startTransition(() => {
-      void syncLocalLearningState({
-        learnedIds: localLearnedIds,
-        bookmarkedIds: localBookmarkedIds,
-        pinnedCategories: localPinnedCategories,
-      }).then((result) => {
-        if (!result.ok) {
-          return;
-        }
-
-        setLearnedIds((current) => new Set([...current, ...localLearnedIds]));
-        setBookmarkedIds(
-          (current) => new Set([...current, ...localBookmarkedIds])
-        );
-        setPinnedCategoriesState((current) =>
-          Array.from(new Set([...current, ...localPinnedCategories]))
-        );
+    enqueueRemoteMutation(
+      () =>
+        syncLocalLearningState({
+          learnedIds: readLocalNumberArray(LEARNED_STORAGE_KEY),
+          bookmarkedIds: readLocalNumberArray(BOOKMARK_STORAGE_KEY),
+          pinnedCategories: readLocalStringArray(
+            PINNED_CATEGORIES_STORAGE_KEY
+          ),
+        }),
+      () => {
         writeLocalNumberArray(LEARNED_STORAGE_KEY, []);
         writeLocalNumberArray(BOOKMARK_STORAGE_KEY, []);
         writeLocalStringArray(PINNED_CATEGORIES_STORAGE_KEY, []);
         setHasLocalProgressToSync(false);
-      });
-    });
-  }, []);
+      }
+    );
+  }, [enqueueRemoteMutation, isRemoteAvailable]);
 
   const value = useMemo(
     () => ({
@@ -239,7 +273,9 @@ export function InterviewLearningStateProvider({
       isAuthenticated: initialState.isAuthenticated,
       isPending,
       isReady,
+      isRemoteAvailable,
       learnedIds,
+      persistenceError,
       pinnedCategories,
       syncBrowserProgress,
       toggleBookmark,
@@ -252,7 +288,9 @@ export function InterviewLearningStateProvider({
       initialState.isAuthenticated,
       isPending,
       isReady,
+      isRemoteAvailable,
       learnedIds,
+      persistenceError,
       pinnedCategories,
       syncBrowserProgress,
       toggleBookmark,

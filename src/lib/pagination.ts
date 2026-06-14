@@ -48,38 +48,19 @@ export function paginate<T>(
 }
 
 /**
- * Get pagination metadata without slicing the array
- */
-export function getPaginationMeta(
-  totalItems: number,
-  options: PaginationOptions
-) {
-  const { page, pageSize } = options;
-  const totalPages = Math.ceil(totalItems / pageSize);
-
-  return {
-    page,
-    pageSize,
-    totalItems,
-    totalPages,
-    hasNextPage: page < totalPages,
-    hasPreviousPage: page > 1,
-  };
-}
-
-/**
  * Validate and normalize page number
  */
 export function normalizePage(page: number | string | undefined, maxPage: number): number {
+  const normalizedMaxPage = Math.max(maxPage, 1);
+
   if (typeof page === "string") {
     const parsed = parseInt(page, 10);
     if (isNaN(parsed) || parsed < 1) return 1;
-    return Math.min(parsed, maxPage);
+    return Math.min(parsed, normalizedMaxPage);
   }
   if (typeof page === "number") {
     if (page < 1) return 1;
-    return Math.min(page, maxPage);
+    return Math.min(page, normalizedMaxPage);
   }
   return 1;
 }
-

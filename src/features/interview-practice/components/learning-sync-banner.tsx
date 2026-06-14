@@ -1,6 +1,6 @@
 "use client";
 
-import { CloudUpload } from "lucide-react";
+import { CloudOff, CloudUpload } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
@@ -11,11 +11,49 @@ export function LearningSyncBanner() {
     hasLocalProgressToSync,
     isAuthenticated,
     isPending,
+    isRemoteAvailable,
+    persistenceError,
     syncBrowserProgress,
   } = useInterviewLearningState();
 
-  if (!isAuthenticated || !hasLocalProgressToSync) {
+  if (!isAuthenticated) {
     return null;
+  }
+
+  if (!isRemoteAvailable) {
+    return (
+      <div className="flex gap-3 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-sm text-amber-900 dark:text-amber-100">
+        <CloudOff className="mt-0.5 size-4 shrink-0" aria-hidden />
+        <div>
+          <p className="font-medium">
+            Account progress is temporarily unavailable
+          </p>
+          <p className="text-xs opacity-80">
+            Changes are being saved in this browser and can be synced when the
+            remote store is available again.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!hasLocalProgressToSync && !persistenceError) {
+    return null;
+  }
+
+  if (persistenceError && !hasLocalProgressToSync) {
+    return (
+      <div className="flex gap-3 rounded-xl border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
+        <CloudOff className="mt-0.5 size-4 shrink-0" aria-hidden />
+        <div>
+          <p className="font-medium">Progress could not be saved</p>
+          <p className="text-xs opacity-80">
+            The last confirmed account state was restored. Please try the
+            action again.
+          </p>
+        </div>
+      </div>
+    );
   }
 
   return (

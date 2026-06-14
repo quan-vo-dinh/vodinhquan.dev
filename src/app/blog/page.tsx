@@ -30,12 +30,11 @@ export default async function BlogPage({
   const { page: pageParam } = await searchParams;
 
   const posts = allPosts;
-  const sortedPosts = [...posts].sort((a, b) => {
-    if (new Date(a.publishedAt) > new Date(b.publishedAt)) {
-      return -1;
-    }
-    return 1;
-  });
+  const sortedPosts = [...posts].sort(
+    (a, b) =>
+      Date.parse(b.publishedAt) - Date.parse(a.publishedAt) ||
+      a._meta.path.localeCompare(b._meta.path)
+  );
 
   const totalPages = Math.ceil(sortedPosts.length / PAGE_SIZE);
   const currentPage = normalizePage(pageParam, totalPages);

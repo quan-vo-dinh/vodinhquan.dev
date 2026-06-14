@@ -14,6 +14,10 @@ import { interviewQuestionRawListSchema } from "./question-schema";
 const questions = interviewQuestionRawListSchema.parse(
   rawQuestions
 ) satisfies InterviewQuestionRaw[];
+const questionIds = new Set(questions.map((question) => question.id));
+const categoryNames = new Set(
+  questions.map((question) => question.category)
+);
 
 function sortByName<T extends { name: string }>(items: T[]) {
   return [...items].sort((a, b) => a.name.localeCompare(b.name));
@@ -33,12 +37,16 @@ function toQuestionView(
   };
 }
 
-export function getInterviewQuestions() {
-  return questions;
-}
-
 export function getInterviewQuestionTotal() {
   return questions.length;
+}
+
+export function getInterviewQuestionIds() {
+  return questionIds;
+}
+
+export function getInterviewCategoryNames() {
+  return categoryNames;
 }
 
 export function getInterviewCategories(): InterviewCategorySummary[] {

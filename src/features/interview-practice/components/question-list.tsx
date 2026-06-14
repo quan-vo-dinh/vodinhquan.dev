@@ -52,8 +52,9 @@ function levelClassName(level: InterviewQuestionView["level"]) {
 async function copyText(value: string) {
   try {
     await navigator.clipboard.writeText(value);
+    return true;
   } catch {
-    // Silently fail
+    return false;
   }
 }
 
@@ -67,9 +68,21 @@ export function QuestionList({ questions }: QuestionListProps) {
   const { bookmarkedIds, isReady, learnedIds, toggleBookmark, toggleLearned } =
     useInterviewLearningState();
 
-  const [copiedId, setCopiedId] = useState<number | null>(null);
-  const [linkedId, setLinkedId] = useState<number | null>(null);
+  const [copyStatus, setCopyStatus] = useState<{
+    id: number;
+    kind: "answer" | "link";
+    status: "error" | "success";
+  } | null>(null);
   const [openValue, setOpenValue] = useState<string>("");
+
+  const showCopyStatus = (nextStatus: NonNullable<typeof copyStatus>) => {
+    setCopyStatus(nextStatus);
+    window.setTimeout(() => {
+      setCopyStatus((currentStatus) =>
+        currentStatus === nextStatus ? null : currentStatus
+      );
+    }, 2000);
+  };
 
   if (questions.length === 0) {
     return (
@@ -93,6 +106,14 @@ export function QuestionList({ questions }: QuestionListProps) {
       {questions.map((question, index) => {
         const isLearned = isReady && learnedIds.has(question.id);
         const isBookmarked = isReady && bookmarkedIds.has(question.id);
+        const answerCopyStatus =
+          copyStatus?.id === question.id && copyStatus.kind === "answer"
+            ? copyStatus.status
+            : null;
+        const linkCopyStatus =
+          copyStatus?.id === question.id && copyStatus.kind === "link"
+            ? copyStatus.status
+            : null;
 
         return (
           <AccordionItem
@@ -233,17 +254,28 @@ export function QuestionList({ questions }: QuestionListProps) {
                   variant="outline"
                   onClick={async () => {
                     const copyContent = `Q: ${question.question}\n\nA:\n${question.answer}`;
-                    await copyText(copyContent);
-                    setCopiedId(question.id);
-                    setTimeout(() => setCopiedId(null), 2000);
+                    const status = (await copyText(copyContent))
+                      ? "success"
+                      : "error";
+
+                    showCopyStatus({
+                      id: question.id,
+                      kind: "answer",
+                      status,
+                    });
                   }}
                   aria-label="Copy question and answer"
-                  className="w-[4.75rem] transition-all sm:w-20"
+                  className="w-[5.5rem] transition-all sm:w-24"
                 >
-                  {copiedId === question.id ? (
+                  {answerCopyStatus === "success" ? (
                     <>
                       <Check className="mr-2 size-4 text-emerald-500" />
                       Copied
+                    </>
+                  ) : answerCopyStatus === "error" ? (
+                    <>
+                      <Clipboard className="mr-2 size-4 text-destructive" />
+                      Failed
                     </>
                   ) : (
                     <>
@@ -258,17 +290,30 @@ export function QuestionList({ questions }: QuestionListProps) {
                   size="sm"
                   variant="outline"
                   onClick={async () => {
-                    await copyText(createQuestionShareUrl(question.id));
-                    setLinkedId(question.id);
-                    setTimeout(() => setLinkedId(null), 2000);
+                    const status = (await copyText(
+                      createQuestionShareUrl(question.id)
+                    ))
+                      ? "success"
+                      : "error";
+
+                    showCopyStatus({
+                      id: question.id,
+                      kind: "link",
+                      status,
+                    });
                   }}
                   aria-label="Copy share link"
-                  className="w-[4.75rem] transition-all sm:w-20"
+                  className="w-[5.5rem] transition-all sm:w-24"
                 >
-                  {linkedId === question.id ? (
+                  {linkCopyStatus === "success" ? (
                     <>
                       <Check className="mr-2 size-4 text-emerald-500" />
                       Linked
+                    </>
+                  ) : linkCopyStatus === "error" ? (
+                    <>
+                      <LinkIcon className="mr-2 size-4 text-destructive" />
+                      Failed
                     </>
                   ) : (
                     <>
@@ -277,6 +322,17 @@ export function QuestionList({ questions }: QuestionListProps) {
                     </>
                   )}
                 </Button>
+              </div>
+              <div className="sr-only" role="status" aria-live="polite">
+                {answerCopyStatus === "success"
+                  ? "Question and answer copied."
+                  : answerCopyStatus === "error"
+                    ? "Unable to copy question and answer."
+                    : linkCopyStatus === "success"
+                      ? "Question link copied."
+                      : linkCopyStatus === "error"
+                        ? "Unable to copy question link."
+                        : ""}
               </div>
             </AccordionContent>
           </AccordionItem>

@@ -10,6 +10,7 @@ import { SignOutButton } from "@/features/auth/components/sign-out-button";
 import type { CurrentViewer } from "@/features/auth/types";
 import { cn } from "@/lib/utils";
 import { getRankTier } from "../lib/rank-meta";
+import { RankImage } from "./rank-image";
 
 type InterviewProfileCardProps = {
   categoryProgress: number;
@@ -245,9 +246,12 @@ export function InterviewProfileCard({
           as="div"
           className="absolute -top-12 left-0 right-0 mx-auto w-fit h-20 pointer-events-none select-none z-30"
         >
-          <img
+          <RankImage
             src={currentTier.svg}
             alt={lolStyles.rankName}
+            width={160}
+            height={160}
+            priority
             className="h-full w-auto object-contain filter drop-shadow-[0_4px_8px_rgba(0,0,0,0.5)] dark:drop-shadow-[0_6px_12px_rgba(0,0,0,0.7)]"
           />
         </CardItem>

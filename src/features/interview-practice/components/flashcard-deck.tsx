@@ -14,6 +14,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 import type { InterviewQuestionView } from "../types";
+import { normalizeFlashcardIndex } from "../lib/flashcard-state";
 import { InterviewMarkdown } from "./interview-markdown";
 import { useInterviewLearningState } from "./interview-learning-state-provider";
 
@@ -23,19 +24,23 @@ type FlashcardDeckProps = {
 
 export function FlashcardDeck({ questions }: FlashcardDeckProps) {
   const [index, setIndex] = useState(0);
-  const [isAnswerVisible, setIsAnswerVisible] = useState(false);
+  const [revealedQuestionId, setRevealedQuestionId] = useState<number | null>(
+    null
+  );
   const { bookmarkedIds, learnedIds, toggleBookmark, toggleLearned } =
     useInterviewLearningState();
 
-  const currentQuestion = questions[index];
+  const normalizedIndex = normalizeFlashcardIndex(index, questions.length);
+  const currentQuestion = questions[normalizedIndex];
+  const isAnswerVisible = revealedQuestionId === currentQuestion?.id;
 
   const progressLabel = useMemo(() => {
     if (questions.length === 0) {
       return "0 / 0";
     }
 
-    return `${index + 1} / ${questions.length}`;
-  }, [index, questions.length]);
+    return `${normalizedIndex + 1} / ${questions.length}`;
+  }, [normalizedIndex, questions.length]);
 
   if (!currentQuestion) {
     return (
@@ -52,15 +57,13 @@ export function FlashcardDeck({ questions }: FlashcardDeckProps) {
   const isBookmarked = bookmarkedIds.has(currentQuestion.id);
 
   function goToPrevious() {
-    setIndex((currentIndex) => Math.max(currentIndex - 1, 0));
-    setIsAnswerVisible(false);
+    setIndex(Math.max(normalizedIndex - 1, 0));
+    setRevealedQuestionId(null);
   }
 
   function goToNext() {
-    setIndex((currentIndex) =>
-      Math.min(currentIndex + 1, questions.length - 1)
-    );
-    setIsAnswerVisible(false);
+    setIndex(Math.min(normalizedIndex + 1, questions.length - 1));
+    setRevealedQuestionId(null);
   }
 
   return (
@@ -99,7 +102,7 @@ export function FlashcardDeck({ questions }: FlashcardDeckProps) {
             type="button"
             variant="outline"
             onClick={goToPrevious}
-            disabled={index === 0}
+            disabled={normalizedIndex === 0}
             aria-label="Previous flashcard"
           >
             <ChevronLeft className="mr-2 size-4" />
@@ -107,7 +110,11 @@ export function FlashcardDeck({ questions }: FlashcardDeckProps) {
           </Button>
           <Button
             type="button"
-            onClick={() => setIsAnswerVisible((v) => !v)}
+            onClick={() =>
+              setRevealedQuestionId((currentId) =>
+                currentId === currentQuestion.id ? null : currentQuestion.id
+              )
+            }
             aria-label={isAnswerVisible ? "Hide answer" : "Reveal answer"}
           >
             <RotateCw className="mr-2 size-4" />
@@ -117,7 +124,7 @@ export function FlashcardDeck({ questions }: FlashcardDeckProps) {
             type="button"
             variant="outline"
             onClick={goToNext}
-            disabled={index === questions.length - 1}
+            disabled={normalizedIndex === questions.length - 1}
             aria-label="Next flashcard"
           >
             Next

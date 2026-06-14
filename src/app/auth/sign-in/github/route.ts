@@ -1,24 +1,17 @@
 import { NextResponse, type NextRequest } from "next/server";
 
+import { resolveAuthOrigin, safeNextPath } from "@/features/auth/lib/auth-redirect";
+import { getServerEnv } from "@/lib/env";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-
-function safeNextPath(value: string | null) {
-  if (!value || !value.startsWith("/")) {
-    return "/interview";
-  }
-
-  if (value.startsWith("//")) {
-    return "/interview";
-  }
-
-  return value;
-}
 
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url);
-  const host = request.headers.get("x-forwarded-host") || requestUrl.host;
-  const proto = request.headers.get("x-forwarded-proto") || requestUrl.protocol.slice(0, -1);
-  const origin = `${proto}://${host}`;
+  const { appOrigin, isDevelopment } = getServerEnv();
+  const origin = resolveAuthOrigin({
+    configuredOrigin: appOrigin,
+    isDevelopment,
+    requestUrl: request.url,
+  });
 
   const next = safeNextPath(requestUrl.searchParams.get("next"));
   const supabase = await createSupabaseServerClient();
