@@ -129,6 +129,18 @@
     @apply bg-background text-foreground;
   }
 
+  .blur-fade {
+    animation-name: blur-fade-in;
+    animation-fill-mode: both;
+    animation-timing-function: ease-out;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .blur-fade {
+      animation: none;
+    }
+  }
+
   /* Shiki dual theme support */
   .shiki,
   .shiki span {
@@ -242,4 +254,18 @@
     @apply border-b-0;
   }
 
+}
+
+@keyframes blur-fade-in {
+  from {
+    opacity: 0.01;
+    filter: blur(var(--blur-fade-blur, 6px));
+    transform: translateY(var(--blur-fade-y, -6px));
+  }
+
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
+  }
 }

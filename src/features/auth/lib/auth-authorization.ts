@@ -10,7 +10,7 @@ export function getGitHubUsername(metadata: Record<string, unknown>) {
   return null;
 }
 
-export function isInterviewOwner(
+export function isSiteOwner(
   metadata: Record<string, unknown>,
   ownerGitHubUsername: string
 ) {
@@ -19,3 +19,5 @@ export function isInterviewOwner(
     ownerGitHubUsername.toLocaleLowerCase()
   );
 }
+
+export const isInterviewOwner = isSiteOwner;

@@ -2,22 +2,42 @@
 
 import { Button } from "@/components/ui/button";
 import { MoonIcon, SunIcon } from "@radix-ui/react-icons";
-import { useTheme } from "next-themes";
+import { forwardRef, type ComponentPropsWithoutRef } from "react";
+
+import { useTheme } from "@/components/theme-provider";
 import { cn } from "@/lib/utils";
 
-export function ModeToggle({ className }: { className?: string }) {
-  const { theme, setTheme } = useTheme();
+type ModeToggleProps = ComponentPropsWithoutRef<typeof Button>;
 
-  return (
-    <Button
-      type="button"
-      variant="link"
-      size="icon"
-      className={cn(className)}
-      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-    >
-      <SunIcon className="h-full w-full" />
-      <MoonIcon className="hidden h-full w-full" />
-    </Button>
-  );
-}
+export const ModeToggle = forwardRef<HTMLButtonElement, ModeToggleProps>(
+  ({ className, onClick, ...props }, ref) => {
+    const { theme, setTheme } = useTheme();
+
+    return (
+      <Button
+        ref={ref}
+        type="button"
+        variant="link"
+        size="icon"
+        className={cn(className)}
+        aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
+        onClick={(event) => {
+          onClick?.(event);
+
+          if (!event.defaultPrevented) {
+            setTheme(theme === "dark" ? "light" : "dark");
+          }
+        }}
+        {...props}
+      >
+        {theme === "dark" ? (
+          <SunIcon className="h-full w-full" />
+        ) : (
+          <MoonIcon className="h-full w-full" />
+        )}
+      </Button>
+    );
+  }
+);
+
+ModeToggle.displayName = "ModeToggle";

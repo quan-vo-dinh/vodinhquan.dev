@@ -5,6 +5,8 @@ import {
   getCachedAuthUser,
 } from "@/lib/supabase/server";
 
+import { checkDatabaseOwner } from "./database-owner-authorization";
+
 export async function getOwnerAuthUser() {
   const {
     data: { user },
@@ -16,9 +18,9 @@ export async function getOwnerAuthUser() {
   }
 
   const supabase = await createSupabaseServerClient();
-  const { data: isOwner, error: ownerCheckError } = await supabase.rpc(
-    "is_interview_owner"
+  const isOwner = await checkDatabaseOwner((functionName) =>
+    supabase.rpc(functionName)
   );
 
-  return !ownerCheckError && isOwner ? user : null;
+  return isOwner ? user : null;
 }

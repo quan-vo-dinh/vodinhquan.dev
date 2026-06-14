@@ -1,7 +1,8 @@
 import { NextResponse, type NextRequest } from "next/server";
 
-import { isInterviewOwner } from "@/features/auth/lib/auth-authorization";
+import { isSiteOwner } from "@/features/auth/lib/auth-authorization";
 import { resolveAuthOrigin, safeNextPath } from "@/features/auth/lib/auth-redirect";
+import { checkDatabaseOwner } from "@/features/auth/lib/database-owner-authorization";
 import { getServerEnv } from "@/lib/env";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -9,8 +10,8 @@ export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url);
   const {
     appOrigin,
-    interviewOwnerGitHubUsername,
     isDevelopment,
+    siteOwnerGitHubUsername,
   } = getServerEnv();
   const origin = resolveAuthOrigin({
     configuredOrigin: appOrigin,
@@ -29,16 +30,16 @@ export async function GET(request: NextRequest) {
       const {
         data: { user },
       } = await supabase.auth.getUser();
-      const { data: isDatabaseOwner } = await supabase.rpc(
-        "is_interview_owner"
+      const isDatabaseOwner = await checkDatabaseOwner((functionName) =>
+        supabase.rpc(functionName)
       );
 
       if (
         user &&
         isDatabaseOwner &&
-        isInterviewOwner(
+        isSiteOwner(
           user.user_metadata,
-          interviewOwnerGitHubUsername
+          siteOwnerGitHubUsername
         )
       ) {
         const res = NextResponse.redirect(`${origin}${next}`);

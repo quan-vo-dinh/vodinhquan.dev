@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   getGitHubUsername,
   isInterviewOwner,
+  isSiteOwner,
 } from "./auth-authorization";
 
 describe("GitHub owner authorization", () => {
@@ -15,10 +16,16 @@ describe("GitHub owner authorization", () => {
 
   it("matches the configured owner case-insensitively", () => {
     expect(
-      isInterviewOwner({ user_name: "VoDinhQuan" }, "vodinhquan")
+      isSiteOwner({ user_name: "Quan-Vo-Dinh" }, "quan-vo-dinh")
     ).toBe(true);
     expect(
-      isInterviewOwner({ user_name: "someone-else" }, "vodinhquan")
+      isSiteOwner({ user_name: "someone-else" }, "quan-vo-dinh")
     ).toBe(false);
+  });
+
+  it("keeps the Interview owner alias wired to the site owner check", () => {
+    expect(
+      isInterviewOwner({ preferred_username: "QUAN-VO-DINH" }, "quan-vo-dinh")
+    ).toBe(true);
   });
 });
