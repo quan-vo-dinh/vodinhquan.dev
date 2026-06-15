@@ -17,6 +17,7 @@ import { TechIcon } from "./tech-icon";
 import { triggerConfetti } from "../lib/celebrate";
 import { getRankTier } from "../lib/rank-meta";
 import { RankImage } from "./rank-image";
+import { useI18n } from "@/i18n/locale-provider";
 
 type ProgressSummaryProps = {
   questions: InterviewQuestionView[];
@@ -91,6 +92,7 @@ function getDeveloperRank(percentage: number) {
 }
 
 export function ProgressSummary({ questions, category }: ProgressSummaryProps) {
+  const { dictionary } = useI18n();
   const {
     bookmarkedIds,
     isAuthenticated,
@@ -169,8 +171,8 @@ export function ProgressSummary({ questions, category }: ProgressSummaryProps) {
             <div className="flex items-center gap-2 flex-wrap">
               <p className="text-sm font-medium">
                 {isAuthenticated && isRemoteAvailable
-                  ? "Synced progress"
-                  : "Local progress"}
+                  ? dictionary.interview.syncedProgress
+                  : dictionary.interview.localProgress}
               </p>
               <div className="relative size-8 flex items-center justify-center">
                 <Tooltip>
@@ -191,10 +193,10 @@ export function ProgressSummary({ questions, category }: ProgressSummaryProps) {
             </div>
             <p className="text-xs text-muted-foreground mt-0.5">
               {isAuthenticated && isRemoteAvailable
-                ? "Saved to your GitHub-backed account."
+                ? dictionary.interview.savedToAccount
                 : isAuthenticated
-                  ? "Remote unavailable; saved in this browser."
-                  : "Stored only in this browser until you sign in."}
+                  ? dictionary.interview.remoteUnavailable
+                  : dictionary.interview.localUntilSignIn}
             </p>
           </div>
           <span className="text-sm font-semibold">{progressValue}%</span>
@@ -218,7 +220,7 @@ export function ProgressSummary({ questions, category }: ProgressSummaryProps) {
                           ? `${m.color} scale-105`
                           : "border-muted-foreground/30 hover:border-muted-foreground/60"
                       )}
-                      aria-label={`Milestone: ${m.label}`}
+                      aria-label={`${dictionary.interview.milestone}: ${m.label}`}
                     >
                       <div className={cn(
                         "size-1 rounded-full transition-all duration-300",
@@ -238,14 +240,14 @@ export function ProgressSummary({ questions, category }: ProgressSummaryProps) {
         <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
           <span className="inline-flex items-center gap-1">
             <CheckCircle2 className="size-3.5" />
-            {learnedCount} learned
+            {learnedCount} {dictionary.interview.learnedCount}
           </span>
           <span className="inline-flex items-center gap-1">
             <Bookmark className="size-3.5" />
-            {bookmarkedCount} bookmarked
+            {bookmarkedCount} {dictionary.interview.bookmarkedCount}
           </span>
           <span className="ml-auto text-muted-foreground/60">
-            {questions.length} visible
+            {questions.length} {dictionary.interview.visibleCount}
           </span>
         </div>
       </div>

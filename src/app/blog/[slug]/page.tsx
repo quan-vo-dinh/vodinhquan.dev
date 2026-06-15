@@ -7,9 +7,15 @@ import { MDXContent } from "@content-collections/mdx/react";
 import { mdxComponents } from "@/mdx-components";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { getServerI18n } from "@/i18n/server";
+import {
+  findLocalizedPost,
+  selectLocalizedPosts,
+} from "@/lib/localized-posts";
+import type { Locale } from "@/i18n/locale";
 
-function getSortedPosts() {
-  return [...allPosts].sort(
+function getSortedPosts(locale: Locale) {
+  return selectLocalizedPosts(allPosts, locale).sort(
     (a, b) =>
       Date.parse(b.publishedAt) - Date.parse(a.publishedAt) ||
       a._meta.path.localeCompare(b._meta.path)
@@ -17,8 +23,8 @@ function getSortedPosts() {
 }
 
 export async function generateStaticParams() {
-  return allPosts.map((post) => ({
-    slug: post._meta.path.replace(/\.mdx$/, ""),
+  return Array.from(new Set(allPosts.map((post) => post.slug))).map((slug) => ({
+    slug,
   }));
 }
 
@@ -29,8 +35,9 @@ export async function generateMetadata({
     slug: string;
   }>;
 }): Promise<Metadata | undefined> {
+  const { locale } = await getServerI18n();
   const { slug } = await params;
-  const post = allPosts.find((p) => p._meta.path.replace(/\.mdx$/, "") === slug);
+  const post = findLocalizedPost(allPosts, slug, locale);
 
   if (!post) {
     return undefined;
@@ -78,10 +85,11 @@ export default async function Blog({
     slug: string;
   }>;
 }) {
+  const { dictionary, locale } = await getServerI18n();
   const { slug } = await params;
-  const sortedPosts = getSortedPosts();
+  const sortedPosts = getSortedPosts(locale);
   const currentIndex = sortedPosts.findIndex(
-    (p) => p._meta.path.replace(/\.mdx$/, "") === slug
+    (post) => post.slug === slug,
   );
   const post = sortedPosts[currentIndex];
 
@@ -93,7 +101,7 @@ export default async function Blog({
   const nextPost = currentIndex < sortedPosts.length - 1 ? sortedPosts[currentIndex + 1] : null;
 
   const getSlug = (post: (typeof sortedPosts)[0]) =>
-    post._meta.path.replace(/\.mdx$/, "");
+    post.slug;
 
   const jsonLdContent = JSON.stringify({
     "@context": "https://schema.org",
@@ -122,9 +130,13 @@ export default async function Blog({
         }}
       />
       <div className="flex justify-start gap-4 items-center">
-        <Link href="/blog" className="text-sm text-muted-foreground hover:text-foreground transition-colors border border-border rounded-lg px-2 py-1 inline-flex items-center gap-1 mb-6 group" aria-label="Back to Blog">
+        <Link
+          href="/blog"
+          className="text-sm text-muted-foreground hover:text-foreground transition-colors border border-border rounded-lg px-2 py-1 inline-flex items-center gap-1 mb-6 group"
+          aria-label={dictionary.blog.back}
+        >
           <ChevronLeft className="size-3 group-hover:-translate-x-px transition-transform" />
-          Back to Blog
+          {dictionary.blog.back}
         </Link>
       </div>
       <div className="flex flex-col gap-4">
@@ -132,7 +144,7 @@ export default async function Blog({
           {post.title}
         </h1>
         <p className="text-sm text-muted-foreground">
-          {formatDate(post.publishedAt)}
+          {formatDate(post.publishedAt, locale)}
         </p>
       </div>
       <div className="my-6 flex w-full items-center">
@@ -159,7 +171,7 @@ export default async function Blog({
             >
               <span className="flex items-center gap-1 text-xs text-muted-foreground">
                 <ChevronLeft className="size-3" />
-                Previous
+                {dictionary.blog.previousPost}
               </span>
               <span className="text-sm font-medium group-hover:text-foreground transition-colors whitespace-normal wrap-break-word">
                 {previousPost.title}
@@ -175,7 +187,7 @@ export default async function Blog({
               className="group flex-1 flex flex-col gap-1 p-4 rounded-lg border border-border hover:bg-accent/50 transition-colors text-right"
             >
               <span className="flex items-center justify-end gap-1 text-xs text-muted-foreground">
-                Next
+                {dictionary.blog.nextPost}
                 <ChevronRight className="size-3" />
               </span>
               <span className="text-sm font-medium group-hover:text-foreground transition-colors whitespace-normal wrap-break-word">

@@ -1,0 +1,38 @@
+---
+locale: "vi"
+slug: "git-workflow-guide"
+title: "Git workflow gọn gàng: từ hỗn loạn đến dễ theo dõi"
+publishedAt: "2024-12-10"
+updatedAt: "2024-12-10"
+author: "Vo Dinh Quan"
+summary: "Một quy trình Git đơn giản giúp lịch sử rõ ràng, review tập trung và phát hành ít áp lực hơn."
+image: "https://images.unsplash.com/photo-1556075798-4825dfaaf498?w=800&h=192&fit=crop"
+---
+
+# Git workflow gọn gàng: từ hỗn loạn đến dễ theo dõi
+
+Git rất mạnh, nhưng một nhóm thường gặp rắc rối khi mỗi người dùng một quy ước khác nhau. Một workflow đơn giản giúp lịch sử dễ đọc, pull request dễ review và lúc release bớt căng thẳng.
+
+## Workflow nhóm đơn giản
+
+- Tạo branch mới từ `main` cho mỗi thay đổi.
+- Giữ branch nhỏ và tồn tại trong thời gian ngắn.
+- Mở pull request sớm để nhận phản hồi.
+- Chỉ merge về `main` khi các kiểm tra cần thiết đã đạt.
+
+## Cách viết commit message
+
+- Bắt đầu bằng động từ rõ ràng như `add`, `fix`, `remove`, `refactor`.
+- Giữ dòng đầu ngắn và nói đúng thay đổi.
+- Ưu tiên nhiều commit nhỏ có ý nghĩa thay vì một commit `WIP` quá lớn.
+
+## Checklist cho pull request
+
+1. Giải thích đã thay đổi gì và vì sao.
+2. Liên kết issue hoặc mô tả tác động tới người dùng.
+3. Thêm test, hoặc nói rõ lý do chưa thể thêm.
+4. Giữ diff đủ nhỏ để người khác review cẩn thận.
+
+## Kết
+
+Mục tiêu không phải là “Git hoàn hảo”, mà là ít bất ngờ hơn và cộng tác nhanh hơn. Hãy bắt đầu đơn giản, ghi lại quy ước và cải thiện dần cùng đội.

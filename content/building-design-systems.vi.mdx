@@ -1,0 +1,109 @@
+---
+locale: "vi"
+slug: "building-design-systems"
+title: "Xây dựng Design System có thể mở rộng với React và Tailwind"
+publishedAt: "2024-12-01"
+updatedAt: "2024-12-01"
+author: "Vo Dinh Quan"
+summary: "Cách tổ chức token, primitive và component để Design System phát triển cùng sản phẩm mà vẫn dễ bảo trì."
+image: "https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=800&h=192&fit=crop"
+---
+
+Design System là nền móng giúp giao diện nhất quán khi sản phẩm và đội ngũ cùng lớn lên.
+
+## Vì sao Design System quan trọng?
+
+Một hệ thống được xây dựng tốt mang lại:
+
+- **Sự nhất quán** giữa nhiều màn hình và sản phẩm.
+- **Tốc độ phát triển** tốt hơn nhờ component tái sử dụng.
+- **Cộng tác rõ ràng** giữa designer và developer.
+- **Ít nợ kỹ thuật** hơn trong dài hạn.
+
+## 1. Bắt đầu từ token
+
+Token là những giá trị cơ bản nhất của hệ thống:
+
+```typescript title="tokens.ts"
+export const tokens = {
+  colors: {
+    primary: {
+      50: "#eff6ff",
+      500: "#3b82f6",
+      900: "#1e3a8a",
+    },
+    neutral: {
+      0: "#ffffff",
+      100: "#f5f5f5",
+      900: "#171717",
+    },
+  },
+  spacing: {
+    xs: "0.25rem",
+    sm: "0.5rem",
+    md: "1rem",
+    lg: "1.5rem",
+    xl: "2rem",
+  },
+  radii: {
+    sm: "0.25rem",
+    md: "0.5rem",
+    lg: "1rem",
+    full: "9999px",
+  },
+} as const;
+```
+
+Token nên diễn tả ngôn ngữ thiết kế, không chỉ là những con số rời rạc.
+
+## 2. Xây primitive trước
+
+Bắt đầu với những component cơ bản có API nhỏ và dễ ghép:
+
+```tsx title="Button.tsx"
+import { cva, type VariantProps } from "class-variance-authority";
+
+const buttonVariants = cva(
+  "inline-flex items-center justify-center rounded-md font-medium transition-colors",
+  {
+    variants: {
+      variant: {
+        primary: "bg-primary text-white hover:bg-primary/90",
+        secondary:
+          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+        ghost: "hover:bg-accent hover:text-accent-foreground",
+      },
+      size: {
+        sm: "h-8 px-3 text-sm",
+        md: "h-10 px-4",
+        lg: "h-12 px-6 text-lg",
+      },
+    },
+    defaultVariants: {
+      variant: "primary",
+      size: "md",
+    },
+  },
+);
+```
+
+## 3. Giữ component có thể ghép nối
+
+Một component tốt nên:
+
+- Có trách nhiệm rõ ràng.
+- Dùng token thay vì giá trị tùy ý.
+- Hỗ trợ trạng thái focus và bàn phím.
+- Cho phép mở rộng bằng composition thay vì thêm quá nhiều prop.
+
+## 4. Tài liệu bằng ví dụ thật
+
+Tài liệu tốt không chỉ liệt kê prop. Hãy cho thấy component trong trạng thái mặc định, loading, disabled, lỗi và trên nhiều kích thước màn hình.
+
+## 5. Quản trị thay đổi
+
+Design System cần người chịu trách nhiệm, quy tắc review và cách thông báo breaking change. Nếu không, thư viện component rất dễ trở thành một thư mục “đồ dùng chung” thiếu định hướng.
+
+## Kết
+
+Hãy bắt đầu nhỏ với token và primitive thật sự cần thiết. Một Design System bền vững được phát triển từ nhu cầu sản phẩm, không phải từ mong muốn xây thật nhiều component.

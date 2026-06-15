@@ -17,6 +17,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+import { useI18n } from "@/i18n/locale-provider";
 
 import type { InterviewQuestionView } from "../types";
 import { InterviewMarkdown } from "./interview-markdown";
@@ -25,16 +26,6 @@ import { useInterviewLearningState } from "./interview-learning-state-provider";
 type QuestionListProps = {
   questions: InterviewQuestionView[];
 };
-
-function levelLabel(level: InterviewQuestionView["level"]) {
-  const labels = {
-    beginner: "Beginner",
-    intermediate: "Intermediate",
-    advanced: "Advanced",
-  } satisfies Record<InterviewQuestionView["level"], string>;
-
-  return labels[level];
-}
 
 function levelClassName(level: InterviewQuestionView["level"]) {
   const classNames = {
@@ -65,6 +56,12 @@ function createQuestionShareUrl(questionId: number) {
 }
 
 export function QuestionList({ questions }: QuestionListProps) {
+  const { dictionary } = useI18n();
+  const levelLabels = {
+    advanced: dictionary.interview.advanced,
+    beginner: dictionary.interview.beginner,
+    intermediate: dictionary.interview.intermediate,
+  } satisfies Record<InterviewQuestionView["level"], string>;
   const { bookmarkedIds, isReady, learnedIds, toggleBookmark, toggleLearned } =
     useInterviewLearningState();
 
@@ -87,9 +84,9 @@ export function QuestionList({ questions }: QuestionListProps) {
   if (questions.length === 0) {
     return (
       <div className="rounded-xl border border-dashed bg-background/60 p-5 text-center text-sm text-muted-foreground sm:rounded-2xl sm:p-8">
-        No questions match the current filters.{" "}
+        {dictionary.interview.noQuestions}{" "}
         <span className="block mt-1 text-xs">
-          Try adjusting the category, topic, or level filter.
+          {dictionary.interview.noQuestionsHint}
         </span>
       </div>
     );
@@ -139,7 +136,7 @@ export function QuestionList({ questions }: QuestionListProps) {
                     variant="outline"
                     className={levelClassName(question.level)}
                   >
-                    {levelLabel(question.level)}
+                    {levelLabels[question.level]}
                   </Badge>
                   <Badge variant="outline">{question.subcategory}</Badge>
                   {isLearned && isReady ? (
@@ -148,7 +145,7 @@ export function QuestionList({ questions }: QuestionListProps) {
                       className="border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px]"
                     >
                       <CheckCircle2 className="mr-1 size-3" />
-                      Learned
+                      {dictionary.interview.learned}
                     </Badge>
                   ) : null}
                   {isBookmarked && isReady ? (
@@ -157,7 +154,7 @@ export function QuestionList({ questions }: QuestionListProps) {
                       className="border-amber-500/20 bg-amber-500/10 text-amber-600 dark:text-amber-400 text-[10px]"
                     >
                       <Bookmark className="mr-1 size-3 fill-current" />
-                      Saved
+                      {dictionary.interview.saved}
                     </Badge>
                   ) : null}
                 </div>
@@ -215,17 +212,23 @@ export function QuestionList({ questions }: QuestionListProps) {
                         }
                       }}
                       aria-label={
-                        isLearned ? "Mark as not learned" : "Mark as learned"
+                        isLearned
+                          ? dictionary.interview.markNotLearned
+                          : dictionary.interview.markLearned
                       }
                       className={cn(
                         isLearned && "bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-600 dark:bg-emerald-700 dark:hover:bg-emerald-800 dark:border-emerald-700"
                       )}
                     >
                       <CheckCircle2 className="mr-2 size-4" />
-                      {isLearned ? "Learned" : "Mark learned"}
+                      {isLearned
+                        ? dictionary.interview.learned
+                        : dictionary.interview.markLearned}
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent>Track your progress</TooltipContent>
+                  <TooltipContent>
+                    {dictionary.interview.trackProgress}
+                  </TooltipContent>
                 </Tooltip>
 
                 <Tooltip>
@@ -237,15 +240,19 @@ export function QuestionList({ questions }: QuestionListProps) {
                       onClick={() => toggleBookmark(question.id)}
                       aria-label={
                         isBookmarked
-                          ? "Remove bookmark"
-                          : "Bookmark question"
+                          ? dictionary.interview.removeBookmark
+                          : dictionary.interview.bookmark
                       }
                     >
                       <Bookmark className={cn("mr-2 size-4", isBookmarked && "fill-current")} />
-                      {isBookmarked ? "Saved" : "Bookmark"}
+                      {isBookmarked
+                        ? dictionary.interview.saved
+                        : dictionary.interview.bookmark}
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent>Save this question</TooltipContent>
+                  <TooltipContent>
+                    {dictionary.interview.saveQuestion}
+                  </TooltipContent>
                 </Tooltip>
 
                 <Button
@@ -264,23 +271,23 @@ export function QuestionList({ questions }: QuestionListProps) {
                       status,
                     });
                   }}
-                  aria-label="Copy question and answer"
+                  aria-label={dictionary.interview.copyQuestionAria}
                   className="w-[5.5rem] transition-all sm:w-24"
                 >
                   {answerCopyStatus === "success" ? (
                     <>
                       <Check className="mr-2 size-4 text-emerald-500" />
-                      Copied
+                      {dictionary.interview.copied}
                     </>
                   ) : answerCopyStatus === "error" ? (
                     <>
                       <Clipboard className="mr-2 size-4 text-destructive" />
-                      Failed
+                      {dictionary.interview.failed}
                     </>
                   ) : (
                     <>
                       <Clipboard className="mr-2 size-4" />
-                      Copy
+                      {dictionary.interview.copy}
                     </>
                   )}
                 </Button>
@@ -302,36 +309,36 @@ export function QuestionList({ questions }: QuestionListProps) {
                       status,
                     });
                   }}
-                  aria-label="Copy share link"
+                  aria-label={dictionary.interview.copyLinkAria}
                   className="w-[5.5rem] transition-all sm:w-24"
                 >
                   {linkCopyStatus === "success" ? (
                     <>
                       <Check className="mr-2 size-4 text-emerald-500" />
-                      Linked
+                      {dictionary.interview.linked}
                     </>
                   ) : linkCopyStatus === "error" ? (
                     <>
                       <LinkIcon className="mr-2 size-4 text-destructive" />
-                      Failed
+                      {dictionary.interview.failed}
                     </>
                   ) : (
                     <>
                       <LinkIcon className="mr-2 size-4" />
-                      Link
+                      {dictionary.interview.link}
                     </>
                   )}
                 </Button>
               </div>
               <div className="sr-only" role="status" aria-live="polite">
                 {answerCopyStatus === "success"
-                  ? "Question and answer copied."
+                  ? dictionary.interview.copiedStatus
                   : answerCopyStatus === "error"
-                    ? "Unable to copy question and answer."
+                    ? dictionary.interview.copyFailedStatus
                     : linkCopyStatus === "success"
-                      ? "Question link copied."
+                      ? dictionary.interview.linkCopiedStatus
                       : linkCopyStatus === "error"
-                        ? "Unable to copy question link."
+                        ? dictionary.interview.linkFailedStatus
                         : ""}
               </div>
             </AccordionContent>

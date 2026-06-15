@@ -1,0 +1,38 @@
+---
+locale: "vi"
+slug: "testing-react-apps"
+title: "Kiểm thử ứng dụng React theo hướng thực dụng"
+publishedAt: "2024-12-14"
+updatedAt: "2024-12-14"
+author: "Vo Dinh Quan"
+summary: "Cách chọn unit, integration và E2E test để tăng độ tin cậy mà không làm test suite trở nên nặng nề."
+image: "https://images.unsplash.com/photo-1516116216624-53e697fedbea?w=800&h=192&fit=crop"
+---
+
+# Kiểm thử ứng dụng React theo hướng thực dụng
+
+Test là lưới an toàn để chúng ta refactor tự tin hơn và đưa thay đổi lên production mà ít lo lắng. Mục tiêu không phải là có thật nhiều test, mà là có <mark>độ tin cậy ở những luồng quan trọng</mark>.
+
+Nếu test suite chậm hoặc dễ vỡ, thường vấn đề nằm ở thứ đang được kiểm tra chứ không chỉ ở công cụ.
+
+## Nên kiểm tra gì?
+
+- **Unit test**: logic nhỏ, nhanh và thuần.
+- **Integration test**: component, dữ liệu và hành vi người dùng đi cùng nhau. Đây thường là nhóm mang lại nhiều giá trị nhất.
+- **E2E test**: một số luồng chính chạy xuyên suốt ứng dụng.
+
+## Những thói quen có tín hiệu cao
+
+- Ưu tiên assertion dựa trên điều người dùng nhìn thấy và thực hiện.
+- Tìm phần tử bằng role, label và tên truy cập được trước.
+- Mock ở ranh giới như network, thay vì mock chi tiết nội bộ.
+
+## Những điều nên tránh
+
+- ~~Kiểm tra state nội bộ của component~~ khi hành vi mới là điều quan trọng.
+- ~~Rải test id khắp nơi~~ như lựa chọn đầu tiên.
+- Lạm dụng snapshot khiến test hỏng vì những thay đổi giao diện vô hại.
+
+## Kết
+
+Hãy bắt đầu nhỏ: một integration test cho luồng quan trọng nhất, sau đó thêm unit test cho logic khó. Theo thời gian, test suite sẽ trở thành tài liệu sống giúp đội phát triển nhanh hơn.

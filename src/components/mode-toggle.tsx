@@ -5,6 +5,7 @@ import { MoonIcon, SunIcon } from "@radix-ui/react-icons";
 import { forwardRef, type ComponentPropsWithoutRef } from "react";
 
 import { useTheme } from "@/components/theme-provider";
+import { useI18n } from "@/i18n/locale-provider";
 import { cn } from "@/lib/utils";
 
 type ModeToggleProps = ComponentPropsWithoutRef<typeof Button>;
@@ -12,6 +13,7 @@ type ModeToggleProps = ComponentPropsWithoutRef<typeof Button>;
 export const ModeToggle = forwardRef<HTMLButtonElement, ModeToggleProps>(
   ({ className, onClick, ...props }, ref) => {
     const { theme, setTheme } = useTheme();
+    const { dictionary } = useI18n();
 
     return (
       <Button
@@ -20,7 +22,11 @@ export const ModeToggle = forwardRef<HTMLButtonElement, ModeToggleProps>(
         variant="link"
         size="icon"
         className={cn(className)}
-        aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
+        aria-label={
+          theme === "dark"
+            ? dictionary.common.switchToLight
+            : dictionary.common.switchToDark
+        }
         onClick={(event) => {
           onClick?.(event);
 

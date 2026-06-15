@@ -9,24 +9,25 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { getServerI18n } from "@/i18n/server";
 
-export function MomentDataUnavailable() {
+export async function MomentDataUnavailable() {
+  const { dictionary } = await getServerI18n();
+
   return (
     <Card className="border border-dashed">
       <CardHeader className="p-5 pb-0 sm:p-6 sm:pb-0">
-        <CardTitle>Moments are temporarily unavailable</CardTitle>
+        <CardTitle>{dictionary.moments.unavailableTitle}</CardTitle>
         <CardDescription>
-          The photo data source is offline or not configured. The rest of the
-          site is still available.
+          {dictionary.moments.unavailableDescription}
         </CardDescription>
       </CardHeader>
       <CardContent className="p-5 text-sm text-muted-foreground sm:p-6">
-        Check the Supabase URL and ensure the Moments migration has been
-        applied before publishing photo sets.
+        {dictionary.moments.unavailableHint}
       </CardContent>
       <CardFooter className="p-5 pt-0 sm:p-6 sm:pt-0">
         <Button asChild variant="outline">
-          <Link href="/">Go to Home</Link>
+          <Link href="/">{dictionary.moments.goHome}</Link>
         </Button>
       </CardFooter>
     </Card>

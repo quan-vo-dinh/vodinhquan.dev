@@ -9,57 +9,61 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 
+import { MomentEmojiField } from "./moment-emoji-field";
 import type { OwnerMomentView } from "../types";
+import { getServerI18n } from "@/i18n/server";
 
-export function MomentForm({
+export async function MomentForm({
   action,
   moment,
 }: {
   action: (formData: FormData) => void | Promise<void>;
   moment?: OwnerMomentView;
 }) {
+  const { dictionary } = await getServerI18n();
+
   return (
     <Card className="border bg-card/80">
       <CardHeader className="p-5 pb-0 sm:p-6 sm:pb-0">
-        <CardTitle>{moment ? "Edit moment" : "Create moment"}</CardTitle>
+        <CardTitle>
+          {moment
+            ? dictionary.moments.formEditTitle
+            : dictionary.moments.formCreateTitle}
+        </CardTitle>
         <CardDescription>
-          Keep it photo-first: a title, optional metadata, and a short note.
+          {dictionary.moments.formDescription}
         </CardDescription>
       </CardHeader>
       <CardContent className="p-5 sm:p-6">
         <form action={action} className="flex flex-col gap-4">
-          <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium" htmlFor="title">
-              Title
-            </label>
-            <Input
-              id="title"
-              name="title"
-              placeholder="Street frames in Saigon"
-              required
-              defaultValue={moment?.title}
-            />
-          </div>
+          <MomentEmojiField
+            id="title"
+            name="title"
+            label={dictionary.moments.titleLabel}
+            placeholder={dictionary.moments.titlePlaceholder}
+            required
+            defaultValue={moment?.title}
+          />
 
           <div className="flex flex-col gap-2">
             <label className="text-sm font-medium" htmlFor="slug">
-              Slug
+              {dictionary.moments.slugLabel}
             </label>
             <Input
               id="slug"
               name="slug"
-              placeholder="street-frames-in-saigon"
+              placeholder={dictionary.moments.slugPlaceholder}
               defaultValue={moment?.slug}
             />
             <p className="text-xs text-muted-foreground">
-              Leave blank to generate from the title.
+              {dictionary.moments.slugHint}
             </p>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="flex flex-col gap-2">
               <label className="text-sm font-medium" htmlFor="occurredAt">
-                Date
+                {dictionary.moments.dateLabel}
               </label>
               <Input
                 id="occurredAt"
@@ -70,37 +74,34 @@ export function MomentForm({
             </div>
             <div className="flex flex-col gap-2">
               <label className="text-sm font-medium" htmlFor="location">
-                Location
+                {dictionary.moments.locationLabel}
               </label>
               <Input
                 id="location"
                 name="location"
-                placeholder="Ho Chi Minh City"
+                placeholder={dictionary.moments.locationPlaceholder}
                 defaultValue={moment?.location ?? ""}
               />
             </div>
           </div>
 
-          <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium" htmlFor="description">
-              Description
-            </label>
-            <Textarea
-              id="description"
-              name="description"
-              placeholder="A one-line description for cards and metadata."
-              defaultValue={moment?.description ?? ""}
-            />
-          </div>
+          <MomentEmojiField
+            id="description"
+            name="description"
+            label={dictionary.moments.descriptionLabel}
+            placeholder={dictionary.moments.descriptionPlaceholder}
+            defaultValue={moment?.description}
+            multiline
+          />
 
           <div className="flex flex-col gap-2">
             <label className="text-sm font-medium" htmlFor="noteMarkdown">
-              Optional note
+              {dictionary.moments.noteLabel}
             </label>
             <Textarea
               id="noteMarkdown"
               name="noteMarkdown"
-              placeholder="Short markdown note. Keep long essays in /blog."
+              placeholder={dictionary.moments.notePlaceholder}
               className="min-h-32"
               defaultValue={moment?.noteMarkdown ?? ""}
             />
@@ -108,7 +109,9 @@ export function MomentForm({
 
           <div className="flex justify-end border-t pt-5">
             <Button type="submit" className="w-full sm:w-auto">
-              {moment ? "Save changes" : "Create moment"}
+              {moment
+                ? dictionary.moments.saveChanges
+                : dictionary.moments.create}
             </Button>
           </div>
         </form>

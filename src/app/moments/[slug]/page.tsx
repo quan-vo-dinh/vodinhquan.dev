@@ -6,6 +6,7 @@ import { MomentDataUnavailable } from "@/features/moments/components/moment-data
 import { MomentDetailPage } from "@/features/moments/components/moment-detail-page";
 import { loadMomentDetailState } from "@/features/moments/lib/moment-feed-state";
 import { getPublishedMomentBySlug } from "@/features/moments/lib/moment-repository";
+import { getServerI18n } from "@/i18n/server";
 
 export const dynamic = "force-dynamic";
 
@@ -14,6 +15,7 @@ export async function generateMetadata({
 }: {
   params: Promise<{ slug: string }>;
 }): Promise<Metadata | undefined> {
+  const { dictionary } = await getServerI18n();
   const { slug } = await params;
   const state = await loadMomentDetailState(() =>
     getPublishedMomentBySlug(slug)
@@ -28,10 +30,10 @@ export async function generateMetadata({
 
   return {
     title: moment.title,
-    description: moment.description ?? "A personal photo moment.",
+    description: moment.description ?? dictionary.moments.description,
     openGraph: {
       title: moment.title,
-      description: moment.description ?? "A personal photo moment.",
+      description: moment.description ?? dictionary.moments.description,
       type: "article",
       url: `${DATA.url}/moments/${slug}`,
       ...(image
@@ -43,7 +45,7 @@ export async function generateMetadata({
     twitter: {
       card: "summary_large_image",
       title: moment.title,
-      description: moment.description ?? "A personal photo moment.",
+      description: moment.description ?? dictionary.moments.description,
       ...(image ? { images: [image] } : {}),
     },
   };

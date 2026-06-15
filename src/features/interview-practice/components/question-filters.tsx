@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { useI18n } from "@/i18n/locale-provider";
 
 import { createInterviewHref } from "../lib/question-url-state";
 import type {
@@ -12,13 +13,6 @@ import type {
   InterviewLevelFilter,
   InterviewSubcategorySummary,
 } from "../types";
-
-const levelOptions: { label: string; value: InterviewLevelFilter }[] = [
-  { label: "All", value: "all" },
-  { label: "Beginner", value: "beginner" },
-  { label: "Intermediate", value: "intermediate" },
-  { label: "Advanced", value: "advanced" },
-];
 
 type QuestionFiltersProps = {
   filterState: InterviewFilterState;
@@ -35,6 +29,16 @@ export function QuestionFilters({
   variant = "all",
   onNavigate,
 }: QuestionFiltersProps) {
+  const { dictionary } = useI18n();
+  const levelOptions: {
+    label: string;
+    value: InterviewLevelFilter;
+  }[] = [
+    { label: dictionary.interview.all, value: "all" },
+    { label: dictionary.interview.beginner, value: "beginner" },
+    { label: dictionary.interview.intermediate, value: "intermediate" },
+    { label: dictionary.interview.advanced, value: "advanced" },
+  ];
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
@@ -68,7 +72,7 @@ export function QuestionFilters({
                 : "border-border bg-background text-muted-foreground hover:text-foreground"
             )}
           >
-            All
+            {dictionary.interview.all}
             <Badge variant="secondary">{resultCount}</Badge>
           </Link>
           {subcategories.map((subcategory) => {
@@ -132,11 +136,11 @@ export function QuestionFilters({
               aria-hidden
             />
             <Input
-              aria-label="Search interview questions"
+              aria-label={dictionary.interview.searchAria}
               className="h-8 rounded-xl pl-9 text-xs"
               defaultValue={filterState.query}
               name="q"
-              placeholder="Search questions..."
+              placeholder={dictionary.interview.search}
             />
           </form>
 
@@ -194,7 +198,7 @@ export function QuestionFilters({
                 className="inline-flex items-center gap-1.5"
               >
                 <List className="size-3.5" />
-                <span>List</span>
+                <span>{dictionary.interview.list}</span>
               </Link>
             </Button>
             <Button
@@ -217,7 +221,7 @@ export function QuestionFilters({
                 className="inline-flex items-center gap-1.5"
               >
                 <SquareStack className="size-3.5" />
-                <span>Flashcards</span>
+                <span>{dictionary.interview.flashcards}</span>
               </Link>
             </Button>
             <Button

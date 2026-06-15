@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
 import { RankImage } from "./rank-image";
 import { TechIcon } from "./tech-icon";
+import { useI18n } from "@/i18n/locale-provider";
 
 type RankUpModalProps = {
   oldRank: RankTier;
@@ -18,6 +19,7 @@ type RankUpModalProps = {
 };
 
 export function RankUpModal({ oldRank, newRank, category, onClose }: RankUpModalProps) {
+  const { dictionary } = useI18n();
   const [showNewRank, setShowNewRank] = useState(false);
 
   useEffect(() => {
@@ -137,53 +139,6 @@ export function RankUpModal({ oldRank, newRank, category, onClose }: RankUpModal
 
   const currentColors = themeColors[newRank.colorTheme] || themeColors.iron;
 
-  const getCongratsMessage = () => {
-    const boldCategory = <strong className="text-zinc-200">{category}</strong>;
-    const boldRank = (
-      <strong className={cn("uppercase tracking-wide", currentColors.text)}>
-        {newRank.name}
-      </strong>
-    );
-
-    switch (newRank.colorTheme) {
-      case "bronze":
-      case "silver":
-        return (
-          <>
-            Your journey in {boldCategory} has just leveled up! {"You've"} officially reached {boldRank}. Keep problem-solving and building your momentum!
-          </>
-        );
-      case "gold":
-      case "platinum":
-      case "emerald":
-        return (
-          <>
-            Impressive progress! {"You've"} mastered the core patterns of {boldCategory} and advanced to {boldRank}. Your skills are getting sharper—keep pushing!
-          </>
-        );
-      case "diamond":
-      case "master":
-      case "grandmaster":
-        return (
-          <>
-            Outstanding progress! Reaching {boldRank} in {boldCategory} shows that {"you've"} mastered complex topics and are operating at an elite level.
-          </>
-        );
-      case "challenger":
-        return (
-          <>
-            Absolute masterclass! {"You've"} reached the summit of {boldCategory} as a {boldRank}. The compiler salutes your mastery!
-          </>
-        );
-      default:
-        return (
-          <>
-            Congratulations! {"You've"} unlocked {boldRank} in {boldCategory}. Continue practicing to conquer the next level!
-          </>
-        );
-    }
-  };
-
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/35 animate-in fade-in duration-500">
       {/* Background Radial Glow */}
@@ -210,12 +165,12 @@ export function RankUpModal({ oldRank, newRank, category, onClose }: RankUpModal
 
         {/* Monospace Gaming Header */}
         <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.35em] text-amber-500/80 mb-2 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
-          ★ RANK PROMOTION SUCCESSFUL ★
+          {dictionary.interview.rankPromotion}
         </span>
 
         {/* Main Promoted Title */}
         <h2 className="text-3xl sm:text-4xl font-extrabold text-foreground uppercase tracking-wider mb-8 drop-shadow-[0_4px_6px_rgba(0,0,0,0.5)]">
-          PROMOTED
+          {dictionary.interview.promoted}
         </h2>
 
         {/* Emblem Transition Arena */}
@@ -300,7 +255,17 @@ export function RankUpModal({ oldRank, newRank, category, onClose }: RankUpModal
           </div>
 
           <p className="text-sm sm:text-base text-zinc-400 max-w-md sm:max-w-lg leading-relaxed text-center">
-            {getCongratsMessage()}
+            {dictionary.interview.rankCongratsBefore}{" "}
+            <strong
+              className={cn(
+                "uppercase tracking-wide",
+                currentColors.text,
+              )}
+            >
+              {newRank.name}
+            </strong>{" "}
+            {dictionary.interview.rankCongratsIn} {category}.{" "}
+            {dictionary.interview.rankCongratsAfter}
           </p>
         </div>
 
@@ -314,7 +279,7 @@ export function RankUpModal({ oldRank, newRank, category, onClose }: RankUpModal
         >
           {/* Sweep sheen on button */}
           <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-1000 ease-out pointer-events-none" />
-          <span>Continue</span>
+          <span>{dictionary.interview.continue}</span>
         </Button>
       </div>
     </div>

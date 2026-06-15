@@ -1,0 +1,60 @@
+---
+locale: "vi"
+slug: "nextjs-performance-tips"
+title: "Các mẹo tối ưu Next.js thực tế cho production"
+publishedAt: "2024-12-05"
+updatedAt: "2024-12-05"
+author: "Vo Dinh Quan"
+summary: "Những cách tối ưu dễ áp dụng để ứng dụng Next.js tải nhanh và gửi ít JavaScript hơn."
+image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=192&fit=crop"
+---
+
+# Các mẹo tối ưu Next.js thực tế cho production
+
+Hiệu năng không phải phần trang trí thêm sau cùng. Với ứng dụng web, nó là một phần trực tiếp của trải nghiệm người dùng.
+
+## 1. Tối ưu hình ảnh
+
+Ưu tiên `next/image` để có kích thước ảnh phù hợp, lazy loading và hạn chế layout shift.
+
+```tsx
+import Image from "next/image";
+
+export function Hero() {
+  return (
+    <Image
+      src="/hero.jpg"
+      alt="Ảnh giới thiệu"
+      width={1200}
+      height={600}
+      priority
+      placeholder="blur"
+      blurDataURL="data:image/jpeg;base64,..."
+    />
+  );
+}
+```
+
+Chỉ dùng `priority` cho ảnh thực sự quan trọng ở màn hình đầu tiên.
+
+## 2. Chọn chiến lược cache rõ ràng
+
+| Chiến lược | Phù hợp với | Thời gian |
+|---|---|---|
+| `force-cache` | Dữ liệu tĩnh | Lâu dài |
+| `revalidate: 3600` | Dữ liệu ít đổi | 1 giờ |
+| `revalidate: 60` | Dữ liệu cập nhật thường xuyên | 1 phút |
+| `no-store` | Dữ liệu thời gian thực | Không cache |
+
+## 3. Giữ Client Component thật nhỏ
+
+Mỗi `"use client"` đều kéo thêm JavaScript xuống trình duyệt. Hãy để phần đọc dữ liệu và render tĩnh ở Server Component, chỉ đưa tương tác thật sự xuống client.
+
+## 4. Theo dõi bundle
+
+```bash title="terminal"
+npm install @next/bundle-analyzer
+ANALYZE=true npm run build
+```
+
+Đo trước khi tối ưu. Một dependency lớn hoặc import sai vị trí thường tạo ra khác biệt đáng kể hơn nhiều chỉnh sửa nhỏ.

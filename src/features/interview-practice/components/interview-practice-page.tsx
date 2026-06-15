@@ -35,6 +35,7 @@ import {
   InterviewLearningStateProvider,
   useInterviewLearningState,
 } from "./interview-learning-state-provider";
+import { useI18n } from "@/i18n/locale-provider";
 
 type InterviewPracticePageProps = {
   categories: InterviewCategorySummary[];
@@ -100,6 +101,7 @@ function InterviewPracticePageContent({
   totalQuestions,
   viewer,
 }: InterviewPracticePageContentProps) {
+  const { dictionary, locale } = useI18n();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
@@ -216,21 +218,20 @@ function InterviewPracticePageContent({
             <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <p className="mb-2 text-xs font-medium uppercase tracking-[0.24em] text-muted-foreground">
-                  Personal Interview Practice
+                  {dictionary.interview.eyebrow}
                 </p>
                 <h1 className="text-3xl font-semibold tracking-tight">
-                  <DiaTextReveal text="Interview Practice" />
+                  <DiaTextReveal text={dictionary.interview.title} />
                 </h1>
                 <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-                  A focused question bank for reviewing software engineering
-                  topics from your own data.
+                  {dictionary.interview.description}
                 </p>
               </div>
               <div className="flex shrink-0 items-center gap-3 rounded-2xl border bg-background/80 px-4 py-3 text-sm text-muted-foreground shadow-sm backdrop-blur sm:flex-col sm:items-start sm:gap-0">
                 <span className="text-2xl font-semibold tracking-tight text-foreground sm:block">
                   <NumberTicker value={totalQuestions} />
                 </span>
-                <span>questions</span>
+                <span>{dictionary.interview.questions}</span>
               </div>
             </div>
 
@@ -279,7 +280,10 @@ function InterviewPracticePageContent({
                   {filterState.category}
                 </p>
                 <h2 className="text-xl font-semibold tracking-tight">
-                  {questions.length.toLocaleString()} visible questions
+                  {questions.length.toLocaleString(
+                    locale === "vi" ? "vi-VN" : "en-US",
+                  )}{" "}
+                  {dictionary.interview.visibleQuestions}
                 </h2>
               </div>
               <Button
@@ -287,10 +291,10 @@ function InterviewPracticePageContent({
                 size="sm"
                 className="lg:hidden shrink-0 h-8 px-2.5 text-xs font-medium flex items-center gap-1.5 cursor-pointer"
                 onClick={() => setIsMobileCategoryOpen(true)}
-                aria-label="Open categories menu"
+                aria-label={dictionary.interview.openCategories}
               >
                 <Menu className="size-4" />
-                <span>Categories</span>
+                <span>{dictionary.interview.categories}</span>
               </Button>
             </div>
           </BlurFade>
@@ -312,16 +316,22 @@ function InterviewPracticePageContent({
                 onClick={() => setIsTopicsOpen(!isTopicsOpen)}
                 className="flex items-center justify-between w-full text-left px-2 py-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-lg cursor-pointer"
                 aria-expanded={isTopicsOpen}
-                aria-label="Toggle subcategories"
+                aria-label={dictionary.interview.toggleTopics}
               >
                 <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
-                  <span>Topic:</span>
+                  <span>{dictionary.interview.topic}</span>
                   <span className="text-foreground font-semibold bg-muted px-2 py-0.5 rounded-full">
-                    {filterState.subcategory === "all" ? "All Topics" : filterState.subcategory}
+                    {filterState.subcategory === "all"
+                      ? dictionary.interview.allTopics
+                      : filterState.subcategory}
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
-                  <span>{isTopicsOpen ? "Hide Topics" : "Show Topics"}</span>
+                  <span>
+                    {isTopicsOpen
+                      ? dictionary.interview.hideTopics
+                      : dictionary.interview.showTopics}
+                  </span>
                   <ChevronDown
                     className={cn(
                       "size-3.5 transition-transform duration-200",
@@ -396,13 +406,15 @@ function InterviewPracticePageContent({
       {/* Drawer Content Panel */}
       <div className="fixed inset-y-0 left-0 flex w-[300px] max-w-[85vw] touch-pan-y flex-col gap-4 overflow-hidden overscroll-contain border-r border-border/40 bg-card p-4 shadow-2xl animate-in slide-in-from-left duration-200">
         <div className="flex items-center justify-between border-b pb-3">
-          <span className="text-sm font-semibold text-foreground">Categories</span>
+          <span className="text-sm font-semibold text-foreground">
+            {dictionary.interview.categories}
+          </span>
           <Button
             variant="ghost"
             size="icon"
             className="size-8 rounded-lg cursor-pointer"
             onClick={() => setIsMobileCategoryOpen(false)}
-            aria-label="Close categories menu"
+            aria-label={dictionary.interview.closeCategories}
           >
             <X className="size-4" />
           </Button>

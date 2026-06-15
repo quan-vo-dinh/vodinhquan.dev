@@ -13,23 +13,25 @@ import { parseInterviewSearchParams } from "@/features/interview-practice/lib/qu
 
 import { getCurrentViewer } from "@/features/auth/lib/get-current-viewer";
 import { getCurrentUserInterviewLearningState } from "@/features/interview-practice/lib/learning-state-repository";
+import { getServerI18n } from "@/i18n/server";
 
-export const metadata: Metadata = {
-  title: "Interview Practice",
-  description:
-    "A personal interview practice question bank for software engineering topics.",
-  openGraph: {
-    title: "Interview Practice",
-    description:
-      "A personal interview practice question bank for software engineering topics.",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Interview Practice",
-    description:
-      "A personal interview practice question bank for software engineering topics.",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { dictionary } = await getServerI18n();
+
+  return {
+    title: dictionary.interview.title,
+    description: dictionary.interview.description,
+    openGraph: {
+      title: dictionary.interview.title,
+      description: dictionary.interview.description,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: dictionary.interview.title,
+      description: dictionary.interview.description,
+    },
+  };
+}
 
 export default async function InterviewPage({
   searchParams,

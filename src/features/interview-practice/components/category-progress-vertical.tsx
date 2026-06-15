@@ -16,6 +16,7 @@ import type { InterviewCategorySummary, InterviewFilterState } from "../types";
 import { useInterviewLearningState } from "./interview-learning-state-provider";
 import { RankImage } from "./rank-image";
 import { TechIcon } from "./tech-icon";
+import { useI18n } from "@/i18n/locale-provider";
 
 type CategoryProgressVerticalProps = {
   categories: InterviewCategorySummary[];
@@ -30,6 +31,7 @@ export function CategoryProgressVertical({
   filterState,
   onNavigate,
 }: CategoryProgressVerticalProps) {
+  const { dictionary } = useI18n();
   const { isReady, learnedIds } = useInterviewLearningState();
 
   const radius = 21;
@@ -161,7 +163,8 @@ export function CategoryProgressVertical({
                     {category.name}
                   </span>
                   <span className="text-[10px] text-muted-foreground">
-                    {learnedCount} / {ids.length} learned ({percentage}%)
+                    {learnedCount} / {ids.length}{" "}
+                    {dictionary.interview.learnedCount} ({percentage}%)
                   </span>
                   {percentage > 0 && (
                     <span className="text-[10px] font-semibold text-amber-500 dark:text-amber-400">

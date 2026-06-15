@@ -30,14 +30,20 @@ import {
   updateMomentAssetAction,
 } from "../actions/moment-actions";
 import type { OwnerMomentView } from "../types";
+import { getServerI18n } from "@/i18n/server";
 
-export function MomentAssetsEditor({ moment }: { moment: OwnerMomentView }) {
+export async function MomentAssetsEditor({
+  moment,
+}: {
+  moment: OwnerMomentView;
+}) {
+  const { dictionary } = await getServerI18n();
+
   if (moment.assets.length === 0) {
     return (
       <Card className="border border-dashed">
         <CardContent className="p-6 text-sm text-muted-foreground">
-          No photos attached yet. Upload a few images to start shaping this
-          moment.
+          {dictionary.moments.assetsEmpty}
         </CardContent>
       </Card>
     );
@@ -70,9 +76,13 @@ export function MomentAssetsEditor({ moment }: { moment: OwnerMomentView }) {
             <CardHeader className="gap-2 p-4">
               <div className="flex items-center justify-between gap-3">
                 <CardTitle className="text-base">
-                  Photo {index + 1}
+                  {dictionary.common.photo} {index + 1}
                 </CardTitle>
-                {isCover && <Badge variant="secondary">Cover</Badge>}
+                {isCover && (
+                  <Badge variant="secondary">
+                    {dictionary.moments.cover}
+                  </Badge>
+                )}
               </div>
             </CardHeader>
             <CardContent className="p-4 pt-0">
@@ -90,7 +100,7 @@ export function MomentAssetsEditor({ moment }: { moment: OwnerMomentView }) {
                       htmlFor={`sort-${asset.id}`}
                       className="text-xs font-medium"
                     >
-                      Sort
+                      {dictionary.moments.sort}
                     </label>
                     <Input
                       id={`sort-${asset.id}`}
@@ -104,7 +114,7 @@ export function MomentAssetsEditor({ moment }: { moment: OwnerMomentView }) {
                       htmlFor={`alt-${asset.id}`}
                       className="text-xs font-medium"
                     >
-                      Alt text
+                      {dictionary.moments.altText}
                     </label>
                     <Input
                       id={`alt-${asset.id}`}
@@ -118,7 +128,7 @@ export function MomentAssetsEditor({ moment }: { moment: OwnerMomentView }) {
                     htmlFor={`caption-${asset.id}`}
                     className="text-xs font-medium"
                   >
-                    Caption
+                    {dictionary.moments.caption}
                   </label>
                   <Textarea
                     id={`caption-${asset.id}`}
@@ -128,7 +138,7 @@ export function MomentAssetsEditor({ moment }: { moment: OwnerMomentView }) {
                 </div>
                 <div className="flex justify-end">
                   <Button type="submit" size="sm" variant="outline">
-                    Save photo metadata
+                    {dictionary.moments.savePhoto}
                   </Button>
                 </div>
               </form>
@@ -136,25 +146,28 @@ export function MomentAssetsEditor({ moment }: { moment: OwnerMomentView }) {
             <CardFooter className="flex justify-between gap-2 p-4 pt-0">
               <form action={setMomentCoverAction.bind(null, moment.id, asset.id)}>
                 <Button type="submit" size="sm" variant="secondary">
-                  Set cover
+                  {dictionary.moments.setCover}
                 </Button>
               </form>
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <Button type="button" size="sm" variant="destructive">
-                    Delete
+                    {dictionary.common.delete}
                   </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
-                    <AlertDialogTitle>Delete this photo?</AlertDialogTitle>
+                    <AlertDialogTitle>
+                      {dictionary.moments.deletePhotoTitle}
+                    </AlertDialogTitle>
                     <AlertDialogDescription>
-                      This removes the photo from the Moment. The action cannot
-                      be undone from Studio.
+                      {dictionary.moments.deletePhotoDescription}
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogCancel>
+                      {dictionary.common.cancel}
+                    </AlertDialogCancel>
                     <form
                       action={deleteMomentAssetAction.bind(
                         null,
@@ -164,7 +177,7 @@ export function MomentAssetsEditor({ moment }: { moment: OwnerMomentView }) {
                     >
                       <AlertDialogAction asChild>
                         <Button type="submit" variant="destructive">
-                          Delete photo
+                          {dictionary.moments.deletePhoto}
                         </Button>
                       </AlertDialogAction>
                     </form>

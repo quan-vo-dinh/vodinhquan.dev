@@ -2,8 +2,11 @@ import Link from "next/link";
 import { Home } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { getServerI18n } from "@/i18n/server";
 
-export default function NotFound() {
+export default async function NotFound() {
+    const { dictionary } = await getServerI18n();
+
     return (
         <div className="min-h-[calc(100vh-12rem)] flex flex-col">
             <div className="flex-1 flex items-center justify-center p-8">
@@ -12,17 +15,16 @@ export default function NotFound() {
                         404
                     </h1>
                     <h2 className="text-4xl tracking-tight font-semibold text-foreground mb-2">
-                        Page Not Found
+                        {dictionary.notFound.title}
                     </h2>
                     <p className="text-muted-foreground mb-8 text-balance tracking-tight font-medium">
-                        The page you&apos;re looking for doesn&apos;t exist or may have been
-                        moved.
+                        {dictionary.notFound.description}
                     </p>
                     <div className="flex flex-col sm:flex-row gap-3">
                         <Link href="/">
                             <Button variant="outline" className="gap-2 cursor-pointer">
                                 <Home className="h-4 w-4" />
-                                Go to Home
+                                {dictionary.notFound.home}
                             </Button>
                         </Link>
                     </div>
@@ -31,5 +33,4 @@ export default function NotFound() {
         </div>
     );
 }
-
 

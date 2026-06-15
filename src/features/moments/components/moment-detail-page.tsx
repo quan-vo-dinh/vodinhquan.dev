@@ -6,13 +6,21 @@ import remarkGfm from "remark-gfm";
 import BlurFade from "@/components/magicui/blur-fade";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { getServerI18n } from "@/i18n/server";
 
 import { MomentPhotoGallery } from "./moment-photo-gallery";
 import type { MomentDetailView } from "../types";
+import { formatPhotoCount } from "../lib/moment-copy";
 
 const BLUR_FADE_DELAY = 0.04;
 
-export function MomentDetailPage({ moment }: { moment: MomentDetailView }) {
+export async function MomentDetailPage({
+  moment,
+}: {
+  moment: MomentDetailView;
+}) {
+  const { dictionary } = await getServerI18n();
+
   return (
     <article className="flex flex-col gap-10">
       <BlurFade delay={BLUR_FADE_DELAY}>
@@ -21,7 +29,7 @@ export function MomentDetailPage({ moment }: { moment: MomentDetailView }) {
           className="inline-flex w-fit items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           <ArrowLeftIcon className="size-4" />
-          Back to Moments
+          {dictionary.moments.back}
         </Link>
       </BlurFade>
 
@@ -31,7 +39,9 @@ export function MomentDetailPage({ moment }: { moment: MomentDetailView }) {
             <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
               {moment.title}
             </h1>
-            <Badge variant="secondary">{moment.photoCount} photos</Badge>
+            <Badge variant="secondary">
+              {formatPhotoCount(moment.photoCount, dictionary.common)}
+            </Badge>
           </div>
           <p className="text-sm text-muted-foreground">
             {[moment.location, moment.occurredAt].filter(Boolean).join(" · ")}
@@ -52,7 +62,7 @@ export function MomentDetailPage({ moment }: { moment: MomentDetailView }) {
         <BlurFade delay={BLUR_FADE_DELAY * 3}>
           <Card className="border border-dashed">
             <CardContent className="p-6 text-sm text-muted-foreground">
-              This moment has no published photos yet.
+              {dictionary.moments.noPhotos}
             </CardContent>
           </Card>
         </BlurFade>

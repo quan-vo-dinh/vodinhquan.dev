@@ -4,6 +4,7 @@ import { Search, Pin } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useI18n } from "@/i18n/locale-provider";
 
 import {
   getInterviewCategoryMeta,
@@ -34,6 +35,7 @@ export function CategoryNav({
   onCategorySelect,
   onNavigate,
 }: CategoryNavProps) {
+  const { dictionary } = useI18n();
   const [searchQuery, setSearchQuery] = useState("");
 
   const filteredCategories = categories.filter((category) =>
@@ -104,7 +106,7 @@ export function CategoryNav({
                     : "bg-blue-500/10 text-blue-500 dark:bg-blue-500/20 dark:text-blue-400"
                 )}
               >
-                NEW
+                {dictionary.interview.new}
               </span>
             ) : null}
           </div>
@@ -121,8 +123,16 @@ export function CategoryNav({
               ? "text-amber-500 hover:text-amber-600 hover:bg-amber-500/10"
               : "text-muted-foreground/50 hover:text-foreground hover:bg-muted/60"
           )}
-          title={isPinned ? "Bỏ ghim" : "Ghim lên đầu"}
-          aria-label={isPinned ? `Bỏ ghim ${category.name}` : `Ghim ${category.name} lên đầu`}
+          title={
+            isPinned
+              ? dictionary.interview.unpin
+              : dictionary.interview.pin
+          }
+          aria-label={`${
+            isPinned
+              ? dictionary.interview.unpin
+              : dictionary.interview.pin
+          } ${category.name}`}
         >
           <Pin className={cn("size-3.5", isPinned && "fill-current")} />
         </button>
@@ -137,7 +147,7 @@ export function CategoryNav({
         <Search className="pointer-events-none absolute left-4 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
         <input
           type="text"
-          placeholder="Lọc danh mục..."
+          placeholder={dictionary.interview.filterCategories}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="w-full h-8 pl-9 pr-3 rounded-lg border bg-background text-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
@@ -145,13 +155,16 @@ export function CategoryNav({
       </div>
 
       <ScrollArea className="flex-1 min-h-0 pr-1 w-full">
-        <nav aria-label="Interview categories" className="flex flex-col gap-4 px-1 py-1 w-full min-w-0">
+        <nav
+          aria-label={dictionary.interview.categoriesAria}
+          className="flex flex-col gap-4 px-1 py-1 w-full min-w-0"
+        >
           {/* Pinned categories section */}
           {filteredPinned.length > 0 && (
             <section className="space-y-1 w-full min-w-0">
               <div className="flex items-center gap-2 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-amber-500 dark:text-amber-400 select-none">
                 <Pin className="size-3 fill-current rotate-45" />
-                <span>Đã ghim</span>
+                <span>{dictionary.interview.pinned}</span>
                 <div className="h-[1px] flex-1 bg-amber-500/20" />
               </div>
               <div className="grid gap-0.5 w-full min-w-0">

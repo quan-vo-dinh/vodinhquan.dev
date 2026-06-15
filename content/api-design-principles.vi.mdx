@@ -1,0 +1,35 @@
+---
+locale: "vi"
+slug: "api-design-principles"
+title: "Thiết kế REST API bền vững theo thời gian"
+publishedAt: "2024-12-12"
+updatedAt: "2024-12-12"
+author: "Vo Dinh Quan"
+summary: "Một checklist ngắn gọn để API dễ hiểu, dễ dùng và ít gây bất ngờ cho đội phát triển."
+image: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&h=192&fit=crop"
+---
+
+# Thiết kế REST API bền vững theo thời gian
+
+Một API tốt thường không cần quá “thông minh”. Điều quan trọng hơn là nó dễ đoán, nhất quán và giúp người dùng API hiểu được chuyện gì sẽ xảy ra trước khi gửi request.
+
+Đây là checklist ngắn mình thường dùng khi thiết kế endpoint mới hoặc review một API đã có.
+
+## Những nguyên tắc cốt lõi
+
+- Đặt **tên tài nguyên** rõ ràng và nhất quán, ưu tiên danh từ.
+- Giữ hành vi đúng với **ngữ nghĩa HTTP**, đặc biệt là đọc và ghi dữ liệu.
+- Trả về **cấu trúc response ổn định** để phía client không phải đoán.
+- Chọn mặc định hợp lý, sau đó dùng query parameter cho lọc, sắp xếp và phân trang.
+
+## Checklist thực tế
+
+1. Dùng đường dẫn tài nguyên ổn định; danh từ số nhiều thường là lựa chọn dễ hiểu.
+2. Chỉ dùng một nhóm status code nhỏ nhưng nhất quán.
+3. Mô tả rõ cách phân trang và ý nghĩa của `next`/`previous`.
+4. Ghi cụ thể yêu cầu xác thực và phân quyền.
+5. Thêm ví dụ cho luồng thành công và các lỗi thường gặp.
+
+## Kết
+
+Nếu ưu tiên tính nhất quán trước, API sẽ dễ viết tài liệu, dễ kiểm thử và cũng dễ được người khác sử dụng hơn.

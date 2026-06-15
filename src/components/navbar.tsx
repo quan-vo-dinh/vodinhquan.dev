@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import { Dock, DockIcon } from "@/components/magicui/dock";
 import { ModeToggle } from "@/components/mode-toggle";
+import { LanguageSwitcher } from "@/components/language-switcher";
 import { Separator } from "@/components/ui/separator";
 import {
   Tooltip,
@@ -11,10 +12,20 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { DATA } from "@/data/resume";
+import { useI18n } from "@/i18n/locale-provider";
 import { cn } from "@/lib/utils";
 
 export default function Navbar() {
   const pathname = usePathname();
+  const { dictionary, locale } = useI18n();
+  const hasSocials = Object.entries(DATA.contact.social).some(([_, social]) => social.navbar);
+  const navigationLabels: Record<string, string> = {
+    "/": dictionary.common.home,
+    "/blog": dictionary.common.blog,
+    "/interview": dictionary.common.interview,
+    "/moments": dictionary.common.moments,
+    "/studio": dictionary.common.studio,
+  };
 
   return (
     <div className="pointer-events-none fixed inset-x-0 bottom-4 z-30">
@@ -50,50 +61,72 @@ export default function Navbar() {
                 sideOffset={8}
                 className="rounded-xl bg-primary text-primary-foreground px-4 py-2 text-sm shadow-[0_10px_40px_-10px_rgba(0,0,0,0.3)] dark:shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)]"
               >
-                <p>{item.label}</p>
+                <p>{navigationLabels[item.href] ?? item.label}</p>
                 <TooltipArrow className="fill-primary" />
               </TooltipContent>
             </Tooltip>
           );
         })}
+        {hasSocials && (
+          <>
+            <Separator
+              orientation="vertical"
+              className="h-2/3 m-auto w-px bg-border"
+            />
+            {Object.entries(DATA.contact.social)
+              .filter(([_, social]) => social.navbar)
+              .map(([name, social], index) => {
+                const isExternal = social.url.startsWith("http");
+                const IconComponent = social.icon;
+                return (
+                  <Tooltip key={`social-${name}-${index}`}>
+                    <TooltipTrigger asChild>
+                      <a
+                        href={social.url}
+                        target={isExternal ? "_blank" : undefined}
+                        rel={isExternal ? "noopener noreferrer" : undefined}
+                      >
+                        <DockIcon className="rounded-3xl cursor-pointer size-full bg-background p-0 text-muted-foreground hover:text-foreground hover:bg-muted backdrop-blur-3xl border border-border transition-colors">
+                          <IconComponent className="size-full rounded-sm overflow-hidden object-contain" />
+                        </DockIcon>
+                      </a>
+                    </TooltipTrigger>
+                    <TooltipContent
+                      side="top"
+                      sideOffset={8}
+                      className="rounded-xl bg-primary text-primary-foreground px-4 py-2 text-sm shadow-[0_10px_40px_-10px_rgba(0,0,0,0.3)] dark:shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)]"
+                    >
+                      <p>{name}</p>
+                      <TooltipArrow className="fill-primary" />
+                    </TooltipContent>
+                  </Tooltip>
+                );
+              })}
+          </>
+        )}
         <Separator
           orientation="vertical"
           className="h-2/3 m-auto w-px bg-border"
         />
-        {Object.entries(DATA.contact.social)
-          .filter(([_, social]) => social.navbar)
-          .map(([name, social], index) => {
-            const isExternal = social.url.startsWith("http");
-            const IconComponent = social.icon;
-            return (
-              <Tooltip key={`social-${name}-${index}`}>
-                <TooltipTrigger asChild>
-                  <a
-                    href={social.url}
-                    target={isExternal ? "_blank" : undefined}
-                    rel={isExternal ? "noopener noreferrer" : undefined}
-                  >
-                    <DockIcon className="rounded-3xl cursor-pointer size-full bg-background p-0 text-muted-foreground hover:text-foreground hover:bg-muted backdrop-blur-3xl border border-border transition-colors">
-                      <IconComponent className="size-full rounded-sm overflow-hidden object-contain" />
-                    </DockIcon>
-                  </a>
-                </TooltipTrigger>
-                <TooltipContent
-                  side="top"
-                  sideOffset={8}
-                  className="rounded-xl bg-primary text-primary-foreground px-4 py-2 text-sm shadow-[0_10px_40px_-10px_rgba(0,0,0,0.3)] dark:shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)]"
-                >
-                  <p>{name}</p>
-                  <TooltipArrow className="fill-primary" />
-                </TooltipContent>
-              </Tooltip>
-            );
-          })}
-        <Separator
-          orientation="vertical"
-          className="h-2/3 m-auto w-px bg-border"
-        />
-        <ModeToggle className="size-10 rounded-3xl border border-border bg-background p-2 text-muted-foreground backdrop-blur-3xl transition-colors hover:bg-muted hover:text-foreground" />
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <DockIcon className="rounded-3xl cursor-pointer size-full bg-background p-0 text-muted-foreground hover:text-foreground hover:bg-muted backdrop-blur-3xl border border-border transition-colors">
+              <LanguageSwitcher className="size-full bg-transparent border-none p-0 hover:bg-transparent" />
+            </DockIcon>
+          </TooltipTrigger>
+          <TooltipContent
+            side="top"
+            sideOffset={8}
+            className="rounded-xl bg-primary text-primary-foreground px-4 py-2 text-sm shadow-[0_10px_40px_-10px_rgba(0,0,0,0.3)] dark:shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)]"
+          >
+            <p>
+              {locale === "vi"
+                ? dictionary.common.switchToEnglish
+                : dictionary.common.switchToVietnamese}
+            </p>
+            <TooltipArrow className="fill-primary" />
+          </TooltipContent>
+        </Tooltip>
       </Dock>
     </div>
   );

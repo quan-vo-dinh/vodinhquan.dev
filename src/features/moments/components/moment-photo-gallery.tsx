@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { createPortal } from "react-dom";
 import { useEffect, useRef, useState } from "react";
 import {
   ChevronLeftIcon,
@@ -12,6 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { DirectionAwareHover } from "@/components/ui/direction-aware-hover";
 import { cn } from "@/lib/utils";
+import { useI18n } from "@/i18n/locale-provider";
 
 import type { MomentAssetView } from "../types";
 
@@ -24,16 +26,25 @@ export function MomentPhotoGallery({
   assets: MomentAssetView[];
   momentTitle: string;
 }) {
+  const { dictionary } = useI18n();
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const lightboxRef = useRef<HTMLDivElement>(null);
+  const openerRef = useRef<HTMLButtonElement>(null);
   const activeAsset = activeIndex === null ? null : assets[activeIndex];
   const hasMultipleAssets = assets.length > 1;
+  const isLightboxOpen = activeIndex !== null;
 
   useEffect(() => {
-    if (activeIndex === null) {
+    if (!isLightboxOpen) {
       return;
     }
 
+    const originalOverflow = document.body.style.overflow;
+    const originalOverscrollBehavior =
+      document.body.style.overscrollBehavior;
+
+    document.body.style.overflow = "hidden";
+    document.body.style.overscrollBehavior = "none";
     lightboxRef.current?.focus();
 
     function handleKeyDown(event: KeyboardEvent) {
@@ -61,8 +72,13 @@ export function MomentPhotoGallery({
 
     window.addEventListener("keydown", handleKeyDown);
 
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [activeIndex, assets.length, hasMultipleAssets]);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = originalOverflow;
+      document.body.style.overscrollBehavior = originalOverscrollBehavior;
+      openerRef.current?.focus();
+    };
+  }, [assets.length, hasMultipleAssets, isLightboxOpen]);
 
   function showPreviousAsset() {
     setActiveIndex((index) =>
@@ -87,9 +103,12 @@ export function MomentPhotoGallery({
             <button
               key={asset.id}
               type="button"
-              aria-label={`Open ${ariaLabel} full size`}
+              aria-label={`${dictionary.moments.openFull}: ${ariaLabel}`}
               className="group flex min-w-0 flex-col overflow-hidden rounded-2xl border bg-card text-left shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              onClick={() => setActiveIndex(index)}
+              onClick={(event) => {
+                openerRef.current = event.currentTarget;
+                setActiveIndex(index);
+              }}
             >
               <DirectionAwareHover
                 imageUrl={asset.secureUrl}
@@ -102,7 +121,7 @@ export function MomentPhotoGallery({
                 <div className="flex flex-col items-start gap-2">
                   <span className="inline-flex items-center gap-2 rounded-full bg-black/35 px-3 py-1 text-xs font-medium backdrop-blur-sm text-white">
                     <ExpandIcon className="size-3.5" />
-                    View full
+                    {dictionary.moments.viewFull}
                   </span>
                   {label && (
                     <span className="text-sm font-medium text-white line-clamp-2 drop-shadow-md">
@@ -116,72 +135,76 @@ export function MomentPhotoGallery({
         })}
       </div>
 
-      {activeAsset ? (
-        <div
-          ref={lightboxRef}
-          role="dialog"
-          aria-modal="true"
-          aria-label={`${momentTitle} full-size photo`}
-          tabIndex={-1}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-background/95 p-4 backdrop-blur-xl focus-visible:outline-none"
-          onClick={() => setActiveIndex(null)}
-        >
-          <div
-            className="flex h-full w-full max-w-6xl flex-col gap-3"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <div className="flex items-center justify-between gap-3">
-              <div className="min-w-0">
-                <p className="truncate text-sm font-medium">
-                  {activeAsset.caption ?? activeAsset.alt ?? momentTitle}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  Photo {(activeIndex ?? 0) + 1} of {assets.length}
-                </p>
-              </div>
-              <Button
-                type="button"
-                variant="outline"
-                size="icon"
-                aria-label="Close full-size photo"
-                onClick={() => setActiveIndex(null)}
+      {activeAsset
+        ? createPortal(
+            <div
+              ref={lightboxRef}
+              role="dialog"
+              aria-modal="true"
+              aria-label={`${momentTitle} ${dictionary.moments.fullSize}`}
+              tabIndex={-1}
+              data-testid="moment-lightbox"
+              className="fixed inset-0 z-[100] h-dvh w-screen overflow-hidden bg-black text-white focus-visible:outline-none"
+            >
+              <div
+                data-testid="moment-lightbox-image"
+                className="absolute inset-0"
               >
-                <XIcon className="size-4" />
-              </Button>
-            </div>
+                <Image
+                  src={activeAsset.secureUrl}
+                  alt={activeAsset.alt ?? momentTitle}
+                  fill
+                  sizes="100vw"
+                  className="object-contain"
+                  priority
+                />
+              </div>
 
-            <div className="relative min-h-0 flex-1 overflow-hidden rounded-2xl border bg-black">
-              <Image
-                src={activeAsset.secureUrl}
-                alt={activeAsset.alt ?? momentTitle}
-                fill
-                sizes="100vw"
-                className="object-contain"
-                priority
-              />
+              <div className="pointer-events-none absolute inset-x-0 top-0 z-10 flex items-start justify-between gap-4 bg-gradient-to-b from-black/75 via-black/35 to-transparent px-4 pb-16 pt-4 sm:px-6 sm:pt-6">
+                <div className="min-w-0 pt-1">
+                  <p className="truncate text-sm font-medium text-white">
+                    {activeAsset.caption ?? activeAsset.alt ?? momentTitle}
+                  </p>
+                  <p className="mt-1 text-xs text-white/70">
+                    {dictionary.moments.photoPosition}{" "}
+                    {(activeIndex ?? 0) + 1}{" "}
+                    {dictionary.moments.positionOf} {assets.length}
+                  </p>
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  aria-label={dictionary.moments.closeFull}
+                  className="pointer-events-auto shrink-0 border-white/20 bg-black/45 text-white shadow-lg backdrop-blur hover:bg-black/70 hover:text-white"
+                  onClick={() => setActiveIndex(null)}
+                >
+                  <XIcon className="size-4" />
+                </Button>
+              </div>
 
               {hasMultipleAssets ? (
                 <>
                   <LightboxNavButton
-                    className="left-3"
-                    label="Show previous photo"
+                    className="left-3 sm:left-5"
+                    label={dictionary.moments.previousPhoto}
                     onClick={showPreviousAsset}
                   >
                     <ChevronLeftIcon className="size-5" />
                   </LightboxNavButton>
                   <LightboxNavButton
-                    className="right-3"
-                    label="Show next photo"
+                    className="right-3 sm:right-5"
+                    label={dictionary.moments.nextPhoto}
                     onClick={showNextAsset}
                   >
                     <ChevronRightIcon className="size-5" />
                   </LightboxNavButton>
                 </>
               ) : null}
-            </div>
-          </div>
-        </div>
-      ) : null}
+            </div>,
+            document.body
+          )
+        : null}
     </>
   );
 }
@@ -204,7 +227,7 @@ function LightboxNavButton({
       size="icon"
       aria-label={label}
       className={cn(
-        "absolute top-1/2 -translate-y-1/2 border-white/20 bg-background/80 text-foreground shadow-lg backdrop-blur",
+        "absolute top-1/2 z-10 -translate-y-1/2 border-white/20 bg-black/45 text-white shadow-lg backdrop-blur hover:bg-black/70 hover:text-white",
         className
       )}
       onClick={onClick}

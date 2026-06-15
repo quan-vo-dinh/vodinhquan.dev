@@ -3,6 +3,9 @@
 import { ImageResponse } from "next/og";
 import { allPosts } from "content-collections";
 import { DATA } from "@/data/resume";
+import { getServerI18n } from "@/i18n/server";
+import { findLocalizedPost } from "@/lib/localized-posts";
+import { formatDate } from "@/lib/utils";
 
 export const runtime = "edge";
 
@@ -128,8 +131,9 @@ export default async function Image({
 }) {
     try {
         const fontData = await getFontData();
+        const { dictionary, locale } = await getServerI18n();
         const { slug } = await params;
-        const post = allPosts.find((p) => p._meta.path.replace(/\.mdx$/, "") === slug);
+        const post = findLocalizedPost(allPosts, slug, locale);
         const imageUrl = DATA.avatarUrl
             ? new URL(DATA.avatarUrl, DATA.url).toString()
             : undefined;
@@ -142,11 +146,11 @@ export default async function Image({
                             <div style={styles.wrapper}>
                                 {imageUrl && (
                                     <div style={styles.imageSection}>
-                                        <img src={imageUrl} alt="Blog Post" style={styles.image} />
+                                        <img src={imageUrl} alt={dictionary.blog.title} style={styles.image} />
                                     </div>
                                 )}
                                 <div style={styles.mainContainer}>
-                                    <div style={styles.title}>Post Not Found</div>
+                                    <div style={styles.title}>{dictionary.blog.notFound}</div>
                                 </div>
                             </div>
                         </div>
@@ -171,12 +175,7 @@ export default async function Image({
         const title = post.title;
         const description = post.summary || "";
         const publishedDate = post.publishedAt
-            ? new Date(post.publishedAt).toLocaleDateString("en-US", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-                timeZone: "UTC",
-            })
+            ? formatDate(post.publishedAt, locale)
             : "";
 
         return new ImageResponse(
@@ -236,5 +235,4 @@ export default async function Image({
         );
     }
 }
-
 

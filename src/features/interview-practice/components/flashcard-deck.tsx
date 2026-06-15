@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { useI18n } from "@/i18n/locale-provider";
 
 import type { InterviewQuestionView } from "../types";
 import { normalizeFlashcardIndex } from "../lib/flashcard-state";
@@ -23,6 +24,7 @@ type FlashcardDeckProps = {
 };
 
 export function FlashcardDeck({ questions }: FlashcardDeckProps) {
+  const { dictionary } = useI18n();
   const [index, setIndex] = useState(0);
   const [revealedQuestionId, setRevealedQuestionId] = useState<number | null>(
     null
@@ -45,9 +47,9 @@ export function FlashcardDeck({ questions }: FlashcardDeckProps) {
   if (!currentQuestion) {
     return (
       <div className="rounded-xl border border-dashed bg-background/60 p-5 text-center text-sm text-muted-foreground sm:rounded-2xl sm:p-8">
-        No flashcards match the current filters.
+        {dictionary.interview.noFlashcards}
         <span className="block mt-1 text-xs">
-          Try adjusting the category, topic, or level filter.
+          {dictionary.interview.noQuestionsHint}
         </span>
       </div>
     );
@@ -92,7 +94,7 @@ export function FlashcardDeck({ questions }: FlashcardDeckProps) {
             <InterviewMarkdown>{currentQuestion.answer}</InterviewMarkdown>
           ) : (
             <p className="text-base text-muted-foreground/80">
-              Think through your answer, then reveal it when ready.
+              {dictionary.interview.thinkFirst}
             </p>
           )}
         </div>
@@ -103,10 +105,10 @@ export function FlashcardDeck({ questions }: FlashcardDeckProps) {
             variant="outline"
             onClick={goToPrevious}
             disabled={normalizedIndex === 0}
-            aria-label="Previous flashcard"
+            aria-label={dictionary.interview.previousFlashcard}
           >
             <ChevronLeft className="mr-2 size-4" />
-            Previous
+            {dictionary.common.previous}
           </Button>
           <Button
             type="button"
@@ -115,41 +117,59 @@ export function FlashcardDeck({ questions }: FlashcardDeckProps) {
                 currentId === currentQuestion.id ? null : currentQuestion.id
               )
             }
-            aria-label={isAnswerVisible ? "Hide answer" : "Reveal answer"}
+            aria-label={
+              isAnswerVisible
+                ? dictionary.interview.hideAnswer
+                : dictionary.interview.revealAnswer
+            }
           >
             <RotateCw className="mr-2 size-4" />
-            {isAnswerVisible ? "Hide answer" : "Reveal answer"}
+            {isAnswerVisible
+              ? dictionary.interview.hideAnswer
+              : dictionary.interview.revealAnswer}
           </Button>
           <Button
             type="button"
             variant="outline"
             onClick={goToNext}
             disabled={normalizedIndex === questions.length - 1}
-            aria-label="Next flashcard"
+            aria-label={dictionary.interview.nextFlashcard}
           >
-            Next
+            {dictionary.common.next}
             <ChevronRight className="ml-2 size-4" />
           </Button>
           <Button
             type="button"
             variant={isLearned ? "default" : "outline"}
             onClick={() => toggleLearned(currentQuestion.id)}
-            aria-label={isLearned ? "Mark as not learned" : "Mark as learned"}
+            aria-label={
+              isLearned
+                ? dictionary.interview.markNotLearned
+                : dictionary.interview.markLearned
+            }
             className={cn(
               isLearned && "bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-600 dark:bg-emerald-700 dark:hover:bg-emerald-800 dark:border-emerald-700"
             )}
           >
             <CheckCircle2 className="mr-2 size-4" />
-            {isLearned ? "Learned" : "Mark learned"}
+            {isLearned
+              ? dictionary.interview.learned
+              : dictionary.interview.markLearned}
           </Button>
           <Button
             type="button"
             variant={isBookmarked ? "default" : "outline"}
             onClick={() => toggleBookmark(currentQuestion.id)}
-            aria-label={isBookmarked ? "Remove bookmark" : "Bookmark"}
+            aria-label={
+              isBookmarked
+                ? dictionary.interview.removeBookmark
+                : dictionary.interview.bookmark
+            }
           >
             <Bookmark className={cn("mr-2 size-4", isBookmarked && "fill-current")} />
-            {isBookmarked ? "Saved" : "Bookmark"}
+            {isBookmarked
+              ? dictionary.interview.saved
+              : dictionary.interview.bookmark}
           </Button>
         </div>
       </CardContent>

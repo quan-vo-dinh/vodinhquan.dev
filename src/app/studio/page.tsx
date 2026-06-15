@@ -28,44 +28,49 @@ import {
 import { getOwnerAuthUser } from "@/features/auth/lib/get-owner-auth-user";
 import { getServerEnv } from "@/lib/env";
 import { getCachedAuthUser } from "@/lib/supabase/server";
+import { getServerI18n } from "@/i18n/server";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
-  title: "Studio",
-  robots: {
-    index: false,
-    follow: false,
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { dictionary } = await getServerI18n();
 
-const STUDIO_ROUTES = [
-  {
-    description: "Review drafts, edit metadata, upload photos, and publish.",
-    href: "/studio/moments",
-    icon: CameraIcon,
-    label: "Moments manager",
-  },
-  {
-    description: "Start a new photo-first collection with title and metadata.",
-    href: "/studio/moments/new",
-    icon: ImagePlusIcon,
-    label: "Create moment",
-  },
-  {
-    description: "See the public gallery exactly as visitors see it.",
-    href: "/moments",
-    icon: ArrowUpRightIcon,
-    label: "Public moments",
-  },
-];
+  return {
+    title: dictionary.studio.title,
+    robots: {
+      index: false,
+      follow: false,
+    },
+  };
+}
 
 const BLUR_FADE_DELAY = 0.04;
 const STUDIO_SIGN_IN_PATH = "/auth/sign-in/github?next=%2Fstudio";
 const SIGN_OUT_PATH = "/auth/sign-out";
 
 export default async function StudioPage() {
+  const { dictionary } = await getServerI18n();
   const owner = await getOwnerAuthUser();
+  const studioRoutes = [
+    {
+      description: dictionary.studio.momentsManagerDescription,
+      href: "/studio/moments",
+      icon: CameraIcon,
+      label: dictionary.studio.momentsManager,
+    },
+    {
+      description: dictionary.studio.createMomentDescription,
+      href: "/studio/moments/new",
+      icon: ImagePlusIcon,
+      label: dictionary.studio.createMoment,
+    },
+    {
+      description: dictionary.studio.publicMomentsDescription,
+      href: "/moments",
+      icon: ArrowUpRightIcon,
+      label: dictionary.studio.publicMoments,
+    },
+  ];
 
   if (!owner) {
     const {
@@ -77,6 +82,7 @@ export default async function StudioPage() {
         isSignedIn={Boolean(user)}
         ownerGitHubUsername={getServerEnv().siteOwnerGitHubUsername}
         signedInEmail={user?.email ?? null}
+        dictionary={dictionary}
       />
     );
   }
@@ -87,13 +93,12 @@ export default async function StudioPage() {
         <div className="flex flex-col gap-3">
           <div className="flex flex-wrap items-center gap-2">
             <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-              Studio
+              {dictionary.studio.title}
             </h1>
-            <Badge variant="secondary">Owner only</Badge>
+            <Badge variant="secondary">{dictionary.studio.ownerOnly}</Badge>
           </div>
           <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
-            A private workspace for shaping the personal site. Keep publishing
-            tools small, explicit, and close to the public routes they affect.
+            {dictionary.studio.description}
           </p>
         </div>
       </BlurFade>
@@ -102,13 +107,13 @@ export default async function StudioPage() {
         <BlurFade delay={BLUR_FADE_DELAY * 2}>
           <Card className="border bg-card/80">
             <CardHeader className="p-5 pb-0 sm:p-6 sm:pb-0">
-              <CardTitle>Routes</CardTitle>
+              <CardTitle>{dictionary.studio.routesTitle}</CardTitle>
               <CardDescription>
-                Pick the owner surface you want to work with.
+                {dictionary.studio.routesDescription}
               </CardDescription>
             </CardHeader>
             <CardContent className="grid gap-3 p-5 sm:p-6">
-              {STUDIO_ROUTES.map((route) => (
+              {studioRoutes.map((route) => (
                 <Link
                   key={route.href}
                   href={route.href}
@@ -140,22 +145,25 @@ export default async function StudioPage() {
                   <span className="grid size-10 place-items-center rounded-2xl bg-primary text-primary-foreground">
                     <FolderKanbanIcon className="size-5" />
                   </span>
-                  <Badge variant="outline">drag preview</Badge>
+                  <Badge variant="outline">
+                    {dictionary.studio.dragPreview}
+                  </Badge>
                 </div>
                 <div className="flex flex-col gap-3">
                   <SparklesIcon className="size-5 text-muted-foreground" />
                   <div>
                     <h2 className="text-xl font-semibold tracking-tight">
-                      Moments workspace
+                      {dictionary.studio.workspaceTitle}
                     </h2>
                     <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                      The playful card is only a visual accent; the real route
-                      list stays predictable and keyboard-friendly.
+                      {dictionary.studio.workspaceDescription}
                     </p>
                   </div>
                 </div>
                 <Button asChild size="sm" className="w-fit">
-                  <Link href="/studio/moments">Open Moments</Link>
+                  <Link href="/studio/moments">
+                    {dictionary.studio.openMoments}
+                  </Link>
                 </Button>
               </div>
             </DraggableCardBody>
@@ -170,10 +178,12 @@ function StudioSignInGate({
   isSignedIn,
   ownerGitHubUsername,
   signedInEmail,
+  dictionary,
 }: {
   isSignedIn: boolean;
   ownerGitHubUsername: string;
   signedInEmail: string | null;
+  dictionary: Awaited<ReturnType<typeof getServerI18n>>["dictionary"];
 }) {
   return (
     <section className="mx-auto flex min-h-[calc(100vh-10rem)] w-full max-w-3xl items-center">
@@ -181,8 +191,10 @@ function StudioSignInGate({
         <Card className="mx-auto w-full overflow-hidden border bg-card/85">
           <CardHeader className="border-b p-5 sm:p-6">
             <div className="flex flex-wrap items-center gap-2">
-              <Badge variant="secondary">Owner only</Badge>
-              <Badge variant="outline">GitHub required</Badge>
+              <Badge variant="secondary">{dictionary.studio.ownerOnly}</Badge>
+              <Badge variant="outline">
+                {dictionary.studio.githubRequired}
+              </Badge>
             </div>
             <div className="mt-6 flex flex-col gap-3">
               <div className="grid size-12 place-items-center rounded-2xl border bg-background text-muted-foreground">
@@ -190,11 +202,10 @@ function StudioSignInGate({
               </div>
               <div>
                 <CardTitle className="text-2xl tracking-tight sm:text-3xl">
-                  Studio is private
+                  {dictionary.studio.privateTitle}
                 </CardTitle>
                 <CardDescription className="mt-3 max-w-2xl text-sm leading-6">
-                  This workspace controls publishing tools for the personal
-                  site. Access is limited to the GitHub owner id{" "}
+                  {dictionary.studio.privateDescriptionBefore}{" "}
                   <code className="rounded-md border bg-background px-1.5 py-0.5 text-foreground">
                     {ownerGitHubUsername}
                   </code>
@@ -206,15 +217,16 @@ function StudioSignInGate({
           <CardContent className="grid gap-5 p-5 sm:p-6">
             {isSignedIn ? (
               <div className="rounded-2xl border border-destructive/30 bg-destructive/5 p-4 text-sm leading-6 text-muted-foreground">
-                You are signed in
-                {signedInEmail ? ` as ${signedInEmail}` : ""}, but this GitHub
-                session is not authorized for Studio. Sign out first if you need
-                to switch to the owner account.
+                {dictionary.studio.signedInUnauthorizedBefore}
+                {signedInEmail
+                  ? ` ${dictionary.studio.signedInAs} ${signedInEmail}`
+                  : ""}
+                ,{" "}
+                {dictionary.studio.signedInUnauthorizedAfter}
               </div>
             ) : (
               <div className="rounded-2xl border bg-background/60 p-4 text-sm leading-6 text-muted-foreground">
-                Sign in with GitHub to continue. Non-owner accounts will remain
-                blocked from the Studio routes.
+                {dictionary.studio.signInHint}
               </div>
             )}
 
@@ -225,7 +237,7 @@ function StudioSignInGate({
                     className="size-4 shrink-0"
                     data-icon="inline-start"
                   />
-                  Login via GitHub
+                  {dictionary.studio.loginGitHub}
                 </a>
               </Button>
               {isSignedIn ? (
@@ -236,7 +248,7 @@ function StudioSignInGate({
                     variant="outline"
                     className="w-full gap-2 sm:w-fit"
                   >
-                    Sign out current session
+                    {dictionary.studio.signOutCurrent}
                   </Button>
                 </form>
               ) : (
@@ -250,7 +262,7 @@ function StudioSignInGate({
                       className="size-4 shrink-0"
                       data-icon="inline-start"
                     />
-                    View owner profile
+                    {dictionary.studio.viewOwner}
                   </a>
                 </Button>
               )}

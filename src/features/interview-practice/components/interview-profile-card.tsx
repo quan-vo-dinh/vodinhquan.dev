@@ -11,6 +11,7 @@ import type { CurrentViewer } from "@/features/auth/types";
 import { cn } from "@/lib/utils";
 import { getRankTier } from "../lib/rank-meta";
 import { RankImage } from "./rank-image";
+import { useI18n } from "@/i18n/locale-provider";
 
 type InterviewProfileCardProps = {
   categoryProgress: number;
@@ -173,7 +174,9 @@ export function InterviewProfileCard({
   learnedCount,
   viewer,
 }: InterviewProfileCardProps) {
-  const displayName = viewer?.displayName ?? "Guest learner";
+  const { dictionary } = useI18n();
+  const displayName =
+    viewer?.displayName ?? dictionary.interview.guestLearner;
   const avatarUrl = viewer?.avatarUrl ?? null;
   const initials =
     displayName
@@ -328,10 +331,12 @@ export function InterviewProfileCard({
                 target="_blank"
                 rel="noopener noreferrer"
                 className="mt-0.5 inline-flex w-fit items-center gap-1.5 text-xs text-muted-foreground underline underline-offset-2 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                aria-label={`Visit ${displayName} GitHub profile`}
+                aria-label={`${dictionary.interview.visitGithub} ${displayName}`}
               >
                 <Icons.github className="size-3.5" aria-hidden />
-                <span>{viewer.githubUsername ?? "GitHub Profile"}</span>
+                <span>
+                  {viewer.githubUsername ?? dictionary.interview.githubProfile}
+                </span>
               </Link>
             </CardItem>
           ) : (

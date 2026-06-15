@@ -1,0 +1,46 @@
+---
+locale: "vi"
+slug: "typescript-best-practices"
+title: "Viết TypeScript sạch và dễ bảo trì"
+publishedAt: "2024-12-08"
+updatedAt: "2024-12-08"
+author: "Vo Dinh Quan"
+summary: "Những thói quen TypeScript giúp code rõ ràng hơn, an toàn hơn và dễ refactor hơn."
+image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&h=192&fit=crop"
+---
+
+# Viết TypeScript sạch và dễ bảo trì
+
+TypeScript phát huy giá trị tốt nhất khi giúp chúng ta mô hình hóa đúng bài toán, thay vì khiến cả đội phải vật lộn với những type quá thông minh. Một vài quy ước nhỏ có thể làm codebase <mark>ổn định, dễ đọc và dễ refactor hơn</mark>.
+
+<MediaContainer
+  src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=1200&fit=crop"
+  alt="Mã TypeScript trên màn hình"
+/>
+
+## Những nguyên tắc thực tế
+
+- Bật strict mode sớm và xử lý các điểm chưa an toàn.
+- Ưu tiên type dễ đọc hơn type quá clever.
+- Dùng union cho “một trong các trường hợp”, interface cho hình dạng dữ liệu ổn định.
+- Tránh dùng `any` như đường tắt vì nó nhanh chóng trở thành ~~nợ kỹ thuật~~.
+
+## Một pattern đáng nhớ
+
+```ts
+type Result<T> =
+  | { ok: true; value: T }
+  | { ok: false; error: string };
+
+export function parseNumber(input: string): Result<number> {
+  const value = Number(input);
+
+  return Number.isFinite(value)
+    ? { ok: true, value }
+    : { ok: false, error: "Không phải là số hợp lệ" };
+}
+```
+
+## Kết
+
+TypeScript tốt nên đọc giống tài liệu tốt: tên rõ ràng, cấu trúc dễ đoán và lỗi chỉ đúng nơi cần sửa.

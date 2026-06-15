@@ -33,23 +33,38 @@ import { MomentAssetsEditor } from "@/features/moments/components/moment-assets-
 import { MomentForm } from "@/features/moments/components/moment-form";
 import { MomentUploadPanel } from "@/features/moments/components/moment-upload-panel";
 import { getOwnerMomentById } from "@/features/moments/lib/moment-repository";
+import { getServerI18n } from "@/i18n/server";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
-  title: "Edit Moment",
-  robots: {
-    index: false,
-    follow: false,
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { dictionary } = await getServerI18n();
+
+  return {
+    title: dictionary.moments.formEditTitle,
+    robots: {
+      index: false,
+      follow: false,
+    },
+  };
+}
 
 export default async function EditMomentPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
+  const { dictionary } = await getServerI18n();
   const { id } = await params;
+  const statusLabels = {
+    archived: dictionary.common.archived,
+    draft: dictionary.common.draft,
+    published: dictionary.common.published,
+  };
+  const visibilityLabels = {
+    private: dictionary.common.private,
+    public: dictionary.common.public,
+  };
 
   await requireOwner(`/studio/moments/${id}/edit`);
   const moment = await getOwnerMomentById(id);
@@ -62,13 +77,19 @@ export default async function EditMomentPage({
     <section className="mx-auto flex w-full max-w-5xl flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border bg-card/60 p-4 sm:p-5">
         <Button asChild variant="ghost" className="px-0">
-          <Link href="/studio/moments">Back to Moments</Link>
+          <Link href="/studio/moments">
+            {dictionary.moments.backToMoments}
+          </Link>
         </Button>
         <div className="flex flex-wrap items-center gap-2">
-          <Badge variant="secondary">{moment.status}</Badge>
-          <Badge variant="outline">{moment.visibility}</Badge>
+          <Badge variant="secondary">{statusLabels[moment.status]}</Badge>
+          <Badge variant="outline">
+            {visibilityLabels[moment.visibility]}
+          </Badge>
           <Button asChild size="sm" variant="outline">
-            <Link href={`/moments/${moment.slug}`}>Public view</Link>
+            <Link href={`/moments/${moment.slug}`}>
+              {dictionary.moments.publicView}
+            </Link>
           </Button>
         </div>
       </div>
@@ -78,9 +99,11 @@ export default async function EditMomentPage({
           <MomentUploadPanel momentId={moment.id} />
           <section className="flex flex-col gap-3">
             <div>
-              <h2 className="text-lg font-semibold tracking-tight">Photos</h2>
+              <h2 className="text-lg font-semibold tracking-tight">
+                {dictionary.moments.photosSection}
+              </h2>
               <p className="text-sm text-muted-foreground">
-                Edit captions, choose the cover, and control display order.
+                {dictionary.moments.photosSectionDescription}
               </p>
             </div>
             <MomentAssetsEditor moment={moment} />
@@ -90,44 +113,45 @@ export default async function EditMomentPage({
         <aside className="flex min-w-0 flex-col gap-6 lg:sticky lg:top-6">
           <Card className="border bg-card/80">
             <CardHeader className="p-5 pb-0 sm:p-6 sm:pb-0">
-              <CardTitle>Publishing</CardTitle>
+              <CardTitle>{dictionary.moments.publishing}</CardTitle>
               <CardDescription>
-                Control when this photo set appears on the public site.
+                {dictionary.moments.publishingDescription}
               </CardDescription>
             </CardHeader>
             <CardContent className="flex flex-wrap gap-2 p-5 sm:p-6">
               <form action={publishMomentAction.bind(null, moment.id)}>
                 <Button type="submit" size="sm">
-                  Publish
+                  {dictionary.moments.publish}
                 </Button>
               </form>
               <form action={archiveMomentAction.bind(null, moment.id)}>
                 <Button type="submit" size="sm" variant="outline">
-                  Archive
+                  {dictionary.moments.archive}
                 </Button>
               </form>
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <Button type="button" size="sm" variant="destructive">
-                    Delete moment
+                  <Button type="button" size="sm" variant="outline">
+                    {dictionary.moments.deleteMoment}
                   </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
                     <AlertDialogTitle>
-                      Delete “{moment.title}”?
+                      {dictionary.moments.deleteMomentTitle} “{moment.title}”
                     </AlertDialogTitle>
                     <AlertDialogDescription>
-                      This permanently removes the Moment and detaches its photo
-                      records. This action cannot be undone.
+                      {dictionary.moments.deleteMomentDescription}
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogCancel>
+                      {dictionary.common.cancel}
+                    </AlertDialogCancel>
                     <form action={deleteMomentAction.bind(null, moment.id)}>
                       <AlertDialogAction asChild>
                         <Button type="submit" variant="destructive">
-                          Delete permanently
+                          {dictionary.moments.deletePermanently}
                         </Button>
                       </AlertDialogAction>
                     </form>

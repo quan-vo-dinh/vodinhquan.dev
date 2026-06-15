@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, type ComponentProps } from "react";
 import { Copy, Check } from "lucide-react";
 import { Button } from "../ui/button";
 import { codeToHtml } from "shiki/bundle/web";
+import { useI18n } from "@/i18n/locale-provider";
 import { cn } from "@/lib/utils";
 import { normalizeShikiLanguage } from "@/lib/normalize-shiki-language";
 
@@ -16,6 +17,7 @@ function extractLanguage(className?: string): string {
 }
 
 export function CodeBlock({ children, ...props }: CodeBlockProps) {
+  const { dictionary } = useI18n();
   const [copyStatus, setCopyStatus] = useState<"error" | "idle" | "success">(
     "idle"
   );
@@ -99,8 +101,12 @@ export function CodeBlock({ children, ...props }: CodeBlockProps) {
           onClick={handleCopy}
           variant="outline"
           size="icon"
-          className={cn("absolute size-8 text-primary cursor-pointer right-3 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity rounded-md border border-border shadow-none", title ? "top-13" : "top-3", props.className)}
-          aria-label="Copy code"
+          className={cn(
+            "absolute right-3 size-8 cursor-pointer rounded-md border border-border text-primary opacity-100 shadow-none transition-opacity lg:opacity-0 lg:group-hover:opacity-100",
+            title ? "top-13" : "top-3",
+            props.className
+          )}
+          aria-label={dictionary.mdx.copyCode}
         >
           {copyStatus === "success" ? (
             <Check className="size-4 text-emerald-500" />
@@ -115,9 +121,9 @@ export function CodeBlock({ children, ...props }: CodeBlockProps) {
         </Button>
         <span className="sr-only" role="status" aria-live="polite">
           {copyStatus === "success"
-            ? "Code copied."
+            ? dictionary.mdx.copied
             : copyStatus === "error"
-              ? "Unable to copy code."
+              ? dictionary.mdx.copyFailed
               : ""}
         </span>
         {html && (
@@ -129,12 +135,8 @@ export function CodeBlock({ children, ...props }: CodeBlockProps) {
           </div>
         )}
 
-        {!html && (
-          <div className="p-4">
-            {children}
-          </div>
-        )}
-      </pre >
-    </div >
+        {!html && <div className="p-4">{children}</div>}
+      </pre>
+    </div>
   );
 }

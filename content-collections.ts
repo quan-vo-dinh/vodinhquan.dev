@@ -9,6 +9,8 @@ const posts = defineCollection({
   directory: "content",
   include: "**/*.mdx",
   schema: z.object({
+    locale: z.enum(["vi", "en"]),
+    slug: z.string(),
     title: z.string(),
     publishedAt: z.string(),
     updatedAt: z.string().optional(),

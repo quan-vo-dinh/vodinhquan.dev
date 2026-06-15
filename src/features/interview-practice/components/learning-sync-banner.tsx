@@ -5,8 +5,10 @@ import { CloudOff, CloudUpload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 import { useInterviewLearningState } from "./interview-learning-state-provider";
+import { useI18n } from "@/i18n/locale-provider";
 
 export function LearningSyncBanner() {
+  const { dictionary } = useI18n();
   const {
     hasLocalProgressToSync,
     isAuthenticated,
@@ -26,11 +28,10 @@ export function LearningSyncBanner() {
         <CloudOff className="mt-0.5 size-4 shrink-0" aria-hidden />
         <div>
           <p className="font-medium">
-            Account progress is temporarily unavailable
+            {dictionary.interview.accountUnavailableTitle}
           </p>
           <p className="text-xs opacity-80">
-            Changes are being saved in this browser and can be synced when the
-            remote store is available again.
+            {dictionary.interview.accountUnavailableDescription}
           </p>
         </div>
       </div>
@@ -46,10 +47,11 @@ export function LearningSyncBanner() {
       <div className="flex gap-3 rounded-xl border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
         <CloudOff className="mt-0.5 size-4 shrink-0" aria-hidden />
         <div>
-          <p className="font-medium">Progress could not be saved</p>
+          <p className="font-medium">
+            {dictionary.interview.saveFailedTitle}
+          </p>
           <p className="text-xs opacity-80">
-            The last confirmed account state was restored. Please try the
-            action again.
+            {dictionary.interview.saveFailedDescription}
           </p>
         </div>
       </div>
@@ -59,9 +61,11 @@ export function LearningSyncBanner() {
   return (
     <div className="flex flex-col gap-3 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-sm text-amber-900 dark:text-amber-100 sm:flex-row sm:items-center sm:justify-between">
       <div>
-        <p className="font-medium">Browser progress found</p>
+        <p className="font-medium">
+          {dictionary.interview.browserProgressTitle}
+        </p>
         <p className="text-xs opacity-80">
-          Sync the progress saved before sign-in into this GitHub account.
+          {dictionary.interview.browserProgressDescription}
         </p>
       </div>
       <Button
@@ -72,7 +76,9 @@ export function LearningSyncBanner() {
         disabled={isPending}
       >
         <CloudUpload className="mr-2 size-4" />
-        {isPending ? "Syncing" : "Sync to account"}
+        {isPending
+          ? dictionary.interview.syncing
+          : dictionary.interview.syncAccount}
       </Button>
     </div>
   );

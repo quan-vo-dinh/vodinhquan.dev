@@ -15,6 +15,8 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
+import { useI18n } from "@/i18n/locale-provider";
+import type { Dictionary } from "@/i18n/dictionaries";
 
 import { addMomentAssetAction } from "../actions/moment-actions";
 
@@ -40,7 +42,7 @@ function isSignatureResponse(value: unknown): value is SignatureResponse {
   );
 }
 
-async function getUploadSignature() {
+async function getUploadSignature(messages: Dictionary["moments"]) {
   const response = await fetch("/api/studio/cloudinary/sign", {
     body: JSON.stringify({}),
     headers: {
@@ -50,20 +52,23 @@ async function getUploadSignature() {
   });
 
   if (!response.ok) {
-    throw new Error("Could not create an upload signature.");
+    throw new Error(messages.signatureError);
   }
 
   const payload: unknown = await response.json();
 
   if (!isSignatureResponse(payload)) {
-    throw new Error("Upload signature response was malformed.");
+    throw new Error(messages.malformedSignature);
   }
 
   return payload;
 }
 
-async function uploadToCloudinary(file: File) {
-  const signature = await getUploadSignature();
+async function uploadToCloudinary(
+  file: File,
+  messages: Dictionary["moments"],
+) {
+  const signature = await getUploadSignature(messages);
   const formData = new FormData();
 
   formData.append("file", file);
@@ -106,7 +111,7 @@ async function uploadToCloudinary(file: File) {
     throw new Error(
       providerMessage
         ? `${file.name}: ${providerMessage}`
-        : `Cloudinary rejected ${file.name}.`
+        : `${messages.providerRejected} ${file.name}.`
     );
   }
 
@@ -114,6 +119,8 @@ async function uploadToCloudinary(file: File) {
 }
 
 export function MomentUploadPanel({ momentId }: { momentId: string }) {
+  const { dictionary } = useI18n();
+  const messages = dictionary.moments;
   const router = useRouter();
   const [isUploading, setIsUploading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -133,14 +140,14 @@ export function MomentUploadPanel({ momentId }: { momentId: string }) {
     setProgress(0);
     setStatus("uploading");
     setMessage(
-      `Uploading ${selectedFiles.length} image${
-        selectedFiles.length > 1 ? "s" : ""
-      }...`
+      `${messages.uploading} ${selectedFiles.length} ${
+        selectedFiles.length > 1 ? messages.images : messages.image
+      }...`,
     );
 
     try {
       for (const [index, file] of selectedFiles.entries()) {
-        const upload = await uploadToCloudinary(file);
+        const upload = await uploadToCloudinary(file, messages);
         const result = await addMomentAssetAction({ momentId, upload });
 
         if (!result.ok) {
@@ -149,17 +156,19 @@ export function MomentUploadPanel({ momentId }: { momentId: string }) {
 
         setProgress(((index + 1) / selectedFiles.length) * 100);
         setMessage(
-          `Uploaded ${index + 1} of ${selectedFiles.length} image${
-            selectedFiles.length > 1 ? "s" : ""
-          }.`
+          `${messages.uploaded} ${index + 1} ${
+            dictionary.blog.of
+          } ${selectedFiles.length} ${
+            selectedFiles.length > 1 ? messages.images : messages.image
+          }.`,
         );
       }
 
-      setMessage("Upload complete.");
+      setMessage(messages.uploadComplete);
       setStatus("success");
       router.refresh();
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Upload failed.");
+      setMessage(error instanceof Error ? error.message : messages.uploadFailed);
       setStatus("error");
     } finally {
       setIsUploading(false);
@@ -169,10 +178,9 @@ export function MomentUploadPanel({ momentId }: { momentId: string }) {
   return (
     <Card className="border bg-card/80">
       <CardHeader className="p-5 pb-0 sm:p-6 sm:pb-0">
-        <CardTitle>Upload photos</CardTitle>
+        <CardTitle>{messages.uploadTitle}</CardTitle>
         <CardDescription>
-          Images go to Cloudinary. Only signed owner sessions can request upload
-          parameters.
+          {messages.uploadDescription}
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4 p-5 sm:p-6">
@@ -184,14 +192,14 @@ export function MomentUploadPanel({ momentId }: { momentId: string }) {
             <UploadCloudIcon className="size-5" />
           </span>
           <span className="text-sm font-medium">
-            Choose one or more photos
+            {messages.choosePhotos}
           </span>
           <span className="text-xs text-muted-foreground">
-            Images upload directly to the owner-only Cloudinary folder.
+            {messages.uploadHint}
           </span>
           <Input
             id="moment-photo-upload"
-            aria-label="Upload moment photos"
+            aria-label={messages.uploadAria}
             accept="image/*"
             className="sr-only"
             disabled={isUploading}
@@ -205,7 +213,7 @@ export function MomentUploadPanel({ momentId }: { momentId: string }) {
         </label>
 
         {status === "uploading" ? (
-          <Progress value={progress} aria-label="Photo upload progress" />
+          <Progress value={progress} aria-label={messages.uploadProgress} />
         ) : null}
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -217,11 +225,11 @@ export function MomentUploadPanel({ momentId }: { momentId: string }) {
                 : "text-xs text-muted-foreground"
             }
           >
-            {message ?? "No files selected."}
+            {message ?? messages.noFiles}
           </p>
           <Badge variant="outline" className="w-fit">
             <ShieldCheckIcon className="size-3.5" />
-            Signed owner upload
+            {messages.signedUpload}
           </Badge>
         </div>
       </CardContent>

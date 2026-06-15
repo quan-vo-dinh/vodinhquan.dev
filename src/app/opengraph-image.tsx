@@ -1,6 +1,7 @@
  
 import { ImageResponse } from "next/og";
-import { DATA } from "@/data/resume";
+import { DATA, getResumeData } from "@/data/resume";
+import { getServerI18n } from "@/i18n/server";
 
 export const runtime = "edge";
 
@@ -108,8 +109,10 @@ const styles = {
 export default async function Image() {
     try {
         const fontData = await getFontData();
-        const imageUrl = DATA.avatarUrl
-            ? new URL(DATA.avatarUrl, DATA.url).toString()
+        const { locale } = await getServerI18n();
+        const data = getResumeData(locale);
+        const imageUrl = data.avatarUrl
+            ? new URL(data.avatarUrl, data.url).toString()
             : undefined;
 
         return new ImageResponse(
@@ -119,13 +122,13 @@ export default async function Image() {
                         <div style={styles.wrapper}>
                             {imageUrl && (
                                 <div style={styles.imageSection}>
-                                    <img src={imageUrl} alt={DATA.name} style={styles.image} />
+                                    <img src={imageUrl} alt={data.name} style={styles.image} />
                                 </div>
                             )}
                             <div style={styles.mainContainer}>
-                                <div style={styles.title}>{DATA.name}</div>
-                                {DATA.description && (
-                                    <div style={styles.description}>{DATA.description}</div>
+                                <div style={styles.title}>{data.name}</div>
+                                {data.description && (
+                                    <div style={styles.description}>{data.description}</div>
                                 )}
                             </div>
                         </div>
@@ -168,5 +171,4 @@ export default async function Image() {
         );
     }
 }
-
 

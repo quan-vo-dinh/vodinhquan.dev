@@ -4,20 +4,27 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { paginate, normalizePage } from "@/lib/pagination";
 import { ChevronRight } from "lucide-react";
+import { getServerI18n } from "@/i18n/server";
+import { selectLocalizedPosts } from "@/lib/localized-posts";
+import { formatDate } from "@/lib/utils";
 
-export const metadata: Metadata = {
-  title: "Blog",
-  description: "Thoughts on software development, life, and more.",
-  openGraph: {
-    title: "Blog",
-    description: "Thoughts on software development, life, and more.",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Blog",
-    description: "Thoughts on software development, life, and more.",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { dictionary } = await getServerI18n();
+
+  return {
+    title: dictionary.blog.title,
+    description: dictionary.blog.description,
+    openGraph: {
+      title: dictionary.blog.title,
+      description: dictionary.blog.description,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: dictionary.blog.title,
+      description: dictionary.blog.description,
+    },
+  };
+}
 
 const PAGE_SIZE = 5;
 const BLUR_FADE_DELAY = 0.04;
@@ -27,9 +34,10 @@ export default async function BlogPage({
 }: {
   searchParams: Promise<{ page?: string }>;
 }) {
+  const { dictionary, locale } = await getServerI18n();
   const { page: pageParam } = await searchParams;
 
-  const posts = allPosts;
+  const posts = selectLocalizedPosts(allPosts, locale);
   const sortedPosts = [...posts].sort(
     (a, b) =>
       Date.parse(b.publishedAt) - Date.parse(a.publishedAt) ||
@@ -46,9 +54,14 @@ export default async function BlogPage({
   return (
     <section id="blog">
       <BlurFade delay={BLUR_FADE_DELAY}>
-        <h1 className="text-2xl font-semibold tracking-tight mb-2">Blog <span className="ml-1 bg-card border border-border rounded-md px-2 py-1 text-muted-foreground text-sm">{sortedPosts.length} posts</span></h1>
+        <h1 className="text-2xl font-semibold tracking-tight mb-2">
+          {dictionary.blog.title}{" "}
+          <span className="ml-1 bg-card border border-border rounded-md px-2 py-1 text-muted-foreground text-sm">
+            {sortedPosts.length} {dictionary.blog.posts}
+          </span>
+        </h1>
         <p className="text-sm text-muted-foreground mb-8">
-          My thoughts on software development, life, and more.
+          {dictionary.blog.description}
         </p>
       </BlurFade>
 
@@ -57,7 +70,7 @@ export default async function BlogPage({
           <BlurFade delay={BLUR_FADE_DELAY * 2}>
             <div className="flex flex-col gap-5">
               {paginatedPosts.map((post, id) => {
-                const slug = post._meta.path.replace(/\.mdx$/, "");
+                const slug = post.slug;
                 const indexNumber = (pagination.page - 1) * PAGE_SIZE + id + 1;
                 return (
                   <BlurFade delay={BLUR_FADE_DELAY * 3 + id * 0.05} key={slug}>
@@ -79,7 +92,7 @@ export default async function BlogPage({
                           </span>
                         </p>
                         <p className="text-xs text-muted-foreground">
-                          {post.publishedAt}
+                          {formatDate(post.publishedAt, locale)}
                         </p>
                       </div>
                     </Link>
@@ -94,7 +107,8 @@ export default async function BlogPage({
             <BlurFade delay={BLUR_FADE_DELAY * 4}>
               <div className="flex gap-3 flex-row items-center justify-between mt-8">
                 <div className="text-sm text-muted-foreground">
-                  Page {pagination.page} of {pagination.totalPages}
+                  {dictionary.blog.page} {pagination.page} {dictionary.blog.of}{" "}
+                  {pagination.totalPages}
                 </div>
                 <div className="flex gap-2 sm:justify-end">
                   {pagination.hasPreviousPage ? (
@@ -102,11 +116,11 @@ export default async function BlogPage({
                       href={`/blog?page=${pagination.page - 1}`}
                       className="h-8 w-fit px-2 flex items-center justify-center text-sm border border-border rounded-lg hover:bg-accent/50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                     >
-                      Previous
+                      {dictionary.blog.previous}
                     </Link>
                   ) : (
                     <span className="h-8 w-fit px-2 flex items-center justify-center text-sm border border-border rounded-lg opacity-50 cursor-not-allowed">
-                      Previous
+                      {dictionary.blog.previous}
                     </span>
                   )}
                   {pagination.hasNextPage ? (
@@ -114,11 +128,11 @@ export default async function BlogPage({
                       href={`/blog?page=${pagination.page + 1}`}
                       className="h-8 w-fit px-2 flex items-center justify-center text-sm border border-border rounded-lg hover:bg-accent/50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                     >
-                      Next
+                      {dictionary.blog.next}
                     </Link>
                   ) : (
                     <span className="h-8 w-fit px-2 flex items-center justify-center text-sm border border-border rounded-lg opacity-50 cursor-not-allowed">
-                      Next
+                      {dictionary.blog.next}
                     </span>
                   )}
                 </div>
@@ -130,7 +144,7 @@ export default async function BlogPage({
         <BlurFade delay={BLUR_FADE_DELAY * 2}>
           <div className="flex flex-col items-center justify-center py-12 px-4 border border-border rounded-xl">
             <p className="text-muted-foreground text-center">
-              No blog posts yet. Check back soon!
+              {dictionary.blog.empty}
             </p>
           </div>
         </BlurFade>

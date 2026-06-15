@@ -1,6 +1,7 @@
  
 import { ImageResponse } from "next/og";
 import { DATA } from "@/data/resume";
+import { getServerI18n } from "@/i18n/server";
 
 export const runtime = "edge";
 
@@ -108,8 +109,9 @@ const styles = {
 export default async function Image() {
     try {
         const fontData = await getFontData();
-        const title = "Blog";
-        const description = "Thoughts on software development, life, and more.";
+        const { dictionary } = await getServerI18n();
+        const title = dictionary.blog.title;
+        const description = dictionary.blog.description;
         const imageUrl = DATA.avatarUrl
             ? new URL(DATA.avatarUrl, DATA.url).toString()
             : undefined;
@@ -121,7 +123,7 @@ export default async function Image() {
                         <div style={styles.wrapper}>
                             {imageUrl && (
                                 <div style={styles.imageSection}>
-                                    <img src={imageUrl} alt="Blog" style={styles.image} />
+                                        <img src={imageUrl} alt={title} style={styles.image} />
                                 </div>
                             )}
                             <div style={styles.mainContainer}>
@@ -170,5 +172,4 @@ export default async function Image() {
         );
     }
 }
-
 

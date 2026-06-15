@@ -7,6 +7,7 @@ import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import Markdown from "react-markdown";
+import { useI18n } from "@/i18n/locale-provider";
 
 function ProjectImage({ src, alt }: { src: string; alt: string }) {
   const [imageError, setImageError] = useState(false);
@@ -54,6 +55,8 @@ export function ProjectCard({
   links,
   className,
 }: Props) {
+  const { dictionary } = useI18n();
+
   return (
     <div
       className={cn(
@@ -116,7 +119,7 @@ export function ProjectCard({
             target="_blank"
             rel="noopener noreferrer"
             className="text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
-            aria-label={`Open ${title}`}
+            aria-label={`${dictionary.home.openProject}: ${title}`}
           >
             <ArrowUpRight className="h-4 w-4" aria-hidden />
           </Link>

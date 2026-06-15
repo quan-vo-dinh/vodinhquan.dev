@@ -11,6 +11,7 @@ import { NextjsIconDark } from "@/components/ui/svgs/nextjsIconDark";
 import { Typescript } from "@/components/ui/svgs/typescript";
 import { Postgresql } from "@/components/ui/svgs/postgresql";
 import { Docker } from "@/components/ui/svgs/docker";
+import type { Locale } from "@/i18n/locale";
 import React from "react";
 
 const createSimpleIcon = (slug: string) => {
@@ -34,9 +35,9 @@ export const DATA = {
   location: "Ho Chi Minh City, VN",
   locationLink: "https://www.google.com/maps/place/Ho+Chi+Minh+City,+Vietnam",
   description:
-    "A Former Frontend dev, currently a handyman dev, focusing on Backend.",
+    "Former Frontend developer transitioning to Full-stack & Backend.",
   summary:
-    "Final-year Information Systems student passionate about modern web development in the JavaScript and TypeScript ecosystem. Experienced in building full-stack applications with Next.js and NestJS.",
+    "Final-year Information Systems student passionate about modern web development in the JavaScript and TypeScript ecosystem. Experienced in building full-stack applications with Next.js and NestJS. I place a high emphasis on code quality, clean architecture, and writing clean, scalable, and maintainable code.",
   avatarUrl: "/me.jpg",
   skills: [
     { name: "TypeScript", icon: Typescript },
@@ -75,7 +76,19 @@ export const DATA = {
         name: "LinkedIn",
         url: "https://www.linkedin.com/in/vodinhquan27/",
         icon: Icons.linkedin,
-        navbar: true,
+        navbar: false,
+      },
+      Facebook: {
+        name: "Facebook",
+        url: "https://www.facebook.com/vdquan.27",
+        icon: Icons.facebook,
+        navbar: false,
+      },
+      Instagram: {
+        name: "Instagram",
+        url: "https://www.instagram.com/vdq.27/",
+        icon: Icons.instagram,
+        navbar: false,
       },
       X: {
         name: "X",
@@ -241,3 +254,85 @@ export const DATA = {
     }[];
   }[],
 } as const;
+
+const VI_RESUME_COPY = {
+  description:
+    "Cựu dev Frontend, hiện tại đang là một thợ đụng - đụng đâu làm đó! 🛠️",
+  education: [
+    {
+      degree: "Hệ thống Thông tin",
+      start: "09/2022",
+      end: "09/2026",
+    },
+  ],
+  location: "TP. Hồ Chí Minh, Việt Nam",
+  projects: [
+    {
+      dates: "01/2026 - 06/2026",
+      description:
+        "Nền tảng POS SaaS kiêm gọi món bằng mã QR 'xịn xò' dành cho các mô hình kinh doanh F&B.",
+    },
+    {
+      dates: "2025",
+      description:
+        "Hệ thống Backend cho sàn thương mại điện tử đa nhà bán hàng siêu mượt.",
+    },
+    {
+      dates: "2024",
+      description:
+        "👟 Website bán giày hiện đại làm bằng React và Laravel, thiết kế sang xịn mịn giúp trưng bày và mua sắm siêu mượt.",
+    },
+    {
+      dates: "2023",
+      description:
+        "Ứng dụng máy tính viết bằng Java Swing giúp gara quản lý vận hành, thông tin khách hàng và kho phụ tùng gọn lẹ.",
+    },
+  ],
+  summary:
+    "Sinh ziên năm cuối ngành Hệ thống Thông tin có niềm đam mê mãnh liệt với code dạo và xây dựng các sản phẩm web xịn xò. Đang 'tu luyện' trong hệ sinh thái JavaScript/TypeScript và đã có kinh nghiệm thực chiến làm app full-stack từ Next.js đến NestJS. Dị ứng với code dơ, code bẩn, luôn hướng tới viết code sạch (clean code) cùng những kiến trúc hệ thống đẹp đẽ, dễ mở rộng.",
+  work: [
+    {
+      badges: ["Freelance"],
+      location: "Từ xa",
+      title: "Lập trình viên Full-stack tự do",
+      start: "11/2025",
+      end: "01/2026",
+      description:
+        "• Tham gia code module tính lương riêng cho doanh nghiệp trong hệ thống ERP nội bộ, xử lý đống logic lương bổng, phụ cấp, khấu trừ và kỳ lương.\n• Xây dựng và tích hợp các tính năng full-stack bằng React.js, Express.js, TypeScript, Prisma và PostgreSQL.\n• Phối hợp cùng tổ đội freelance 4 người để thiết lập quy tắc tính lương, chỉnh sửa giao diện/API và test luồng thanh toán.",
+    },
+    {
+      badges: ["Thực tập"],
+      location: "TP. Hồ Chí Minh, Việt Nam",
+      title: "Thực tập sinh Frontend",
+      start: "06/2025",
+      end: "09/2025",
+      description:
+        "• Phát triển Commitment Module cho OGeek 2.0 trên cả trang User và Admin, bắt tay cùng đội Backend và Design System.\n• Xây dựng các app responsive với React.js, TypeScript, TanStack Query, Ant Design và Tailwind CSS.\n• Viết tài liệu API và hướng dẫn phát triển để tối ưu hóa việc ghép nối Frontend/Backend.\n• Làm việc chuẩn Agile Scrum, tham gia họp hành daily stand-up và quản lý code xịn xò qua GitLab/Git Flow.",
+    },
+  ],
+} as const;
+
+export function getResumeData(locale: Locale) {
+  if (locale === "en") {
+    return DATA;
+  }
+
+  return {
+    ...DATA,
+    description: VI_RESUME_COPY.description,
+    education: DATA.education.map((education, index) => ({
+      ...education,
+      ...VI_RESUME_COPY.education[index],
+    })),
+    location: VI_RESUME_COPY.location,
+    projects: DATA.projects.map((project, index) => ({
+      ...project,
+      ...VI_RESUME_COPY.projects[index],
+    })),
+    summary: VI_RESUME_COPY.summary,
+    work: DATA.work.map((work, index) => ({
+      ...work,
+      ...VI_RESUME_COPY.work[index],
+    })),
+  };
+}
