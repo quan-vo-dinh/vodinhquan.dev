@@ -39,10 +39,20 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const response = NextResponse.json(
-    createMomentUploadSignature(parsed.data, getCloudinaryEnv())
-  );
-  response.headers.set("Cache-Control", "no-store, max-age=0");
-
-  return response;
+  try {
+    const response = NextResponse.json(
+      createMomentUploadSignature(parsed.data, getCloudinaryEnv())
+    );
+    response.headers.set("Cache-Control", "no-store, max-age=0");
+    return response;
+  } catch (error) {
+    console.error("Cloudinary signature generation failed:", error);
+    return NextResponse.json(
+      {
+        error:
+          "Cloudinary is not configured on the server. Please check that CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET, and CLOUDINARY_CLOUD_NAME (or CLOUDINARY_URL) are set in your Vercel project environment variables.",
+      },
+      { status: 500 }
+    );
+  }
 }
