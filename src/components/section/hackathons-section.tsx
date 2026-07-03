@@ -1,9 +1,10 @@
-/* eslint-disable @next/next/no-img-element */
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { getResumeData } from "@/data/resume";
 import { getServerI18n } from "@/i18n/server";
 import { Timeline, TimelineItem, TimelineConnectItem } from "@/components/timeline";
+import Image from "next/image";
+import { normalizeImageSrc } from "@/lib/utils";
 
 export default async function HackathonsSection() {
   const { dictionary, locale } = await getServerI18n();
@@ -36,9 +37,11 @@ export default async function HackathonsSection() {
             <TimelineItem key={hackathon.title + hackathon.dates} className="w-full flex items-start justify-between gap-10">
               <TimelineConnectItem className="flex items-start justify-center">
                 {hackathon.image ? (
-                  <img
-                    src={hackathon.image}
+                  <Image
+                    src={normalizeImageSrc(hackathon.image)}
                     alt={hackathon.title}
+                    width={40}
+                    height={40}
                     className="size-10 bg-card z-10 shrink-0 overflow-hidden p-1 border rounded-full shadow ring-2 ring-border object-contain flex-none"
                   />
                 ) : (

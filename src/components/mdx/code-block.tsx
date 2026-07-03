@@ -3,7 +3,6 @@
 import { useState, useRef, useEffect, type ComponentProps } from "react";
 import { Copy, Check } from "lucide-react";
 import { Button } from "../ui/button";
-import { codeToHtml } from "shiki/bundle/web";
 import { useI18n } from "@/i18n/locale-provider";
 import { cn } from "@/lib/utils";
 import { normalizeShikiLanguage } from "@/lib/normalize-shiki-language";
@@ -40,27 +39,29 @@ export function CodeBlock({ children, ...props }: CodeBlockProps) {
     const nextClassName = codeEl.className || "";
     setSourceCode(codeText);
 
-    void codeToHtml(codeText, {
-      lang,
-      themes: {
-        light: "github-light",
-        dark: "github-dark",
-      },
-      defaultColor: false,
-    })
-      .then((html) => {
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(html, "text/html");
-        setRenderState({
-          html: doc.querySelector("code")?.innerHTML ?? "",
-          className: nextClassName,
-          title: nextTitle,
-        });
-      })
-      .catch((error) => {
-        console.error("Failed to highlight code:", error);
-        setRenderState({ html: "", className: nextClassName, title: nextTitle });
+    const highlight = async () => {
+      const { codeToHtml } = await import("shiki/bundle/web");
+      const html = await codeToHtml(codeText, {
+        lang,
+        themes: {
+          light: "github-light",
+          dark: "github-dark",
+        },
+        defaultColor: false,
       });
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, "text/html");
+      setRenderState({
+        html: doc.querySelector("code")?.innerHTML ?? "",
+        className: nextClassName,
+        title: nextTitle,
+      });
+    };
+
+    highlight().catch((error) => {
+      console.error("Failed to highlight code:", error);
+      setRenderState({ html: "", className: nextClassName, title: nextTitle });
+    });
   }, [children]);
 
   const handleCopy = async () => {

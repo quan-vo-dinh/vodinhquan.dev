@@ -1,11 +1,12 @@
-import confetti from "canvas-confetti";
 
 /**
  * Triggers a beautiful confetti animation themed around the specific milestone reached.
  * @param milestone The progress milestone reached (10, 20, 30, ..., 100)
  */
-export function triggerConfetti(milestone: number) {
+export async function triggerConfetti(milestone: number) {
   if (typeof window === "undefined") return;
+
+  const confetti = (await import("canvas-confetti")).default;
 
   let colors: string[] = [];
   let duration = 1.5 * 1000;

@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { Badge } from "@/components/ui/badge";
@@ -8,6 +7,8 @@ import Link from "next/link";
 import { useState } from "react";
 import Markdown from "react-markdown";
 import { useI18n } from "@/i18n/locale-provider";
+import Image from "next/image";
+import { normalizeImageSrc } from "@/lib/utils";
 
 function ProjectImage({ src, alt }: { src: string; alt: string }) {
   const [imageError, setImageError] = useState(false);
@@ -17,9 +18,11 @@ function ProjectImage({ src, alt }: { src: string; alt: string }) {
   }
 
   return (
-    <img
-      src={src}
+    <Image
+      src={normalizeImageSrc(src)}
       alt={alt}
+      width={600}
+      height={192}
       className="w-full h-48 object-cover"
       onError={() => setImageError(true)}
     />

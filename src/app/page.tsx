@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 import BlurFade from "@/components/magicui/blur-fade";
 import BlurFadeText from "@/components/magicui/blur-fade-text";
 import { DiaTextReveal } from "@/components/ui/dia-text-reveal";
@@ -12,6 +11,8 @@ import HackathonsSection from "@/components/section/hackathons-section";
 import ProjectsSection from "@/components/section/projects-section";
 import WorkSection from "@/components/section/work-section";
 import { ArrowUpRight } from "lucide-react";
+import Image from "next/image";
+import { normalizeImageSrc } from "@/lib/utils";
 
 const BLUR_FADE_DELAY = 0.04;
 
@@ -99,9 +100,11 @@ export default async function Page() {
                 >
                   <div className="flex items-center gap-x-3 flex-1 min-w-0">
                     {education.logoUrl ? (
-                      <img
-                        src={education.logoUrl}
+                      <Image
+                        src={normalizeImageSrc(education.logoUrl)}
                         alt={education.school}
+                        width={40}
+                        height={40}
                         className="size-8 md:size-10 p-1 border rounded-full shadow ring-2 ring-border overflow-hidden object-contain flex-none"
                       />
                     ) : (
@@ -158,9 +161,11 @@ export default async function Page() {
                       </div>
                     </div>
                     {cert.logoUrl && (
-                      <img
-                        src={cert.logoUrl}
+                      <Image
+                        src={normalizeImageSrc(cert.logoUrl)}
                         alt={cert.issuer}
+                        width={40}
+                        height={40}
                         className="size-8 md:size-10 p-1.5 border rounded-xl shadow-sm bg-background flex-none object-contain"
                       />
                     )}

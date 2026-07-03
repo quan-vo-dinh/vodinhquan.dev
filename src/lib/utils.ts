@@ -16,3 +16,17 @@ export function formatDate(date: string | Date, locale: Locale = "vi") {
     timeZone: "UTC",
   });
 }
+
+export function normalizeImageSrc(src: string): string {
+  if (!src) return "";
+  if (
+    src.startsWith("/") ||
+    src.startsWith("http://") ||
+    src.startsWith("https://") ||
+    src.startsWith("data:")
+  ) {
+    return src;
+  }
+  return `/${src}`;
+}
+

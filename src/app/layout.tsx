@@ -8,8 +8,8 @@ import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { FlickeringGrid } from "@/components/magicui/flickering-grid";
 import { ModeToggle } from "@/components/mode-toggle";
+import { BackgroundGrid } from "@/components/background-grid";
 
 const geist = Geist({
   subsets: ["latin"],
@@ -82,18 +82,7 @@ export default async function RootLayout({
         <LocaleProvider dictionary={dictionary} locale={locale}>
           <ThemeProvider defaultTheme="light">
             <TooltipProvider delayDuration={0}>
-              <div className="absolute inset-0 top-0 left-0 right-0 h-[200px] overflow-hidden z-0">
-                <FlickeringGrid
-                  className="h-full w-full"
-                  squareSize={2}
-                  gridGap={2}
-                  style={{
-                    maskImage: "linear-gradient(to bottom, black, transparent)",
-                    WebkitMaskImage:
-                      "linear-gradient(to bottom, black, transparent)",
-                  }}
-                />
-              </div>
+              <BackgroundGrid />
               <div className="absolute right-4 top-4 sm:right-6 sm:top-6 z-50">
                 <ModeToggle className="size-10 rounded-3xl border border-border bg-background p-2.5 text-muted-foreground backdrop-blur-3xl transition-colors hover:bg-muted hover:text-foreground shadow-sm" />
               </div>
