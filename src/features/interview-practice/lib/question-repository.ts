@@ -8,6 +8,7 @@ import type {
   InterviewQuestionRaw,
   InterviewQuestionView,
   InterviewSubcategorySummary,
+  InterviewTargetLevel,
 } from "../types";
 import { interviewQuestionRawListSchema } from "./question-schema";
 
@@ -18,6 +19,16 @@ const questionIds = new Set(questions.map((question) => question.id));
 const categoryNames = new Set(
   questions.map((question) => question.category)
 );
+
+export function filterByTargetLevel(
+  question: InterviewQuestionRaw,
+  target: InterviewTargetLevel = "senior"
+): boolean {
+  if (target === "junior") {
+    return question.level === "beginner" || question.level === "intermediate";
+  }
+  return true; // senior
+}
 
 function sortByName<T extends { name: string }>(items: T[]) {
   return [...items].sort((a, b) => a.name.localeCompare(b.name));
@@ -37,22 +48,26 @@ function toQuestionView(
   };
 }
 
-export function getInterviewQuestionTotal() {
-  return questions.length;
+export function getInterviewQuestionTotal(target: InterviewTargetLevel = "senior") {
+  return questions.filter((q) => filterByTargetLevel(q, target)).length;
 }
 
-export function getInterviewQuestionIds() {
-  return questionIds;
+export function getInterviewQuestionIds(target: InterviewTargetLevel = "senior") {
+  const filtered = questions.filter((q) => filterByTargetLevel(q, target));
+  return new Set(filtered.map((question) => question.id));
 }
 
 export function getInterviewCategoryNames() {
   return categoryNames;
 }
 
-export function getInterviewCategories(): InterviewCategorySummary[] {
+export function getInterviewCategories(target: InterviewTargetLevel = "senior"): InterviewCategorySummary[] {
   const counts = new Map<string, number>();
 
   for (const question of questions) {
+    if (!filterByTargetLevel(question, target)) {
+      continue;
+    }
     counts.set(question.category, (counts.get(question.category) ?? 0) + 1);
   }
 
@@ -65,12 +80,16 @@ export function getInterviewCategories(): InterviewCategorySummary[] {
 }
 
 export function getInterviewSubcategories(
-  category: string
+  category: string,
+  target: InterviewTargetLevel = "senior"
 ): InterviewSubcategorySummary[] {
   const counts = new Map<string, number>();
 
   for (const question of questions) {
     if (question.category !== category) {
+      continue;
+    }
+    if (!filterByTargetLevel(question, target)) {
       continue;
     }
 
@@ -92,6 +111,7 @@ export function getFilteredInterviewQuestions(state: InterviewFilterState) {
   const normalizedQuery = state.query.toLowerCase();
 
   return questions
+    .filter((question) => filterByTargetLevel(question, state.target))
     .filter((question) => question.category === state.category)
     .filter((question) =>
       state.subcategory === "all"
@@ -117,10 +137,13 @@ export function getFilteredInterviewQuestions(state: InterviewFilterState) {
     .map((question) => toQuestionView(question, state.locale));
 }
 
-export function getInterviewCategoryQuestionIds(): Record<string, number[]> {
+export function getInterviewCategoryQuestionIds(target: InterviewTargetLevel = "senior"): Record<string, number[]> {
   const mapping: Record<string, number[]> = {};
 
   for (const question of questions) {
+    if (!filterByTargetLevel(question, target)) {
+      continue;
+    }
     if (!mapping[question.category]) {
       mapping[question.category] = [];
     }

@@ -241,6 +241,9 @@ const vi = {
   interview: {
     eyebrow: "Không gian luyện phỏng vấn cá nhân",
     title: "Luyện phỏng vấn",
+    targetLevel: "Level mục tiêu",
+    junior: "Fresher / Junior",
+    senior: "Senior",
     description:
       "Ngân hàng câu hỏi tập trung để bạn ôn lại các chủ đề kỹ thuật theo dữ liệu riêng.",
     questions: "câu hỏi",
@@ -575,6 +578,9 @@ const en = {
   interview: {
     eyebrow: "Personal Interview Practice",
     title: "Interview Practice",
+    targetLevel: "Target Level",
+    junior: "Fresher / Junior",
+    senior: "Senior",
     description:
       "A focused question bank for reviewing software engineering topics from your own data.",
     questions: "questions",

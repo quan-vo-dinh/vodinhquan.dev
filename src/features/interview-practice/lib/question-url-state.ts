@@ -2,11 +2,13 @@ import {
   INTERVIEW_LEVELS,
   INTERVIEW_LOCALES,
   INTERVIEW_MODES,
+  INTERVIEW_TARGET_LEVELS,
   type InterviewFilterState,
   type InterviewLevelFilter,
   type InterviewLocale,
   type InterviewMode,
   type InterviewSubcategoryFilter,
+  type InterviewTargetLevel,
 } from "../types";
 
 export const DEFAULT_INTERVIEW_CATEGORY = "Next.js";
@@ -27,6 +29,15 @@ function normalizeLevel(value: string | undefined): InterviewLevelFilter {
   return INTERVIEW_LEVELS.includes(value as (typeof INTERVIEW_LEVELS)[number])
     ? (value as InterviewLevelFilter)
     : "all";
+}
+
+function normalizeTarget(value: string | undefined): InterviewTargetLevel {
+  if (!value) {
+    return "senior";
+  }
+  return INTERVIEW_TARGET_LEVELS.includes(value as InterviewTargetLevel)
+    ? (value as InterviewTargetLevel)
+    : "senior";
 }
 
 function normalizeLocale(value: string | undefined): InterviewLocale {
@@ -58,6 +69,7 @@ export function parseInterviewSearchParams(
     query: firstParam(searchParams.q)?.trim() || "",
     locale: normalizeLocale(firstParam(searchParams.lang)),
     mode: normalizeMode(firstParam(searchParams.mode)),
+    target: normalizeTarget(firstParam(searchParams.target)),
   };
 }
 
@@ -88,6 +100,10 @@ export function createInterviewHref(
 
   if (state.mode !== DEFAULT_INTERVIEW_MODE) {
     params.set("mode", state.mode);
+  }
+
+  if (state.target !== "senior") {
+    params.set("target", state.target);
   }
 
   return `/interview?${params.toString()}`;

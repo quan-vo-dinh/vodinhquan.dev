@@ -1,8 +1,10 @@
 export const INTERVIEW_LEVELS = ["beginner", "intermediate", "advanced"] as const;
+export const INTERVIEW_TARGET_LEVELS = ["junior", "senior"] as const;
 export const INTERVIEW_LOCALES = ["vi", "en"] as const;
 export const INTERVIEW_MODES = ["list", "flashcards"] as const;
 
 export type InterviewLevel = (typeof INTERVIEW_LEVELS)[number];
+export type InterviewTargetLevel = (typeof INTERVIEW_TARGET_LEVELS)[number];
 export type InterviewLocale = (typeof INTERVIEW_LOCALES)[number];
 export type InterviewMode = (typeof INTERVIEW_MODES)[number];
 
@@ -46,4 +48,5 @@ export type InterviewFilterState = {
   query: string;
   locale: InterviewLocale;
   mode: InterviewMode;
+  target: InterviewTargetLevel;
 };

@@ -37,7 +37,14 @@ export function QuestionFilters({
     { label: dictionary.interview.all, value: "all" },
     { label: dictionary.interview.beginner, value: "beginner" },
     { label: dictionary.interview.intermediate, value: "intermediate" },
-    { label: dictionary.interview.advanced, value: "advanced" },
+    ...(filterState.target === "senior"
+      ? [
+          {
+            label: dictionary.interview.advanced,
+            value: "advanced" as InterviewLevelFilter,
+          },
+        ]
+      : []),
   ];
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -53,6 +60,7 @@ export function QuestionFilters({
 
   return (
     <div className="flex flex-col gap-4">
+
       {/* Subcategory chips */}
       {showTopics && (
         <div className="flex flex-wrap gap-2">
@@ -130,6 +138,9 @@ export function QuestionFilters({
             ) : null}
             {filterState.mode !== "list" ? (
               <input type="hidden" name="mode" value={filterState.mode} />
+            ) : null}
+            {filterState.target !== "senior" ? (
+              <input type="hidden" name="target" value={filterState.target} />
             ) : null}
             <Search
               className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"

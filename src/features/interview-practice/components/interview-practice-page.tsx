@@ -16,6 +16,7 @@ import { getRankTier, RankTier } from "../lib/rank-meta";
 import { RankUpModal } from "./rank-up-modal";
 import { InterviewProfileCard } from "./interview-profile-card";
 import { LearningSyncBanner } from "./learning-sync-banner";
+import { createInterviewHref } from "../lib/question-url-state";
 
 import type { CurrentViewer } from "@/features/auth/types";
 import type {
@@ -102,6 +103,10 @@ function InterviewPracticePageContent({
   viewer,
 }: InterviewPracticePageContentProps) {
   const { dictionary, locale } = useI18n();
+  const targetOptions = [
+    { label: dictionary.interview.junior, value: "junior" as const },
+    { label: dictionary.interview.senior, value: "senior" as const },
+  ];
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
@@ -200,7 +205,7 @@ function InterviewPracticePageContent({
   const mainContent = (
     <main className="relative left-0 translate-x-0 w-[calc(100%+3rem)] -mx-6 flex flex-col gap-4 px-2 sm:gap-6 sm:px-6 sm:w-screen sm:max-w-7xl sm:left-1/2 sm:-translate-x-1/2 sm:mx-0">
       <BlurFade delay={BLUR_FADE_DELAY}>
-        <section className="relative rounded-2xl border bg-card/80 p-4 shadow-[0_0_10px_3px] shadow-primary/5 backdrop-blur sm:rounded-3xl sm:p-5 overflow-hidden">
+        <section className="relative rounded-2xl border bg-card/80 p-4 shadow-[0_0_10px_3px] shadow-primary/5 backdrop-blur sm:rounded-3xl sm:p-5">
           {/* Background Grid Wrapper to clip the grid pattern without clipping the profile card */}
           <div className="absolute inset-0 overflow-hidden rounded-2xl sm:rounded-3xl pointer-events-none z-0">
             <AnimatedGridPattern
@@ -215,7 +220,7 @@ function InterviewPracticePageContent({
             />
           </div>
           <div className="relative z-10 grid gap-6 md:grid-cols-[1fr_auto] md:items-center">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="mb-2 text-xs font-medium uppercase tracking-[0.24em] text-muted-foreground">
                   {dictionary.interview.eyebrow}
@@ -227,11 +232,56 @@ function InterviewPracticePageContent({
                   {dictionary.interview.description}
                 </p>
               </div>
-              <div className="flex shrink-0 items-center gap-3 rounded-2xl border bg-background/80 px-4 py-3 text-sm text-muted-foreground shadow-sm backdrop-blur sm:flex-col sm:items-start sm:gap-0">
-                <span className="text-2xl font-semibold tracking-tight text-foreground sm:block">
-                  <NumberTicker value={totalQuestions} />
-                </span>
-                <span>{dictionary.interview.questions}</span>
+              <div className="flex flex-row flex-wrap items-center gap-3 shrink-0">
+                {/* Target Level Switcher */}
+                <div className="flex items-center gap-2 rounded-2xl border bg-background/80 px-3.5 py-2.5 shadow-sm backdrop-blur">
+                  <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mr-1">
+                    {dictionary.interview.targetLevel}:
+                  </span>
+                  <div className="flex items-center gap-1.5">
+                    {targetOptions.map((opt) => {
+                      const isActive = filterState.target === opt.value;
+                      const targetHref = createInterviewHref(
+                        { target: opt.value },
+                        filterState
+                      );
+
+                      return (
+                        <Button
+                          key={opt.value}
+                          asChild
+                          size="sm"
+                          variant={isActive ? "default" : "outline"}
+                          className={cn(
+                            "h-7 px-3 text-xs font-medium rounded-full cursor-pointer transition-colors",
+                            !isActive && "bg-background/50 hover:bg-background/80"
+                          )}
+                        >
+                          <Link
+                            href={targetHref}
+                            onClick={(e) => {
+                              if (handleNavigate) {
+                                e.preventDefault();
+                                handleNavigate(targetHref);
+                              }
+                            }}
+                            prefetch={false}
+                          >
+                            {opt.label}
+                          </Link>
+                        </Button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Total Questions Box */}
+                <div className="flex items-center gap-3 rounded-2xl border bg-background/80 px-4 py-3 text-sm text-muted-foreground shadow-sm backdrop-blur sm:flex-col sm:items-start sm:gap-0">
+                  <span className="text-2xl font-semibold tracking-tight text-foreground sm:block">
+                    <NumberTicker value={totalQuestions} />
+                  </span>
+                  <span>{dictionary.interview.questions}</span>
+                </div>
               </div>
             </div>
 

@@ -125,7 +125,7 @@ export const INTERVIEW_CATEGORY_META: Record<string, InterviewCategoryMeta> = {
   "Code Quality": { group: "Other", iconKey: "code-quality" },
   "Coding Interview": { group: "Career", iconKey: "coding-interview" },
   Debugging: { group: "Other", iconKey: "debugging" },
-  "Design Patterns": { group: "Computer Science", iconKey: "design-patterns" },
+  "OOP & Design Patterns": { group: "Computer Science", iconKey: "design-patterns" },
   Performance: { group: "Other", iconKey: "performance" },
   "Problem Solving": { group: "Computer Science", iconKey: "problem-solving" },
   SEO: { group: "Other", iconKey: "seo" },

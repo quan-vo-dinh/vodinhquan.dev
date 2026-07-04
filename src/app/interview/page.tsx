@@ -39,12 +39,12 @@ export default async function InterviewPage({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const rawState = parseInterviewSearchParams(await searchParams);
-  const categories = getInterviewCategories();
-  const initialSubcategories = getInterviewSubcategories(rawState.category);
+  const categories = getInterviewCategories(rawState.target);
+  const initialSubcategories = getInterviewSubcategories(rawState.category, rawState.target);
   const state = withResolvedTaxonomy(rawState, categories, initialSubcategories);
-  const subcategories = getInterviewSubcategories(state.category);
+  const subcategories = getInterviewSubcategories(state.category, state.target);
   const questions = getFilteredInterviewQuestions(state);
-  const categoryQuestionIds = getInterviewCategoryQuestionIds();
+  const categoryQuestionIds = getInterviewCategoryQuestionIds(state.target);
 
   const [viewer, learningState] = await Promise.all([
     getCurrentViewer(),
@@ -59,7 +59,7 @@ export default async function InterviewPage({
       initialLearningState={learningState}
       questions={questions}
       subcategories={subcategories}
-      totalQuestions={getInterviewQuestionTotal()}
+      totalQuestions={getInterviewQuestionTotal(state.target)}
       viewer={viewer}
     />
   );

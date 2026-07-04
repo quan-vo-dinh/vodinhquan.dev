@@ -35,8 +35,14 @@ export function withResolvedTaxonomy(
   categories: InterviewCategorySummary[],
   subcategories: InterviewSubcategorySummary[]
 ): InterviewFilterState {
+  let resolvedLevel = state.level;
+  if (state.target === "junior" && resolvedLevel === "advanced") {
+    resolvedLevel = "all";
+  }
+
   return {
     ...state,
+    level: resolvedLevel,
     category: resolveExistingCategory(categories, state.category),
     subcategory: resolveExistingSubcategory(
       subcategories,
