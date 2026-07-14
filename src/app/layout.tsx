@@ -80,7 +80,7 @@ export default async function RootLayout({
         )}
       >
         <LocaleProvider dictionary={dictionary} locale={locale}>
-          <ThemeProvider defaultTheme="light">
+          <ThemeProvider defaultTheme="dark">
             <TooltipProvider delayDuration={0}>
               <BackgroundGrid />
               <div className="absolute right-4 top-4 sm:right-6 sm:top-6 z-50">

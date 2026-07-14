@@ -35,7 +35,7 @@ export const DATA = {
   location: "Ho Chi Minh City, VN",
   locationLink: "https://www.google.com/maps/place/Ho+Chi+Minh+City,+Vietnam",
   description:
-    "Former Frontend developer transitioning to Full-stack & Backend.",
+    "Full-stack Developer building scalable applications with Next.js & NestJS.",
   summary:
     "Final-year Information Systems student passionate about modern web development in the JavaScript and TypeScript ecosystem. Experienced in building full-stack applications with Next.js and NestJS. I place a high emphasis on code quality, clean architecture, and writing clean, scalable, and maintainable code.",
   avatarUrl: "/me.jpg",

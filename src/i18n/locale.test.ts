@@ -8,10 +8,10 @@ import {
 } from "./locale";
 
 describe("site locale", () => {
-  it("uses Vietnamese when no supported locale is stored", () => {
-    expect(DEFAULT_LOCALE).toBe("vi");
-    expect(resolveLocale(undefined)).toBe("vi");
-    expect(resolveLocale("fr")).toBe("vi");
+  it("uses English when no supported locale is stored", () => {
+    expect(DEFAULT_LOCALE).toBe("en");
+    expect(resolveLocale(undefined)).toBe("en");
+    expect(resolveLocale("fr")).toBe("en");
   });
 
   it("accepts both supported website locales", () => {

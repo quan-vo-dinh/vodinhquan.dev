@@ -1,5 +1,5 @@
 export const SUPPORTED_LOCALES = ["vi", "en"] as const;
-export const DEFAULT_LOCALE = "vi";
+export const DEFAULT_LOCALE = "en";
 export const LOCALE_COOKIE_NAME = "portfolio-locale";
 
 export type Locale = (typeof SUPPORTED_LOCALES)[number];

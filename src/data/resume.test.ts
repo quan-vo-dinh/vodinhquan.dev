@@ -15,7 +15,7 @@ describe("localized resume data", () => {
   it("keeps the English resume available", () => {
     const resume = getResumeData("en");
 
-    expect(resume.description).toContain("developer");
+    expect(resume.description).toContain("Developer");
     expect(resume.education[0]?.degree).toBe("Information Systems");
   });
 });

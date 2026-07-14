@@ -12,7 +12,7 @@ import {
 } from "../types";
 
 export const DEFAULT_INTERVIEW_CATEGORY = "Next.js";
-export const DEFAULT_INTERVIEW_LOCALE: InterviewLocale = "vi";
+export const DEFAULT_INTERVIEW_LOCALE: InterviewLocale = "en";
 export const DEFAULT_INTERVIEW_MODE: InterviewMode = "list";
 
 type RawSearchParams = Record<string, string | string[] | undefined>;
