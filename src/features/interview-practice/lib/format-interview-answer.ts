@@ -14,14 +14,17 @@ function splitByFences(text: string): Array<{ fenced: boolean; content: string }
   while (index < text.length) {
     if (text.startsWith("```", index)) {
       const fenceEnd = text.indexOf("```", index + 3);
-      if (fenceEnd !== -1) {
-        parts.push({
-          fenced: true,
-          content: text.slice(index, fenceEnd + 3),
-        });
-        index = fenceEnd + 3;
-        continue;
+      if (fenceEnd === -1) {
+        parts.push({ fenced: true, content: text.slice(index) });
+        break;
       }
+
+      parts.push({
+        fenced: true,
+        content: text.slice(index, fenceEnd + 3),
+      });
+      index = fenceEnd + 3;
+      continue;
     }
 
     const nextFence = text.indexOf("```", index);
@@ -175,28 +178,12 @@ function formatTextSegment(text: string): string {
 }
 
 function joinFormattedParts(parts: Array<{ fenced: boolean; content: string }>): string {
-  const formattedParts = parts.map((part) =>
-    part.fenced ? part.content : formatTextSegment(part.content)
-  );
-
-  let formatted = "";
-
-  for (let i = 0; i < formattedParts.length; i++) {
-    if (i > 0) {
-      const previous = formattedParts[i - 1];
-      const current = formattedParts[i];
-      const needsBoundaryNewline =
-        previous.endsWith("```") && current.length > 0 && !current.startsWith("\n");
-
-      if (needsBoundaryNewline) {
-        formatted += "\n";
-      }
-    }
-
-    formatted += formattedParts[i];
-  }
-
-  return formatted;
+  return parts
+    .map((part) =>
+      part.fenced ? part.content.trim() : formatTextSegment(part.content)
+    )
+    .filter(Boolean)
+    .join("\n\n");
 }
 
 export function formatInterviewAnswer(raw: string): string {

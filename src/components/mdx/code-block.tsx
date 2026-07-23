@@ -86,57 +86,59 @@ export function CodeBlock({ children, ...props }: CodeBlockProps) {
   };
 
   return (
-    <div className="group relative rounded-xl overflow-hidden border border-border w-full max-w-full min-w-0">
+    <div className="not-prose group relative w-full max-w-full min-w-0 overflow-hidden rounded-xl border border-border bg-background">
+      {title && (
+        <div className="border-b border-border bg-muted/50 px-3 py-2.5 pr-14 text-xs font-medium text-foreground">
+          {title}
+        </div>
+      )}
+
+      <Button
+        type="button"
+        onClick={handleCopy}
+        variant="outline"
+        size="icon"
+        className={cn(
+          "absolute right-3 z-10 size-8 cursor-pointer rounded-md border border-border bg-background/90 text-primary opacity-100 shadow-none transition-opacity hover:bg-muted lg:opacity-0 lg:group-focus-within:opacity-100 lg:group-hover:opacity-100",
+          title ? "top-11" : "top-3"
+        )}
+        aria-label={dictionary.mdx.copyCode}
+      >
+        {copyStatus === "success" ? (
+          <Check className="size-4 text-emerald-500" />
+        ) : (
+          <Copy
+            className={cn(
+              "size-4",
+              copyStatus === "error" && "text-destructive"
+            )}
+          />
+        )}
+      </Button>
+      <span className="sr-only" role="status" aria-live="polite">
+        {copyStatus === "success"
+          ? dictionary.mdx.copied
+          : copyStatus === "error"
+            ? dictionary.mdx.copyFailed
+            : ""}
+      </span>
+
       <pre
         ref={preRef}
         {...props}
-        className={cn("p-0! m-0! overflow-x-auto w-full", props.className)}
+        className={cn(
+          "m-0! w-full max-w-full overflow-x-auto bg-transparent! p-0! text-left font-mono! text-[13px]! leading-relaxed! [&>code]:block [&>code]:min-w-max [&>code]:border-0! [&>code]:bg-transparent! [&>code]:p-4 [&>code]:pr-14 [&>code]:whitespace-pre",
+          props.className
+        )}
       >
-        {title && (
-          <div className="p-3 text-xs font-medium border-b border-border rounded-t-xl bg-muted/50 text-foreground">
-            {title}
-          </div>
-        )}
-
-        <Button
-          onClick={handleCopy}
-          variant="outline"
-          size="icon"
-          className={cn(
-            "absolute right-3 size-8 cursor-pointer rounded-md border border-border text-primary opacity-100 shadow-none transition-opacity lg:opacity-0 lg:group-hover:opacity-100",
-            title ? "top-13" : "top-3",
-            props.className
-          )}
-          aria-label={dictionary.mdx.copyCode}
-        >
-          {copyStatus === "success" ? (
-            <Check className="size-4 text-emerald-500" />
-          ) : (
-            <Copy
-              className={cn(
-                "size-4",
-                copyStatus === "error" && "text-destructive"
-              )}
-            />
-          )}
-        </Button>
-        <span className="sr-only" role="status" aria-live="polite">
-          {copyStatus === "success"
-            ? dictionary.mdx.copied
-            : copyStatus === "error"
-              ? dictionary.mdx.copyFailed
-              : ""}
-        </span>
         {html && (
-          <div className="p-3">
-            <code
-              className={`shiki ${className}`}
-              dangerouslySetInnerHTML={{ __html: html }}
-            />
-          </div>
+          <code
+            className={cn("shiki", className)}
+            dangerouslySetInnerHTML={{ __html: html }}
+          />
         )}
 
-        {!html && <div className="p-4">{children}</div>}
+        {!html && children}
       </pre>
     </div>
   );
