@@ -306,7 +306,11 @@ const vi = {
     localUntilSignIn: "Chỉ lưu trên trình duyệt này cho đến khi bạn đăng nhập.",
     learnedCount: "đã học",
     bookmarkedCount: "đã lưu",
+    ignoredCount: "đã bỏ qua",
     visibleCount: "đang hiển thị",
+    ignoreQuestion: "Bỏ qua câu này",
+    unignoreQuestion: "Khôi phục câu này",
+    ignoredFilter: "Đã bỏ qua",
     milestone: "Cột mốc",
     accountUnavailableTitle: "Tiến độ tài khoản đang tạm thời không khả dụng",
     accountUnavailableDescription:
@@ -642,7 +646,11 @@ const en = {
     localUntilSignIn: "Stored only in this browser until you sign in.",
     learnedCount: "learned",
     bookmarkedCount: "bookmarked",
+    ignoredCount: "ignored",
     visibleCount: "visible",
+    ignoreQuestion: "Ignore question",
+    unignoreQuestion: "Restore question",
+    ignoredFilter: "Ignored",
     milestone: "Milestone",
     accountUnavailableTitle: "Account progress is temporarily unavailable",
     accountUnavailableDescription:

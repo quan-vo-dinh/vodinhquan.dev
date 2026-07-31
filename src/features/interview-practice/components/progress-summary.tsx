@@ -1,6 +1,6 @@
 "use client";
 
-import { Bookmark, CheckCircle2 } from "lucide-react";
+import { Bookmark, CheckCircle2, EyeOff } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { useRef, useEffect } from "react";
@@ -95,6 +95,7 @@ export function ProgressSummary({ questions, category }: ProgressSummaryProps) {
   const { dictionary } = useI18n();
   const {
     bookmarkedIds,
+    ignoredIds,
     isAuthenticated,
     isReady,
     isRemoteAvailable,
@@ -102,16 +103,22 @@ export function ProgressSummary({ questions, category }: ProgressSummaryProps) {
   } = useInterviewLearningState();
   const meta = getInterviewCategoryMeta(category);
 
-  const visibleIds = new Set(questions.map((q) => q.id));
+  const activeQuestions = questions.filter((q) => !ignoredIds.has(q.id));
+  const activeIds = new Set(activeQuestions.map((q) => q.id));
+
   const learnedCount = isReady
-    ? Array.from(learnedIds).filter((id) => visibleIds.has(id)).length
+    ? Array.from(learnedIds).filter((id) => activeIds.has(id)).length
     : 0;
   const bookmarkedCount = isReady
-    ? Array.from(bookmarkedIds).filter((id) => visibleIds.has(id)).length
+    ? Array.from(bookmarkedIds).filter((id) => activeIds.has(id)).length
     : 0;
+  const ignoredCount = isReady
+    ? questions.filter((q) => ignoredIds.has(q.id)).length
+    : 0;
+
   const progressValue =
-    questions.length > 0
-      ? Math.round((learnedCount / questions.length) * 100)
+    activeQuestions.length > 0
+      ? Math.round((learnedCount / activeQuestions.length) * 100)
       : 0;
 
   const prevProgressRef = useRef(progressValue);
@@ -163,26 +170,26 @@ export function ProgressSummary({ questions, category }: ProgressSummaryProps) {
   ];
 
   return (
-    <div className="grid grid-cols-[1fr_auto] items-center gap-2 rounded-xl border bg-background/95 p-2.5 shadow-sm backdrop-blur-md dark:bg-background/95 sm:gap-4 sm:rounded-2xl sm:p-4">
+    <div className="grid grid-cols-[1fr_auto] items-center gap-2 rounded-xl border bg-background/95 p-2 shadow-sm backdrop-blur-md dark:bg-background/95 sm:gap-3.5 sm:rounded-2xl sm:p-2.5">
       {/* Left Column: Progress Info */}
-      <div className="grid min-w-0 gap-2 sm:gap-3">
-        <div className="flex items-center justify-between gap-3">
-          <div>
-            <div className="flex items-center gap-2 flex-wrap">
-              <p className="text-sm font-medium">
+      <div className="grid min-w-0 gap-1 sm:gap-1.5">
+        <div className="flex items-center justify-between gap-2">
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+              <p className="text-xs sm:text-sm font-medium truncate">
                 {isAuthenticated && isRemoteAvailable
                   ? dictionary.interview.syncedProgress
                   : dictionary.interview.localProgress}
               </p>
-              <div className="relative size-8 flex items-center justify-center">
+              <div className="relative size-6 sm:size-7 flex items-center justify-center shrink-0">
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <RankImage
                       src={tier.logoSvg}
                       alt={tier.name}
-                      width={48}
-                      height={48}
-                      className="absolute size-[48px] max-w-none object-contain cursor-help hover:scale-115 transition-transform select-none"
+                      width={36}
+                      height={36}
+                      className="absolute size-[32px] sm:size-[40px] max-w-none object-contain cursor-help hover:scale-110 transition-transform select-none"
                     />
                   </TooltipTrigger>
                   <TooltipContent>
@@ -191,7 +198,7 @@ export function ProgressSummary({ questions, category }: ProgressSummaryProps) {
                 </Tooltip>
               </div>
             </div>
-            <p className="text-xs text-muted-foreground mt-0.5">
+            <p className="hidden sm:block text-[11px] text-muted-foreground mt-0.5 truncate">
               {isAuthenticated && isRemoteAvailable
                 ? dictionary.interview.savedToAccount
                 : isAuthenticated
@@ -199,11 +206,11 @@ export function ProgressSummary({ questions, category }: ProgressSummaryProps) {
                   : dictionary.interview.localUntilSignIn}
             </p>
           </div>
-          <span className="text-sm font-semibold">{progressValue}%</span>
+          <span className="text-xs sm:text-sm font-semibold shrink-0">{progressValue}%</span>
         </div>
 
         {/* Progress Bar with Milestones */}
-        <div className="relative w-full my-2">
+        <div className="relative w-full my-0.5 sm:my-1">
           <Progress value={progressValue} className={cn("h-1.5", rank.barColorClass)} />
           <div className="absolute inset-y-0 left-0 right-0 flex items-center pointer-events-none">
             {milestones.map((m) => {
@@ -215,7 +222,7 @@ export function ProgressSummary({ questions, category }: ProgressSummaryProps) {
                       type="button"
                       style={{ left: `${m.value}%` }}
                       className={cn(
-                        "absolute -translate-x-1/2 size-2.5 rounded-full border bg-background transition-all duration-300 flex items-center justify-center shadow-sm hover:scale-125 focus:outline-none pointer-events-auto cursor-pointer",
+                        "absolute -translate-x-1/2 size-2 sm:size-2.5 rounded-full border bg-background transition-all duration-300 flex items-center justify-center shadow-sm hover:scale-125 focus:outline-none pointer-events-auto cursor-pointer",
                         isReached
                           ? `${m.color} scale-105`
                           : "border-muted-foreground/30 hover:border-muted-foreground/60"
@@ -223,7 +230,7 @@ export function ProgressSummary({ questions, category }: ProgressSummaryProps) {
                       aria-label={`${dictionary.interview.milestone}: ${m.label}`}
                     >
                       <div className={cn(
-                        "size-1 rounded-full transition-all duration-300",
+                        "size-0.5 sm:size-1 rounded-full transition-all duration-300",
                         isReached ? "bg-white scale-100" : "bg-transparent scale-0"
                       )} />
                     </button>
@@ -237,23 +244,32 @@ export function ProgressSummary({ questions, category }: ProgressSummaryProps) {
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
+        <div className="flex items-center gap-2.5 sm:gap-3 text-[11px] sm:text-xs text-muted-foreground">
           <span className="inline-flex items-center gap-1">
-            <CheckCircle2 className="size-3.5" />
-            {learnedCount} {dictionary.interview.learnedCount}
+            <CheckCircle2 className="size-3 sm:size-3.5 text-emerald-500" />
+            <span className="font-medium text-foreground">{learnedCount}</span>
+            <span className="hidden sm:inline">{dictionary.interview.learnedCount}</span>
           </span>
           <span className="inline-flex items-center gap-1">
-            <Bookmark className="size-3.5" />
-            {bookmarkedCount} {dictionary.interview.bookmarkedCount}
+            <Bookmark className="size-3 sm:size-3.5 text-amber-500" />
+            <span className="font-medium text-foreground">{bookmarkedCount}</span>
+            <span className="hidden sm:inline">{dictionary.interview.bookmarkedCount}</span>
           </span>
-          <span className="ml-auto text-muted-foreground/60">
-            {questions.length} {dictionary.interview.visibleCount}
+          {ignoredCount > 0 && (
+            <span className="inline-flex items-center gap-1">
+              <EyeOff className="size-3 sm:size-3.5 text-zinc-400" />
+              <span className="font-medium text-foreground">{ignoredCount}</span>
+              <span className="hidden sm:inline">{dictionary.interview.ignoredCount}</span>
+            </span>
+          )}
+          <span className="hidden sm:inline-flex ml-auto text-muted-foreground/60">
+            {activeQuestions.length} {dictionary.interview.visibleCount}
           </span>
         </div>
       </div>
 
       {/* Right Column: Tech Logo */}
-      <div className="flex shrink-0 items-center justify-center size-12 sm:size-14 md:size-16">
+      <div className="flex shrink-0 items-center justify-center size-8 sm:size-10 md:size-11">
         <TechIcon
           iconKey={meta.iconKey}
           className="size-full"

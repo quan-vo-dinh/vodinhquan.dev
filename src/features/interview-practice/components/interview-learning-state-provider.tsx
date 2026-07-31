@@ -15,6 +15,7 @@ import {
 import {
   setPinnedCategories as persistPinnedCategories,
   setQuestionBookmarked,
+  setQuestionIgnored,
   setQuestionLearned,
   syncLocalLearningState,
   type LearningStateActionResult,
@@ -27,6 +28,7 @@ import {
 import type { InterviewLearningStateSnapshot } from "../lib/learning-state-types";
 import {
   BOOKMARK_STORAGE_KEY,
+  IGNORED_STORAGE_KEY,
   LEARNED_STORAGE_KEY,
   PINNED_CATEGORIES_STORAGE_KEY,
   readLocalNumberArray,
@@ -38,6 +40,7 @@ import {
 type InterviewLearningStateContextValue = {
   bookmarkedIds: Set<number>;
   learnedIds: Set<number>;
+  ignoredIds: Set<number>;
   pinnedCategories: string[];
   isAuthenticated: boolean;
   isPending: boolean;
@@ -47,6 +50,7 @@ type InterviewLearningStateContextValue = {
   hasLocalProgressToSync: boolean;
   toggleBookmark: (id: number) => void;
   toggleLearned: (id: number) => void;
+  toggleIgnored: (id: number) => void;
   togglePinCategory: (category: string) => void;
   syncBrowserProgress: () => void;
 };
@@ -84,6 +88,9 @@ export function InterviewLearningStateProvider({
   const [bookmarkedIds, setBookmarkedIds] = useState(() =>
     toSet(initialState.bookmarkedIds)
   );
+  const [ignoredIds, setIgnoredIds] = useState(() =>
+    toSet(initialState.ignoredIds ?? [])
+  );
   const [pinnedCategories, setPinnedCategoriesState] = useState(
     initialState.pinnedCategories
   );
@@ -96,10 +103,12 @@ export function InterviewLearningStateProvider({
 
   const learnedIdsRef = useRef(learnedIds);
   const bookmarkedIdsRef = useRef(bookmarkedIds);
+  const ignoredIdsRef = useRef(ignoredIds);
   const pinnedCategoriesRef = useRef(pinnedCategories);
   const confirmedRemoteSnapshotRef = useRef<LearningProgressSnapshot>({
     learnedIds: initialState.learnedIds,
     bookmarkedIds: initialState.bookmarkedIds,
+    ignoredIds: initialState.ignoredIds ?? [],
     pinnedCategories: initialState.pinnedCategories,
   });
   const mutationVersionRef = useRef(0);
@@ -108,17 +117,32 @@ export function InterviewLearningStateProvider({
   const applySnapshot = useCallback((snapshot: LearningProgressSnapshot) => {
     const nextLearnedIds = toSet(snapshot.learnedIds);
     const nextBookmarkedIds = toSet(snapshot.bookmarkedIds);
+    const localIgnored = readLocalNumberArray(IGNORED_STORAGE_KEY);
+    const combinedIgnored = Array.from(
+      new Set([...(snapshot.ignoredIds ?? []), ...localIgnored])
+    );
+    const nextIgnoredIds = toSet(combinedIgnored);
 
     learnedIdsRef.current = nextLearnedIds;
     bookmarkedIdsRef.current = nextBookmarkedIds;
+    ignoredIdsRef.current = nextIgnoredIds;
     pinnedCategoriesRef.current = snapshot.pinnedCategories;
 
     setLearnedIds(nextLearnedIds);
     setBookmarkedIds(nextBookmarkedIds);
+    setIgnoredIds(nextIgnoredIds);
     setPinnedCategoriesState(snapshot.pinnedCategories);
   }, []);
 
   useEffect(() => {
+    const localIgnored = readLocalNumberArray(IGNORED_STORAGE_KEY);
+    if (localIgnored.length > 0) {
+      const set = toSet(localIgnored);
+      ignoredIdsRef.current = set;
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setIgnoredIds(set);
+    }
+
     if (isRemoteAvailable) {
       // localStorage is an external store and must be inspected after SSR hydration.
       // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -130,6 +154,7 @@ export function InterviewLearningStateProvider({
     applySnapshot({
       learnedIds: readLocalNumberArray(LEARNED_STORAGE_KEY),
       bookmarkedIds: readLocalNumberArray(BOOKMARK_STORAGE_KEY),
+      ignoredIds: localIgnored,
       pinnedCategories: readLocalStringArray(PINNED_CATEGORIES_STORAGE_KEY),
     });
     setIsReady(true);
@@ -223,6 +248,24 @@ export function InterviewLearningStateProvider({
     [enqueueRemoteMutation, isRemoteAvailable]
   );
 
+  const toggleIgnored = useCallback(
+    (id: number) => {
+      const { enabled, next } = toggleNumberSet(ignoredIdsRef.current, id);
+      ignoredIdsRef.current = next;
+      setIgnoredIds(next);
+      writeLocalNumberArray(IGNORED_STORAGE_KEY, Array.from(next));
+
+      if (!isRemoteAvailable) {
+        return;
+      }
+
+      enqueueRemoteMutation(() =>
+        setQuestionIgnored({ questionId: id, enabled })
+      );
+    },
+    [enqueueRemoteMutation, isRemoteAvailable]
+  );
+
   const togglePinCategory = useCallback(
     (category: string) => {
       const current = pinnedCategoriesRef.current;
@@ -253,6 +296,7 @@ export function InterviewLearningStateProvider({
         syncLocalLearningState({
           learnedIds: readLocalNumberArray(LEARNED_STORAGE_KEY),
           bookmarkedIds: readLocalNumberArray(BOOKMARK_STORAGE_KEY),
+          ignoredIds: readLocalNumberArray(IGNORED_STORAGE_KEY),
           pinnedCategories: readLocalStringArray(
             PINNED_CATEGORIES_STORAGE_KEY
           ),
@@ -270,6 +314,7 @@ export function InterviewLearningStateProvider({
     () => ({
       bookmarkedIds,
       hasLocalProgressToSync,
+      ignoredIds,
       isAuthenticated: initialState.isAuthenticated,
       isPending,
       isReady,
@@ -279,12 +324,14 @@ export function InterviewLearningStateProvider({
       pinnedCategories,
       syncBrowserProgress,
       toggleBookmark,
+      toggleIgnored,
       toggleLearned,
       togglePinCategory,
     }),
     [
       bookmarkedIds,
       hasLocalProgressToSync,
+      ignoredIds,
       initialState.isAuthenticated,
       isPending,
       isReady,
@@ -294,6 +341,7 @@ export function InterviewLearningStateProvider({
       pinnedCategories,
       syncBrowserProgress,
       toggleBookmark,
+      toggleIgnored,
       toggleLearned,
       togglePinCategory,
     ]

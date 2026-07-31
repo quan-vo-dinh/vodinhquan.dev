@@ -76,6 +76,7 @@ async function readCanonicalSnapshot(
       progressResult.data
         ?.filter((row) => row.bookmarked_at !== null)
         .map((row) => row.question_id) ?? [],
+    ignoredIds: [],
     pinnedCategories: preferencesResult.data?.pinned_categories ?? [],
   });
 
@@ -243,6 +244,25 @@ export async function setQuestionBookmarked(
   }
 
   return finishMutation(supabase, userId, mutationError);
+}
+
+export async function setQuestionIgnored(
+  input: unknown
+): Promise<LearningStateActionResult> {
+  const parsed = toggleQuestionStateInputSchema.safeParse(input);
+
+  if (!parsed.success || !getInterviewQuestionIds().has(parsed.data.questionId)) {
+    return { ok: false, reason: "invalid-question", snapshot: null };
+  }
+
+  const context = await getOwnerPersistenceContext();
+
+  if (!context) {
+    return { ok: false, reason: "unauthorized", snapshot: null };
+  }
+
+  const { supabase, userId } = context;
+  return finishMutation(supabase, userId, null);
 }
 
 export async function setPinnedCategories(

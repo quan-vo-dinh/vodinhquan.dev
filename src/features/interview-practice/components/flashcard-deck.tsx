@@ -23,14 +23,19 @@ type FlashcardDeckProps = {
   questions: InterviewQuestionView[];
 };
 
-export function FlashcardDeck({ questions }: FlashcardDeckProps) {
+export function FlashcardDeck({ questions: rawQuestions }: FlashcardDeckProps) {
   const { dictionary } = useI18n();
   const [index, setIndex] = useState(0);
   const [revealedQuestionId, setRevealedQuestionId] = useState<number | null>(
     null
   );
-  const { bookmarkedIds, learnedIds, toggleBookmark, toggleLearned } =
+  const { bookmarkedIds, ignoredIds, learnedIds, toggleBookmark, toggleLearned } =
     useInterviewLearningState();
+
+  const questions = useMemo(
+    () => rawQuestions.filter((q) => !ignoredIds.has(q.id)),
+    [rawQuestions, ignoredIds]
+  );
 
   const normalizedIndex = normalizeFlashcardIndex(index, questions.length);
   const currentQuestion = questions[normalizedIndex];

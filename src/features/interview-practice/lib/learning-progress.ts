@@ -24,6 +24,7 @@ const pinnedCategoryListSchema = z
 export const learningProgressSnapshotSchema = z.object({
   learnedIds: questionIdListSchema,
   bookmarkedIds: questionIdListSchema,
+  ignoredIds: questionIdListSchema.default([]),
   pinnedCategories: pinnedCategoryListSchema,
 });
 
@@ -37,6 +38,7 @@ export const pinnedCategoriesInputSchema = pinnedCategoryListSchema;
 export const syncLocalLearningStateInputSchema = z.object({
   learnedIds: questionIdListSchema,
   bookmarkedIds: questionIdListSchema,
+  ignoredIds: questionIdListSchema.default([]),
   pinnedCategories: pinnedCategoryListSchema,
 });
 
@@ -63,6 +65,7 @@ export function mergeLearningStateSnapshots(
   return {
     learnedIds: mergeNumbers(remote.learnedIds, local.learnedIds),
     bookmarkedIds: mergeNumbers(remote.bookmarkedIds, local.bookmarkedIds),
+    ignoredIds: mergeNumbers(remote.ignoredIds ?? [], local.ignoredIds ?? []),
     pinnedCategories: mergeStrings(
       remote.pinnedCategories,
       local.pinnedCategories
@@ -78,6 +81,7 @@ export function validateLearningProgressReferences(
   const hasUnknownQuestionId = [
     ...snapshot.learnedIds,
     ...snapshot.bookmarkedIds,
+    ...(snapshot.ignoredIds ?? []),
   ].some((questionId) => !knownQuestionIds.has(questionId));
   const hasUnknownCategory = snapshot.pinnedCategories.some(
     (category) => !knownCategories.has(category)

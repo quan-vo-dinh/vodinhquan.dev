@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Bookmark, CheckCircle2, Clipboard, LinkIcon, Check } from "lucide-react";
+import { Bookmark, CheckCircle2, Clipboard, LinkIcon, Check, EyeOff, Eye } from "lucide-react";
 
 import {
   Accordion,
@@ -62,7 +62,7 @@ export function QuestionList({ questions }: QuestionListProps) {
     beginner: dictionary.interview.beginner,
     intermediate: dictionary.interview.intermediate,
   } satisfies Record<InterviewQuestionView["level"], string>;
-  const { bookmarkedIds, isReady, learnedIds, toggleBookmark, toggleLearned } =
+  const { bookmarkedIds, ignoredIds, isReady, learnedIds, toggleBookmark, toggleIgnored, toggleLearned } =
     useInterviewLearningState();
 
   const [copyStatus, setCopyStatus] = useState<{
@@ -71,6 +71,7 @@ export function QuestionList({ questions }: QuestionListProps) {
     status: "error" | "success";
   } | null>(null);
   const [openValue, setOpenValue] = useState<string>("");
+  const [viewMode, setViewMode] = useState<"active" | "ignored">("active");
 
   const showCopyStatus = (nextStatus: NonNullable<typeof copyStatus>) => {
     setCopyStatus(nextStatus);
@@ -81,28 +82,77 @@ export function QuestionList({ questions }: QuestionListProps) {
     }, 2000);
   };
 
-  if (questions.length === 0) {
+  const activeQuestions = questions.filter((q) => !ignoredIds.has(q.id));
+  const ignoredQuestions = questions.filter((q) => ignoredIds.has(q.id));
+  const displayedQuestions = viewMode === "ignored" ? ignoredQuestions : activeQuestions;
+
+  if (questions.length === 0 || displayedQuestions.length === 0) {
     return (
-      <div className="rounded-xl border border-dashed bg-background/60 p-5 text-center text-sm text-muted-foreground sm:rounded-2xl sm:p-8">
-        {dictionary.interview.noQuestions}{" "}
-        <span className="block mt-1 text-xs">
+      <div className="flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed bg-background/60 p-5 text-center text-sm text-muted-foreground sm:rounded-2xl sm:p-8">
+        <p>
+          {viewMode === "ignored"
+            ? dictionary.interview.noQuestions
+            : activeQuestions.length === 0 && ignoredQuestions.length > 0
+            ? `${dictionary.interview.ignoredCount}: ${ignoredQuestions.length}`
+            : dictionary.interview.noQuestions}
+        </p>
+        <span className="block text-xs">
           {dictionary.interview.noQuestionsHint}
         </span>
+        {isReady && ignoredQuestions.length > 0 && (
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="mt-2 h-7 px-3 text-xs"
+            onClick={() => setViewMode(viewMode === "active" ? "ignored" : "active")}
+          >
+            {viewMode === "active"
+              ? `${dictionary.interview.ignoredFilter} (${ignoredQuestions.length})`
+              : dictionary.interview.all}
+          </Button>
+        )}
       </div>
     );
   }
 
   return (
-    <Accordion
-      type="single"
-      collapsible
-      value={openValue}
-      onValueChange={setOpenValue}
-      className="grid w-full min-w-0 max-w-full gap-2 sm:gap-3"
-    >
-      {questions.map((question, index) => {
-        const isLearned = isReady && learnedIds.has(question.id);
-        const isBookmarked = isReady && bookmarkedIds.has(question.id);
+    <div className="flex flex-col gap-2">
+      {isReady && ignoredQuestions.length > 0 && (
+        <div className="flex items-center justify-between gap-2 px-2 py-1 text-xs text-muted-foreground bg-muted/30 rounded-lg border border-border/50">
+          <div className="flex items-center gap-1.5">
+            <EyeOff className="size-3.5 text-muted-foreground" />
+            <span>
+              {viewMode === "ignored"
+                ? `${dictionary.interview.ignoredFilter}: ${ignoredQuestions.length}`
+                : `${dictionary.interview.ignoredCount}: ${ignoredQuestions.length}`}
+            </span>
+          </div>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="h-6 px-2 text-[11px] font-medium hover:bg-muted"
+            onClick={() => setViewMode(viewMode === "active" ? "ignored" : "active")}
+          >
+            {viewMode === "active"
+              ? `Xem ${ignoredQuestions.length} câu đã ẩn`
+              : "Quay lại danh sách chính"}
+          </Button>
+        </div>
+      )}
+
+      <Accordion
+        type="single"
+        collapsible
+        value={openValue}
+        onValueChange={setOpenValue}
+        className="grid w-full min-w-0 max-w-full gap-2 sm:gap-3"
+      >
+        {displayedQuestions.map((question, index) => {
+          const isLearned = isReady && learnedIds.has(question.id);
+          const isBookmarked = isReady && bookmarkedIds.has(question.id);
+          const isIgnored = isReady && ignoredIds.has(question.id);
         const answerCopyStatus =
           copyStatus?.id === question.id && copyStatus.kind === "answer"
             ? copyStatus.status
@@ -157,12 +207,22 @@ export function QuestionList({ questions }: QuestionListProps) {
                       {dictionary.interview.saved}
                     </Badge>
                   ) : null}
+                  {isIgnored && isReady ? (
+                    <Badge
+                      variant="outline"
+                      className="border-zinc-500/30 bg-zinc-500/10 text-zinc-500 text-[10px]"
+                    >
+                      <EyeOff className="mr-1 size-3" />
+                      {dictionary.interview.ignoredFilter}
+                    </Badge>
+                  ) : null}
                 </div>
                 <span
                   className={cn(
                     "break-words text-[15px] font-bold leading-snug text-zinc-950 dark:text-zinc-50 sm:text-base md:text-lg",
                     isLearned &&
-                      "text-muted-foreground line-through decoration-muted-foreground decoration-[1.5px]"
+                      "text-muted-foreground line-through decoration-muted-foreground decoration-[1.5px]",
+                    isIgnored && "text-muted-foreground/80 font-medium"
                   )}
                 >
                   {question.question}
@@ -252,6 +312,40 @@ export function QuestionList({ questions }: QuestionListProps) {
                   </TooltipTrigger>
                   <TooltipContent>
                     {dictionary.interview.saveQuestion}
+                  </TooltipContent>
+                </Tooltip>
+
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant={isIgnored ? "secondary" : "outline"}
+                      onClick={() => toggleIgnored(question.id)}
+                      aria-label={
+                        isIgnored
+                          ? dictionary.interview.unignoreQuestion
+                          : dictionary.interview.ignoreQuestion
+                      }
+                      className={cn(isIgnored && "text-muted-foreground")}
+                    >
+                      {isIgnored ? (
+                        <>
+                          <Eye className="mr-2 size-4 text-zinc-500" />
+                          {dictionary.interview.unignoreQuestion}
+                        </>
+                      ) : (
+                        <>
+                          <EyeOff className="mr-2 size-4 text-muted-foreground" />
+                          {dictionary.interview.ignoreQuestion}
+                        </>
+                      )}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    {isIgnored
+                      ? dictionary.interview.unignoreQuestion
+                      : dictionary.interview.ignoreQuestion}
                   </TooltipContent>
                 </Tooltip>
 
@@ -346,5 +440,6 @@ export function QuestionList({ questions }: QuestionListProps) {
         );
       })}
     </Accordion>
+    </div>
   );
 }

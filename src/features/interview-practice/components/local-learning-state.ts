@@ -1,5 +1,6 @@
 export const LEARNED_STORAGE_KEY = "interview-practice:v1:learned";
 export const BOOKMARK_STORAGE_KEY = "interview-practice:v1:bookmarks";
+export const IGNORED_STORAGE_KEY = "interview-practice:v1:ignored";
 export const PINNED_CATEGORIES_STORAGE_KEY =
   "interview-practice:v1:pinned-categories";
 

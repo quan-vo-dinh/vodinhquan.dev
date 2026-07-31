@@ -9,6 +9,7 @@ import type { InterviewLearningStateSnapshot } from "./learning-state-types";
 export const emptyInterviewLearningState: InterviewLearningStateSnapshot = {
   learnedIds: [],
   bookmarkedIds: [],
+  ignoredIds: [],
   pinnedCategories: [],
   isAuthenticated: false,
   remoteStatus: "not-applicable",

@@ -124,6 +124,7 @@ function InterviewPracticePageContent({
   );
 
   const {
+    ignoredIds,
     isReady,
     learnedIds,
     pinnedCategories,
@@ -135,11 +136,14 @@ function InterviewPracticePageContent({
   const hasHydratedCategoryProgressRef = useRef<Record<string, boolean>>({});
 
   const currentCategoryQuestionIds = categoryQuestionIds[filterState.category] || [];
+  const currentCategoryActiveQuestionIds = currentCategoryQuestionIds.filter(
+    (id) => !ignoredIds.has(id)
+  );
   const categoryLearnedCount = isReady
-    ? currentCategoryQuestionIds.filter((id) => learnedIds.has(id)).length
+    ? currentCategoryActiveQuestionIds.filter((id) => learnedIds.has(id)).length
     : 0;
-  const categoryProgress = currentCategoryQuestionIds.length > 0
-    ? Math.round((categoryLearnedCount / currentCategoryQuestionIds.length) * 100)
+  const categoryProgress = currentCategoryActiveQuestionIds.length > 0
+    ? Math.round((categoryLearnedCount / currentCategoryActiveQuestionIds.length) * 100)
     : 0;
 
 
@@ -416,9 +420,9 @@ function InterviewPracticePageContent({
           <BlurFade
             delay={BLUR_FADE_DELAY * 7}
             yOffset={10}
-            className="sticky-progress-summary sticky top-0 z-40 -mx-2 px-2 py-2 bg-background/90 backdrop-blur-md border-b border-border/40 shadow-sm sm:-mx-4 sm:px-4 lg:top-6 lg:z-20 lg:-mx-0 lg:px-0 lg:border-none lg:shadow-none lg:pb-0 lg:pt-0 lg:bg-transparent lg:backdrop-blur-none transition-all duration-200"
+            className="sticky-progress-summary sticky top-0 z-40 -mx-2 px-2 py-1 bg-background/90 backdrop-blur-md border-b border-border/40 shadow-sm sm:-mx-4 sm:px-4 sm:py-1.5 lg:top-6 lg:z-20 lg:-mx-0 lg:px-0 lg:border-none lg:shadow-none lg:pb-0 lg:pt-0 lg:bg-transparent lg:backdrop-blur-none transition-all duration-200"
           >
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-2">
               <LearningSyncBanner />
               <ProgressSummary questions={questions} category={filterState.category} />
             </div>
