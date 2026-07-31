@@ -168,7 +168,7 @@ export function QuestionList({ questions }: QuestionListProps) {
             id={`question-${question.id}`}
             value={String(question.id)}
             className={cn(
-              "w-full min-w-0 max-w-full rounded-none border-x-0 border-t bg-background/70 px-2.5 transition-all duration-200 first:border-t-0 sm:rounded-2xl sm:border-x sm:px-4",
+              "w-full min-w-0 max-w-full rounded-none border-x-0 border-t bg-background/70 px-1.5 transition-all duration-200 first:border-t-0 sm:rounded-2xl sm:border-x sm:px-4",
               isLearned && "border-emerald-500/30 bg-emerald-500/[0.02] dark:border-emerald-500/20",
               isBookmarked && "border-amber-500/50 bg-amber-500/[0.02] dark:border-amber-500/30 shadow-md"
             )}
