@@ -158,123 +158,108 @@ export function ProgressSummary({ questions, category }: ProgressSummaryProps) {
   const tier = getRankTier(progressValue);
 
   const milestones = [
-    { value: 10, label: "Bronze (10%)", color: "bg-amber-800 border-amber-800/40" },
-    { value: 20, label: "Silver (20%)", color: "bg-slate-400 border-slate-400/40" },
-    { value: 30, label: "Gold (30%)", color: "bg-yellow-500 border-yellow-500/40" },
-    { value: 40, label: "Platinum (40%)", color: "bg-teal-500 border-teal-500/40" },
-    { value: 50, label: "Emerald (50%)", color: "bg-emerald-500 border-emerald-500/40" },
-    { value: 60, label: "Diamond (60%)", color: "bg-blue-500 border-blue-500/40" },
-    { value: 70, label: "Master (70%)", color: "bg-purple-500 border-purple-500/40" },
-    { value: 80, label: "Grandmaster (80%)", color: "bg-rose-500 border-rose-500/40" },
-    { value: 90, label: "Challenger (90%)", color: "bg-amber-500 border-amber-500/40" },
+    { value: 10, label: "Bronze (10%)", logoSvg: "/ranked/bronze-logo.svg" },
+    { value: 20, label: "Silver (20%)", logoSvg: "/ranked/sliver-logo.svg" },
+    { value: 30, label: "Gold (30%)", logoSvg: "/ranked/gold-logo.svg" },
+    { value: 40, label: "Platinum (40%)", logoSvg: "/ranked/platinum-logo.svg" },
+    { value: 50, label: "Emerald (50%)", logoSvg: "/ranked/emerald-logo.svg" },
+    { value: 60, label: "Diamond (60%)", logoSvg: "/ranked/diamond-logo.svg" },
+    { value: 70, label: "Master (70%)", logoSvg: "/ranked/master-logo.svg" },
+    { value: 80, label: "Grandmaster (80%)", logoSvg: "/ranked/grandmaster-logo.svg" },
+    { value: 90, label: "Challenger (90%)", logoSvg: "/ranked/challenger-logo.svg" },
   ];
 
   return (
-    <div className="grid grid-cols-[1fr_auto] items-center gap-2 rounded-xl border bg-background/95 p-2 shadow-sm backdrop-blur-md dark:bg-background/95 sm:gap-3.5 sm:rounded-2xl sm:p-2.5">
-      {/* Left Column: Progress Info */}
-      <div className="grid min-w-0 gap-1 sm:gap-1.5">
-        <div className="flex items-center justify-between gap-2">
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
-              <p className="text-xs sm:text-sm font-medium truncate">
-                {isAuthenticated && isRemoteAvailable
-                  ? dictionary.interview.syncedProgress
-                  : dictionary.interview.localProgress}
-              </p>
-              <div className="relative size-6 sm:size-7 flex items-center justify-center shrink-0">
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <RankImage
-                      src={tier.logoSvg}
-                      alt={tier.name}
-                      width={36}
-                      height={36}
-                      className="absolute size-[32px] sm:size-[40px] max-w-none object-contain cursor-help hover:scale-110 transition-transform select-none"
-                    />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <span className="font-semibold text-xs">{rank.title}</span>
-                  </TooltipContent>
-                </Tooltip>
-              </div>
-            </div>
-            <p className="hidden sm:block text-[11px] text-muted-foreground mt-0.5 truncate">
-              {isAuthenticated && isRemoteAvailable
-                ? dictionary.interview.savedToAccount
-                : isAuthenticated
-                  ? dictionary.interview.remoteUnavailable
-                  : dictionary.interview.localUntilSignIn}
-            </p>
-          </div>
-          <span className="text-xs sm:text-sm font-semibold shrink-0">{progressValue}%</span>
+    <div className="relative rounded-xl border bg-background/95 px-2 py-1.5 shadow-sm backdrop-blur-md dark:bg-background/95 sm:rounded-2xl sm:px-3 sm:py-2">
+      {/* Top Header Row */}
+      <div className="flex items-center justify-between gap-2 mb-0.5">
+        {/* Left: Progress Title */}
+        <div className="min-w-0 flex-1">
+          <p className="text-xs sm:text-sm font-medium truncate">
+            {isAuthenticated && isRemoteAvailable
+              ? dictionary.interview.syncedProgress
+              : dictionary.interview.localProgress}
+          </p>
         </div>
 
-        {/* Progress Bar with Milestones */}
-        <div className="relative w-full my-0.5 sm:my-1">
-          <Progress value={progressValue} className={cn("h-1.5", rank.barColorClass)} />
-          <div className="absolute inset-y-0 left-0 right-0 flex items-center pointer-events-none">
-            {milestones.map((m) => {
-              const isReached = progressValue >= m.value;
-              return (
-                <Tooltip key={m.value}>
-                  <TooltipTrigger asChild>
-                    <button
-                      type="button"
-                      style={{ left: `${m.value}%` }}
-                      className={cn(
-                        "absolute -translate-x-1/2 size-2 sm:size-2.5 rounded-full border bg-background transition-all duration-300 flex items-center justify-center shadow-sm hover:scale-125 focus:outline-none pointer-events-auto cursor-pointer",
-                        isReached
-                          ? `${m.color} scale-105`
-                          : "border-muted-foreground/30 hover:border-muted-foreground/60"
-                      )}
-                      aria-label={`${dictionary.interview.milestone}: ${m.label}`}
-                    >
-                      <div className={cn(
-                        "size-0.5 sm:size-1 rounded-full transition-all duration-300",
-                        isReached ? "bg-white scale-100" : "bg-transparent scale-0"
-                      )} />
-                    </button>
-                  </TooltipTrigger>
-                  <TooltipContent side="bottom" className="text-[10px] py-1 px-2">
-                    <span className="font-semibold text-xs">{m.label}</span>
-                  </TooltipContent>
-                </Tooltip>
-              );
-            })}
+        {/* Right: Rank Title + % + Tech Icon */}
+        <div className="flex items-center justify-end gap-1.5 sm:gap-2 shrink-0 min-w-0">
+          <span className="text-[11px] sm:text-xs font-semibold px-2 py-0.5 rounded-full border bg-muted/50 text-foreground truncate">
+            {rank.title}
+          </span>
+          <span className="text-xs sm:text-sm font-bold shrink-0">{progressValue}%</span>
+          <div className="flex shrink-0 items-center justify-center size-5 sm:size-6">
+            <TechIcon
+              iconKey={meta.iconKey}
+              className="size-full"
+              iconClassName="size-full"
+            />
           </div>
-        </div>
-
-        <div className="flex items-center gap-2.5 sm:gap-3 text-[11px] sm:text-xs text-muted-foreground">
-          <span className="inline-flex items-center gap-1">
-            <CheckCircle2 className="size-3 sm:size-3.5 text-emerald-500" />
-            <span className="font-medium text-foreground">{learnedCount}</span>
-            <span className="hidden sm:inline">{dictionary.interview.learnedCount}</span>
-          </span>
-          <span className="inline-flex items-center gap-1">
-            <Bookmark className="size-3 sm:size-3.5 text-amber-500" />
-            <span className="font-medium text-foreground">{bookmarkedCount}</span>
-            <span className="hidden sm:inline">{dictionary.interview.bookmarkedCount}</span>
-          </span>
-          {ignoredCount > 0 && (
-            <span className="inline-flex items-center gap-1">
-              <EyeOff className="size-3 sm:size-3.5 text-zinc-400" />
-              <span className="font-medium text-foreground">{ignoredCount}</span>
-              <span className="hidden sm:inline">{dictionary.interview.ignoredCount}</span>
-            </span>
-          )}
-          <span className="hidden sm:inline-flex ml-auto text-muted-foreground/60">
-            {activeQuestions.length} {dictionary.interview.visibleCount}
-          </span>
         </div>
       </div>
 
-      {/* Right Column: Tech Logo */}
-      <div className="flex shrink-0 items-center justify-center size-8 sm:size-10 md:size-11">
-        <TechIcon
-          iconKey={meta.iconKey}
-          className="size-full"
-          iconClassName="size-full"
-        />
+      {/* Progress Bar with Milestone Rank SVGs */}
+      <div className="relative w-full my-1.5 pt-1 pb-0.5">
+        <Progress value={progressValue} className={cn("h-1.5 rounded-full", rank.barColorClass)} />
+        <div className="absolute inset-y-0 left-0 right-0 flex items-center pointer-events-none">
+          {milestones.map((m) => {
+            const isReached = progressValue >= m.value;
+            return (
+              <Tooltip key={m.value}>
+                <TooltipTrigger asChild>
+                  <div
+                    style={{ left: `${m.value}%` }}
+                    className="absolute -translate-x-1/2 flex items-center justify-center pointer-events-auto cursor-pointer select-none group"
+                  >
+                    <div
+                      className={cn(
+                        "relative size-6 sm:size-7 flex items-center justify-center transition-all duration-300 transform group-hover:scale-125",
+                        isReached
+                          ? "opacity-100 filter drop-shadow-[0_2px_4px_rgba(0,0,0,0.4)] scale-110"
+                          : "opacity-30 grayscale contrast-75 hover:opacity-80 hover:grayscale-0"
+                      )}
+                    >
+                      <RankImage
+                        src={m.logoSvg}
+                        alt={m.label}
+                        width={28}
+                        height={28}
+                        className="size-full object-contain pointer-events-none"
+                      />
+                    </div>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent side="top" className="text-[10px] py-1 px-2 font-semibold">
+                  <span>{m.label}</span>
+                </TooltipContent>
+              </Tooltip>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Stats Row */}
+      <div className="flex items-center gap-2.5 sm:gap-3 text-[11px] sm:text-xs text-muted-foreground">
+        <span className="inline-flex items-center gap-1">
+          <CheckCircle2 className="size-3 sm:size-3.5 text-emerald-500" />
+          <span className="font-medium text-foreground">{learnedCount}</span>
+          <span className="hidden sm:inline">{dictionary.interview.learnedCount}</span>
+        </span>
+        <span className="inline-flex items-center gap-1">
+          <Bookmark className="size-3 sm:size-3.5 text-amber-500" />
+          <span className="font-medium text-foreground">{bookmarkedCount}</span>
+          <span className="hidden sm:inline">{dictionary.interview.bookmarkedCount}</span>
+        </span>
+        {ignoredCount > 0 && (
+          <span className="inline-flex items-center gap-1">
+            <EyeOff className="size-3 sm:size-3.5 text-zinc-400" />
+            <span className="font-medium text-foreground">{ignoredCount}</span>
+            <span className="hidden sm:inline">{dictionary.interview.ignoredCount}</span>
+          </span>
+        )}
+        <span className="hidden sm:inline-flex ml-auto text-muted-foreground/60">
+          {activeQuestions.length} {dictionary.interview.visibleCount}
+        </span>
       </div>
     </div>
   );

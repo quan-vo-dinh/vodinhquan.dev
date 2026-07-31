@@ -247,13 +247,13 @@ export function InterviewProfileCard({
         <CardItem
           translateZ={100}
           as="div"
-          className="absolute -top-12 left-0 right-0 mx-auto w-fit h-20 pointer-events-none select-none z-30"
+          className="absolute -top-16 sm:-top-20 left-0 right-0 mx-auto w-fit h-32 sm:h-36 pointer-events-none select-none z-30"
         >
           <RankImage
             src={currentTier.svg}
             alt={lolStyles.rankName}
-            width={160}
-            height={160}
+            width={280}
+            height={280}
             priority
             className="h-full w-auto object-contain filter drop-shadow-[0_4px_8px_rgba(0,0,0,0.5)] dark:drop-shadow-[0_6px_12px_rgba(0,0,0,0.7)]"
           />
@@ -315,7 +315,7 @@ export function InterviewProfileCard({
         </div>
 
         {/* Card Details */}
-        <div className={cn("flex min-w-0 flex-col gap-1 [transform-style:preserve-3d] z-10 w-full justify-center", viewer && "pr-16")}>
+        <div className={cn("flex min-w-0 flex-col gap-1.5 [transform-style:preserve-3d] z-10 w-full justify-center mt-1.5 sm:mt-2", viewer && "pr-16")}>
           <CardItem
             translateZ={75}
             as="h3"
