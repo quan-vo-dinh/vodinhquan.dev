@@ -74,7 +74,7 @@ export default async function RootLayout({
     <html lang={locale} suppressHydrationWarning>
       <body
         className={cn(
-          "min-h-screen bg-background font-sans antialiased relative",
+          "min-h-screen bg-background font-sans antialiased relative overflow-x-hidden",
           geist.variable,
           geistMono.variable,
         )}

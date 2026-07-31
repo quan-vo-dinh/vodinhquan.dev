@@ -145,7 +145,6 @@ export function InterviewLearningStateProvider({
 
     if (isRemoteAvailable) {
       // localStorage is an external store and must be inspected after SSR hydration.
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setHasLocalProgressToSync(hasStoredBrowserProgress());
       setIsReady(true);
       return;

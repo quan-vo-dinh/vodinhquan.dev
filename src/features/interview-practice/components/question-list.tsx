@@ -174,7 +174,7 @@ export function QuestionList({ questions }: QuestionListProps) {
             )}
           >
             <AccordionTrigger className="gap-2 py-3 hover:no-underline sm:gap-3 sm:py-4 [&>svg]:hidden">
-              <div className="flex w-full min-w-0 flex-col gap-2 text-left sm:gap-3">
+              <div className="flex w-full min-w-0 max-w-full flex-col gap-2 text-left sm:gap-3 overflow-hidden">
                 <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
                   <span className="font-mono text-xs text-muted-foreground">
                     #{String(index + 1).padStart(2, "0")}
