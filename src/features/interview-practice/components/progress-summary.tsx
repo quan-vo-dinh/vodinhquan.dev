@@ -178,7 +178,7 @@ export function ProgressSummary({ questions, category }: ProgressSummaryProps) {
       </div>
 
       {/* Progress Bar with Milestone Rank SVGs */}
-      <div className="relative w-full my-1.5 pt-1 pb-0.5">
+      <div className="relative w-full px-3 my-1.5 pt-1 pb-0.5">
         <Progress
           value={progressPercentage}
           className={cn(
@@ -186,7 +186,7 @@ export function ProgressSummary({ questions, category }: ProgressSummaryProps) {
             rank.barColorClass
           )}
         />
-        <div className="absolute inset-y-0 left-0 right-0 flex items-center pointer-events-none">
+        <div className="absolute inset-y-0 left-3 right-3 flex items-center pointer-events-none">
           {milestones.map((m) => {
             const isReached = progressPercentage >= m.value;
             const targetScore = Math.ceil((m.value / 100) * totalPossibleScore);

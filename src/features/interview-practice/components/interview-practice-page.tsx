@@ -196,9 +196,9 @@ function InterviewPracticePageContent({
   }, [isMobileCategoryOpen]);
 
   const mainContent = (
-    <main className="relative left-0 translate-x-0 w-[calc(100%+3rem)] -mx-6 flex flex-col gap-4 px-2 sm:gap-6 sm:px-6 sm:w-screen sm:max-w-7xl sm:left-1/2 sm:-translate-x-1/2 sm:mx-0">
+    <main className="relative w-full max-w-full min-w-0 flex flex-col gap-4 px-0 sm:gap-6 sm:px-6 sm:w-[calc(100vw-3rem)] sm:max-w-7xl sm:left-1/2 sm:-translate-x-1/2 sm:mx-0">
       <BlurFade delay={BLUR_FADE_DELAY}>
-        <section className="relative rounded-2xl border bg-card/80 p-4 shadow-[0_0_10px_3px] shadow-primary/5 backdrop-blur sm:rounded-3xl sm:p-5">
+        <section className="relative rounded-2xl border bg-card/80 p-4 pt-14 sm:p-5 sm:pt-16 shadow-[0_0_10px_3px] shadow-primary/5 backdrop-blur sm:rounded-3xl">
           {/* Background Grid Wrapper to clip the grid pattern without clipping the profile card */}
           <div className="absolute inset-0 overflow-hidden rounded-2xl sm:rounded-3xl pointer-events-none z-0">
             <AnimatedGridPattern
@@ -409,7 +409,7 @@ function InterviewPracticePageContent({
           <BlurFade
             delay={BLUR_FADE_DELAY * 7}
             yOffset={10}
-            className="sticky-progress-summary sticky top-0 z-40 -mx-2 px-2 py-1 bg-background/90 backdrop-blur-md border-b border-border/40 shadow-sm sm:-mx-4 sm:px-4 sm:py-1.5 lg:top-6 lg:z-20 lg:-mx-0 lg:px-0 lg:border-none lg:shadow-none lg:pb-0 lg:pt-0 lg:bg-transparent lg:backdrop-blur-none transition-all duration-200"
+            className="sticky-progress-summary sticky top-0 z-40 w-full px-0 py-1 bg-background/90 backdrop-blur-md border-b border-border/40 shadow-sm sm:py-1.5 lg:top-6 lg:z-20 lg:border-none lg:shadow-none lg:pb-0 lg:pt-0 lg:bg-transparent lg:backdrop-blur-none transition-all duration-200"
           >
             <div className="flex flex-col gap-2">
               <LearningSyncBanner />

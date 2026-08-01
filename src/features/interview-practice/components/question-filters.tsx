@@ -59,11 +59,11 @@ export function QuestionFilters({
   const showFilters = variant === "all" || variant === "filters-only";
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 w-full max-w-full min-w-0">
 
       {/* Subcategory chips */}
       {showTopics && (
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 w-full max-w-full min-w-0">
           <Link
             href={createInterviewHref({ subcategory: "all" }, filterState)}
             onClick={(e) => {

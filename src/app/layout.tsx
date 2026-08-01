@@ -71,7 +71,7 @@ export default async function RootLayout({
   const { dictionary, locale } = await getServerI18n();
 
   return (
-    <html lang={locale} suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning className="overflow-x-hidden max-w-full">
       <body
         className={cn(
           "min-h-screen bg-background font-sans antialiased relative overflow-x-hidden",
@@ -86,7 +86,7 @@ export default async function RootLayout({
               <div className="absolute right-4 top-4 sm:right-6 sm:top-6 z-50">
                 <ModeToggle className="size-10 rounded-3xl border border-border bg-background p-2.5 text-muted-foreground backdrop-blur-3xl transition-colors hover:bg-muted hover:text-foreground shadow-sm" />
               </div>
-              <div className="relative z-10 max-w-2xl mx-auto py-12 pb-24 sm:py-24 px-6">
+              <div className="relative z-10 max-w-2xl mx-auto py-12 pb-24 sm:py-24 px-3 sm:px-6">
                 {children}
               </div>
               <Navbar />

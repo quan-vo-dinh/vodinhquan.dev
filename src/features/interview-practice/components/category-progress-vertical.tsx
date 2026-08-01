@@ -67,7 +67,7 @@ export function CategoryProgressVertical({
   }
 
   return (
-    <div className="absolute left-[calc(100%+16px)] top-[165px] bottom-6 z-50 hidden 2xl:block w-[72px]">
+    <div className="absolute left-[calc(100%+16px)] top-[165px] bottom-6 z-50 hidden xl:block w-[72px]">
       <aside className="sticky top-24 flex flex-col items-center rounded-2xl border bg-card/70 p-2.5 text-sm w-[72px] max-h-[80vh] overflow-y-auto scrollbar-none shadow-sm backdrop-blur-md">
         <div className="flex flex-col items-center gap-4">
           {activeCategories.map((category) => {

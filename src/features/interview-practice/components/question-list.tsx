@@ -195,7 +195,7 @@ export function QuestionList({ questions }: QuestionListProps) {
                   >
                     +{getQuestionPoints(question.level)} PTS
                   </Badge>
-                  <Badge variant="outline">{question.subcategory}</Badge>
+                  <Badge variant="outline" className="max-w-full truncate">{question.subcategory}</Badge>
                   {isLearned && isReady ? (
                     <Badge
                       variant="outline"
@@ -238,7 +238,7 @@ export function QuestionList({ questions }: QuestionListProps) {
             </AccordionTrigger>
             <AccordionContent className="space-y-3 pb-3 sm:space-y-4 sm:pb-4 w-full max-w-full min-w-0 overflow-hidden">
               {openValue === String(question.id) && (
-                <InterviewMarkdown className="w-full min-w-0 overflow-hidden [&_.group]:-mx-1 [&_.group]:rounded-lg sm:[&_.group]:mx-0 sm:[&_.group]:rounded-xl">
+                <InterviewMarkdown className="w-full min-w-0 overflow-hidden [&_.group]:mx-0 [&_.group]:rounded-lg sm:[&_.group]:rounded-xl">
                   {question.answer}
                 </InterviewMarkdown>
               )}
