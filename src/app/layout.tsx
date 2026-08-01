@@ -71,10 +71,10 @@ export default async function RootLayout({
   const { dictionary, locale } = await getServerI18n();
 
   return (
-    <html lang={locale} suppressHydrationWarning className="overflow-x-hidden max-w-full">
+    <html lang={locale} suppressHydrationWarning className="overflow-x-clip max-w-full">
       <body
         className={cn(
-          "min-h-screen bg-background font-sans antialiased relative overflow-x-hidden",
+          "min-h-screen bg-background font-sans antialiased relative overflow-x-clip",
           geist.variable,
           geistMono.variable,
         )}

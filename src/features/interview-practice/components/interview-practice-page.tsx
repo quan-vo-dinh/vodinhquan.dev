@@ -424,7 +424,7 @@ function InterviewPracticePageContent({
           <BlurFade
             delay={BLUR_FADE_DELAY * 7}
             yOffset={10}
-            className="sticky-progress-summary sticky top-0 z-40 w-full px-0 py-1 bg-background/90 backdrop-blur-md border-b border-border/40 shadow-sm sm:py-1.5 lg:top-6 lg:z-20 lg:border-none lg:shadow-none lg:pb-0 lg:pt-0 lg:bg-transparent lg:backdrop-blur-none transition-all duration-200"
+            className="sticky-progress-summary sticky top-2 sm:top-4 lg:top-6 z-40 w-full py-1.5 bg-background/80 backdrop-blur-md rounded-xl transition-all duration-200"
           >
             <div className="flex flex-col gap-2">
               <LearningSyncBanner />
