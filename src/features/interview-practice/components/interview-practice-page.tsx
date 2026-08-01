@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { DiaTextReveal } from "@/components/ui/dia-text-reveal";
 import { getRankTier, RankTier } from "../lib/rank-meta";
+import { RankImage } from "./rank-image";
 import { RankUpModal } from "./rank-up-modal";
 import { InterviewProfileCard } from "./interview-profile-card";
 import { LearningSyncBanner } from "./learning-sync-banner";
@@ -195,10 +196,24 @@ function InterviewPracticePageContent({
     };
   }, [isMobileCategoryOpen]);
 
+  const currentTier = getRankTier(categoryProgress);
+
   const mainContent = (
     <main className="relative w-full max-w-full min-w-0 flex flex-col gap-4 px-0 sm:gap-6 sm:px-6 sm:w-[calc(100vw-3rem)] sm:max-w-7xl sm:left-1/2 sm:-translate-x-1/2 sm:mx-0">
       <BlurFade delay={BLUR_FADE_DELAY}>
-        <section className="relative rounded-2xl border bg-card/80 p-4 pt-14 sm:p-5 sm:pt-16 shadow-[0_0_10px_3px] shadow-primary/5 backdrop-blur sm:rounded-3xl">
+        <section className="relative rounded-2xl border bg-card/80 p-2.5 pt-8 sm:p-4 sm:pt-10 mt-8 sm:mt-12 shadow-[0_0_10px_3px] shadow-primary/5 backdrop-blur sm:rounded-3xl">
+          {/* Centered Top Rank Emblem SVG sitting absolute on the top rim */}
+          <div className="absolute -top-12 sm:-top-16 md:-top-18 left-1/2 -translate-x-1/2 z-30 pointer-events-none select-none flex items-center justify-center">
+            <RankImage
+              src={currentTier.svg}
+              alt={currentTier.name}
+              width={280}
+              height={280}
+              priority
+              className="h-24 sm:h-32 md:h-36 w-auto object-contain filter drop-shadow-[0_6px_16px_rgba(0,0,0,0.7)] dark:drop-shadow-[0_8px_24px_rgba(0,0,0,0.9)]"
+            />
+          </div>
+
           {/* Background Grid Wrapper to clip the grid pattern without clipping the profile card */}
           <div className="absolute inset-0 overflow-hidden rounded-2xl sm:rounded-3xl pointer-events-none z-0">
             <AnimatedGridPattern

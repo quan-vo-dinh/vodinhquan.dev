@@ -244,22 +244,6 @@ export function InterviewProfileCard({
         {/* Metallic Sheen Sweep Animation */}
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 dark:via-white/10 to-transparent -translate-x-full group-hover/card:translate-x-full transition-transform duration-1000 ease-out pointer-events-none rounded-2xl z-30" />
 
-        {/* Dynamic Game Rank SVG Image - Direct child of CardBody, sitting on top of the card header */}
-        <CardItem
-          translateZ={100}
-          as="div"
-          className="absolute -top-24 sm:-top-28 left-0 right-0 mx-auto w-fit h-32 sm:h-36 pointer-events-none select-none z-30"
-        >
-          <RankImage
-            src={currentTier.svg}
-            alt={lolStyles.rankName}
-            width={280}
-            height={280}
-            priority
-            className="h-full w-auto object-contain filter drop-shadow-[0_4px_8px_rgba(0,0,0,0.5)] dark:drop-shadow-[0_6px_12px_rgba(0,0,0,0.7)]"
-          />
-        </CardItem>
-
         {/* Summoner Avatar with Circular Rank Border */}
         <div className="relative shrink-0 flex items-center justify-center [transform-style:preserve-3d]">
           {/* Avatar with Circular Rank Border */}
