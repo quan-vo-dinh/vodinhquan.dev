@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useMemo } from "react";
 
 import {
   Tooltip,
@@ -12,15 +13,17 @@ import { cn } from "@/lib/utils";
 import { getInterviewCategoryMeta } from "../lib/category-meta";
 import { createInterviewHref } from "../lib/question-url-state";
 import { getRankTier } from "../lib/rank-meta";
-import type { InterviewCategorySummary, InterviewFilterState } from "../types";
+import type { InterviewCategorySummary, InterviewFilterState, InterviewQuestionView } from "../types";
 import { useInterviewLearningState } from "./interview-learning-state-provider";
 import { RankImage } from "./rank-image";
 import { TechIcon } from "./tech-icon";
 import { useI18n } from "@/i18n/locale-provider";
+import { calculateCategoryScore } from "../lib/question-points";
 
 type CategoryProgressVerticalProps = {
   categories: InterviewCategorySummary[];
   categoryQuestionIds: Record<string, number[]>;
+  allQuestions?: InterviewQuestionView[];
   filterState: InterviewFilterState;
   onNavigate?: (href: string) => void;
 };
@@ -28,14 +31,26 @@ type CategoryProgressVerticalProps = {
 export function CategoryProgressVertical({
   categories,
   categoryQuestionIds,
+  allQuestions = [],
   filterState,
   onNavigate,
 }: CategoryProgressVerticalProps) {
   const { dictionary } = useI18n();
-  const { isReady, learnedIds } = useInterviewLearningState();
+  const { isReady, learnedIds, ignoredIds } = useInterviewLearningState();
 
   const radius = 21;
   const circumference = 2 * Math.PI * radius;
+
+  const questionsByCategory = useMemo(() => {
+    const map: Record<string, InterviewQuestionView[]> = {};
+    for (const q of allQuestions) {
+      if (!map[q.category]) {
+        map[q.category] = [];
+      }
+      map[q.category].push(q);
+    }
+    return map;
+  }, [allQuestions]);
 
   if (!isReady) {
     return null;
@@ -59,15 +74,19 @@ export function CategoryProgressVertical({
             const meta = getInterviewCategoryMeta(category.name);
             const isActive = category.name === filterState.category;
             const ids = categoryQuestionIds[category.name] || [];
+            const catQuestions = questionsByCategory[category.name] || [];
 
-            const learnedCount = isReady
-              ? ids.filter((id) => learnedIds.has(id)).length
-              : 0;
+            const scoreResult = catQuestions.length > 0
+              ? calculateCategoryScore(catQuestions, learnedIds, ignoredIds)
+              : null;
 
-            const percentage =
-              ids.length === 0
+            const percentage = scoreResult
+              ? scoreResult.progressPercentage
+              : ids.length === 0
                 ? 0
-                : Math.round((learnedCount / ids.length) * 100);
+                : Math.round((ids.filter((id) => learnedIds.has(id)).length / ids.length) * 100);
+
+            const learnedCount = ids.filter((id) => learnedIds.has(id)).length;
             const strokeDashoffset =
               circumference - (percentage / 100) * circumference;
             const tier = getRankTier(percentage);
@@ -142,13 +161,18 @@ export function CategoryProgressVertical({
                       {/* Mini rank logo badge — bottom-right corner, only when progress > 0 */}
                       {percentage > 0 && (
                         <div className="absolute -bottom-1.5 -right-1.5 size-7 rounded-full bg-card/90 border border-border/50 shadow-sm flex items-center justify-center overflow-hidden pointer-events-none">
-                          <RankImage
-                            src={tier.logoSvg}
-                            alt={tier.name}
-                            width={28}
-                            height={28}
-                            className="size-full object-contain"
-                          />
+                          <div
+                            style={{ transform: `scale(${tier.logoScale * 0.9})` }}
+                            className="size-full flex items-center justify-center"
+                          >
+                            <RankImage
+                              src={tier.logoSvg}
+                              alt={tier.name}
+                              width={28}
+                              height={28}
+                              className="size-full object-contain"
+                            />
+                          </div>
                         </div>
                       )}
                     </div>
@@ -163,8 +187,7 @@ export function CategoryProgressVertical({
                     {category.name}
                   </span>
                   <span className="text-[10px] text-muted-foreground">
-                    {learnedCount} / {ids.length}{" "}
-                    {dictionary.interview.learnedCount} ({percentage}%)
+                    {scoreResult ? `${scoreResult.currentScore} / ${scoreResult.totalPossibleScore} PTS` : `${learnedCount} / ${ids.length}`} ({percentage}%)
                   </span>
                   {percentage > 0 && (
                     <span className="text-[10px] font-semibold text-amber-500 dark:text-amber-400">

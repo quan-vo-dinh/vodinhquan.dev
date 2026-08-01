@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef, useTransition } from "react";
+import { useState, useEffect, useCallback, useRef, useTransition, useMemo } from "react";
 import { createPortal } from "react-dom";
 import { ChevronDown, Menu, X, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -17,6 +17,7 @@ import { RankUpModal } from "./rank-up-modal";
 import { InterviewProfileCard } from "./interview-profile-card";
 import { LearningSyncBanner } from "./learning-sync-banner";
 import { createInterviewHref } from "../lib/question-url-state";
+import { calculateCategoryScore } from "../lib/question-points";
 
 import type { CurrentViewer } from "@/features/auth/types";
 import type {
@@ -87,11 +88,6 @@ type InterviewPracticePageContentProps = {
 const BLUR_FADE_DELAY = 0.04;
 const RANK_MILESTONES = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100] as const;
 
-function getCategoryProgressPercent(learnedCount: number, total: number): number {
-  if (total === 0) return 0;
-  return Math.round((learnedCount / total) * 100);
-}
-
 
 function InterviewPracticePageContent({
   categories,
@@ -132,57 +128,50 @@ function InterviewPracticePageContent({
   } = useInterviewLearningState();
 
   const [rankUpData, setRankUpData] = useState<{ oldRank: RankTier; newRank: RankTier; category: string } | null>(null);
-  const prevCategoryLearnedCountRef = useRef<Record<string, number>>({});
+  const prevCategoryProgressRef = useRef<Record<string, number>>({});
   const hasHydratedCategoryProgressRef = useRef<Record<string, boolean>>({});
 
-  const currentCategoryQuestionIds = categoryQuestionIds[filterState.category] || [];
-  const currentCategoryActiveQuestionIds = currentCategoryQuestionIds.filter(
-    (id) => !ignoredIds.has(id)
+  const scoreResult = useMemo(
+    () => calculateCategoryScore(questions, learnedIds, ignoredIds),
+    [questions, learnedIds, ignoredIds]
   );
+  const categoryProgress = scoreResult.progressPercentage;
   const categoryLearnedCount = isReady
-    ? currentCategoryActiveQuestionIds.filter((id) => learnedIds.has(id)).length
+    ? questions.filter((q) => learnedIds.has(q.id) && !ignoredIds.has(q.id)).length
     : 0;
-  const categoryProgress = currentCategoryActiveQuestionIds.length > 0
-    ? Math.round((categoryLearnedCount / currentCategoryActiveQuestionIds.length) * 100)
-    : 0;
-
-
 
   useEffect(() => {
     if (!isReady) return;
 
     const currentCategoryName = filterState.category;
-    const currentCount = categoryLearnedCount;
-    const totalInCategory = currentCategoryQuestionIds.length;
+    const currentProgress = categoryProgress;
 
     if (!hasHydratedCategoryProgressRef.current[currentCategoryName]) {
       hasHydratedCategoryProgressRef.current[currentCategoryName] = true;
-      prevCategoryLearnedCountRef.current[currentCategoryName] = currentCount;
+      prevCategoryProgressRef.current[currentCategoryName] = currentProgress;
       return;
     }
 
-    const prevCount = prevCategoryLearnedCountRef.current[currentCategoryName] ?? currentCount;
+    const prevProgress = prevCategoryProgressRef.current[currentCategoryName] ?? currentProgress;
 
-    if (currentCount > prevCount && totalInCategory > 0) {
-      const prevProgress = getCategoryProgressPercent(prevCount, totalInCategory);
-      const newProgress = getCategoryProgressPercent(currentCount, totalInCategory);
+    if (currentProgress > prevProgress) {
       const crossedMilestone = RANK_MILESTONES.find(
-        (milestone) => prevProgress < milestone && newProgress >= milestone
+        (milestone) => prevProgress < milestone && currentProgress >= milestone
       );
 
       if (crossedMilestone) {
         queueMicrotask(() => {
           setRankUpData({
             oldRank: getRankTier(prevProgress),
-            newRank: getRankTier(newProgress),
+            newRank: getRankTier(currentProgress),
             category: currentCategoryName,
           });
         });
       }
     }
 
-    prevCategoryLearnedCountRef.current[currentCategoryName] = currentCount;
-  }, [categoryLearnedCount, filterState.category, currentCategoryQuestionIds.length, isReady]);
+    prevCategoryProgressRef.current[currentCategoryName] = currentProgress;
+  }, [categoryProgress, filterState.category, isReady]);
 
   useEffect(() => {
     const timer = setTimeout(() => setMounted(true), 0);
@@ -443,6 +432,7 @@ function InterviewPracticePageContent({
       <CategoryProgressVertical
         categories={categories}
         categoryQuestionIds={categoryQuestionIds}
+        allQuestions={questions}
         filterState={filterState}
         onNavigate={handleNavigate}
       />

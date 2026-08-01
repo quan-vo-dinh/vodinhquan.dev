@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 
 import { CardContainer, CardBody, CardItem } from "@/components/ui/3d-card";
@@ -243,11 +244,11 @@ export function InterviewProfileCard({
         {/* Metallic Sheen Sweep Animation */}
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 dark:via-white/10 to-transparent -translate-x-full group-hover/card:translate-x-full transition-transform duration-1000 ease-out pointer-events-none rounded-2xl z-30" />
 
-        {/* Dynamic Game Rank SVG Image - Direct child of CardBody, sitting on top of the avatar */}
+        {/* Dynamic Game Rank SVG Image - Direct child of CardBody, sitting on top of the card header */}
         <CardItem
           translateZ={100}
           as="div"
-          className="absolute -top-16 sm:-top-20 left-0 right-0 mx-auto w-fit h-32 sm:h-36 pointer-events-none select-none z-30"
+          className="absolute -top-24 sm:-top-28 left-0 right-0 mx-auto w-fit h-32 sm:h-36 pointer-events-none select-none z-30"
         >
           <RankImage
             src={currentTier.svg}
@@ -259,58 +260,31 @@ export function InterviewProfileCard({
           />
         </CardItem>
 
-        {/* Winged Summoner Avatar & XP */}
-        <div className="relative shrink-0 flex flex-col items-center justify-center py-2 [transform-style:preserve-3d]">
-          {/* Left Wing */}
-          {lolStyles.hasWings && (
-            <CardItem
-              translateZ={30}
-              className={cn(
-                "absolute -left-2.5 top-1/2 -translate-y-1/2 -mt-1 w-1.5 h-6 rounded-l-md border-y border-l transition-all duration-300 pointer-events-none",
-                lolStyles.wingColor
-              )}
-            >
-              {""}
-            </CardItem>
-          )}
-
-          {/* Avatar with Ring */}
-          <CardItem translateZ={50} className="relative z-10">
-            <Avatar
-              className={cn(
-                "size-12 border shadow-sm ring-2 transition-all duration-500",
-                lolStyles.avatarRing
-              )}
-            >
+        {/* Summoner Avatar with Circular Rank Border */}
+        <div className="relative shrink-0 flex items-center justify-center [transform-style:preserve-3d]">
+          {/* Avatar with Circular Rank Border */}
+          <CardItem translateZ={50} className="relative z-10 flex items-center justify-center">
+            <Avatar className="size-12 border border-border/40 shadow-sm rounded-full overflow-hidden">
               {avatarUrl && (
                 <AvatarImage alt={displayName} src={avatarUrl} />
               )}
               <AvatarFallback>{initials}</AvatarFallback>
             </Avatar>
-          </CardItem>
 
-          {/* Right Wing */}
-          {lolStyles.hasWings && (
-            <CardItem
-              translateZ={30}
-              className={cn(
-                "absolute -right-2.5 top-1/2 -translate-y-1/2 -mt-1 w-1.5 h-6 rounded-r-md border-y border-r transition-all duration-300 pointer-events-none",
-                lolStyles.wingColor
-              )}
-            >
-              {""}
-            </CardItem>
-          )}
-
-          {/* Level Badge */}
-          <CardItem
-            translateZ={75}
-            className={cn(
-              "absolute -bottom-6 left-0 right-0 mx-auto w-fit px-1 py-0.5 rounded text-[8px] font-extrabold tracking-wider border shadow-sm transition-all duration-500 z-20 pointer-events-none select-none",
-              lolStyles.badgeClass
+            {currentTier.iconBorder && (
+              <Image
+                src={currentTier.iconBorder}
+                alt={`${currentTier.name} Border`}
+                width={280}
+                height={363}
+                priority
+                unoptimized
+                style={{
+                  transform: `translate(-50%, calc(-50% + ${currentTier.iconBorderOffsetY ?? -6.5}%))`,
+                }}
+                className="absolute top-1/2 left-1/2 w-[280%] h-auto max-w-none pointer-events-none z-20 filter drop-shadow-[0_4px_10px_rgba(0,0,0,0.6)] transition-all duration-500"
+              />
             )}
-          >
-            {lolStyles.levelText}
           </CardItem>
         </div>
 

@@ -22,6 +22,7 @@ import { useI18n } from "@/i18n/locale-provider";
 import type { InterviewQuestionView } from "../types";
 import { InterviewMarkdown } from "./interview-markdown";
 import { useInterviewLearningState } from "./interview-learning-state-provider";
+import { getQuestionPoints } from "../lib/question-points";
 
 type QuestionListProps = {
   questions: InterviewQuestionView[];
@@ -187,6 +188,12 @@ export function QuestionList({ questions }: QuestionListProps) {
                     className={levelClassName(question.level)}
                   >
                     {levelLabels[question.level]}
+                  </Badge>
+                  <Badge
+                    variant="outline"
+                    className="font-mono text-[10px] border-amber-500/30 bg-amber-500/5 text-amber-600 dark:text-amber-400 font-semibold"
+                  >
+                    +{getQuestionPoints(question.level)} PTS
                   </Badge>
                   <Badge variant="outline">{question.subcategory}</Badge>
                   {isLearned && isReady ? (

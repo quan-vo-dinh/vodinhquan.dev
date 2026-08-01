@@ -1,6 +1,6 @@
 "use client";
 
-import { Bookmark, CheckCircle2, EyeOff } from "lucide-react";
+import { Bookmark, CheckCircle2, EyeOff, Sparkles } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { useRef, useEffect } from "react";
@@ -9,15 +9,17 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { NumberTicker } from "@/components/ui/number-ticker";
 
 import type { InterviewQuestionView } from "../types";
 import { useInterviewLearningState } from "./interview-learning-state-provider";
 import { getInterviewCategoryMeta } from "../lib/category-meta";
 import { TechIcon } from "./tech-icon";
 import { triggerConfetti } from "../lib/celebrate";
-import { getRankTier } from "../lib/rank-meta";
+import { getRankTier, RANK_TIERS } from "../lib/rank-meta";
 import { RankImage } from "./rank-image";
 import { useI18n } from "@/i18n/locale-provider";
+import { calculateCategoryScore } from "../lib/question-points";
 
 type ProgressSummaryProps = {
   questions: InterviewQuestionView[];
@@ -82,104 +84,81 @@ function getDeveloperRank(percentage: number) {
         barColorClass: "[&>div]:bg-rose-500",
       };
     case "challenger":
+      return { title: "Challenger", barColorClass: "bg-amber-400" };
     default:
-      return {
-        title: "Challenger 👑",
-        className: "border-amber-500/30 text-amber-500 bg-amber-500/10 shadow-[0_0_12px_rgba(234,179,8,0.2)] animate-pulse font-bold",
-        barColorClass: "[&>div]:bg-gradient-to-r [&>div]:from-amber-500 [&>div]:to-orange-500 [&>div]:animate-pulse",
-      };
+      return { title: "Iron", barColorClass: "bg-zinc-500" };
   }
 }
 
 export function ProgressSummary({ questions, category }: ProgressSummaryProps) {
   const { dictionary } = useI18n();
   const {
+    learnedIds,
     bookmarkedIds,
     ignoredIds,
-    isAuthenticated,
     isReady,
+    isAuthenticated,
     isRemoteAvailable,
-    learnedIds,
   } = useInterviewLearningState();
-  const meta = getInterviewCategoryMeta(category);
+
+  const scoreResult = calculateCategoryScore(questions, learnedIds, ignoredIds);
+  const { currentScore, totalPossibleScore, progressPercentage } = scoreResult;
 
   const activeQuestions = questions.filter((q) => !ignoredIds.has(q.id));
-  const activeIds = new Set(activeQuestions.map((q) => q.id));
 
-  const learnedCount = isReady
-    ? Array.from(learnedIds).filter((id) => activeIds.has(id)).length
-    : 0;
-  const bookmarkedCount = isReady
-    ? Array.from(bookmarkedIds).filter((id) => activeIds.has(id)).length
-    : 0;
-  const ignoredCount = isReady
-    ? questions.filter((q) => ignoredIds.has(q.id)).length
-    : 0;
+  const learnedCount = questions.filter(
+    (q) => learnedIds.has(q.id) && !ignoredIds.has(q.id)
+  ).length;
 
-  const progressValue =
-    activeQuestions.length > 0
-      ? Math.round((learnedCount / activeQuestions.length) * 100)
-      : 0;
+  const bookmarkedCount = questions.filter(
+    (q) => bookmarkedIds.has(q.id) && !ignoredIds.has(q.id)
+  ).length;
 
-  const prevProgressRef = useRef(progressValue);
-  const lastCategoryRef = useRef(category);
-  const hasHydratedProgressRef = useRef(false);
+  const ignoredCount = questions.filter((q) => ignoredIds.has(q.id)).length;
 
+  const meta = getInterviewCategoryMeta(category);
+
+  // Trigger celebration confetti when crossing a milestone threshold
+  const prevProgressRef = useRef(progressPercentage);
   useEffect(() => {
     if (!isReady) return;
-
-    if (lastCategoryRef.current !== category) {
-      lastCategoryRef.current = category;
-      prevProgressRef.current = progressValue;
-      hasHydratedProgressRef.current = true;
-      return;
-    }
-
-    if (!hasHydratedProgressRef.current) {
-      hasHydratedProgressRef.current = true;
-      prevProgressRef.current = progressValue;
-      return;
-    }
-
     const prev = prevProgressRef.current;
-    const curr = progressValue;
-
+    const curr = progressPercentage;
     if (curr > prev) {
-      const milestoneValues = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
-      const crossed = milestoneValues.find((m) => prev < m && curr >= m);
+      const thresholds = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
+      const crossed = thresholds.find((t) => prev < t && curr >= t);
       if (crossed) {
         triggerConfetti(crossed);
       }
     }
     prevProgressRef.current = curr;
-  }, [progressValue, category, isReady]);
+  }, [progressPercentage, category, isReady]);
 
-  const rank = getDeveloperRank(progressValue);
-  const tier = getRankTier(progressValue);
+  const rank = getDeveloperRank(progressPercentage);
 
-  const milestones = [
-    { value: 10, label: "Bronze (10%)", logoSvg: "/ranked/bronze-logo.svg" },
-    { value: 20, label: "Silver (20%)", logoSvg: "/ranked/sliver-logo.svg" },
-    { value: 30, label: "Gold (30%)", logoSvg: "/ranked/gold-logo.svg" },
-    { value: 40, label: "Platinum (40%)", logoSvg: "/ranked/platinum-logo.svg" },
-    { value: 50, label: "Emerald (50%)", logoSvg: "/ranked/emerald-logo.svg" },
-    { value: 60, label: "Diamond (60%)", logoSvg: "/ranked/diamond-logo.svg" },
-    { value: 70, label: "Master (70%)", logoSvg: "/ranked/master-logo.svg" },
-    { value: 80, label: "Grandmaster (80%)", logoSvg: "/ranked/grandmaster-logo.svg" },
-    { value: 90, label: "Challenger (90%)", logoSvg: "/ranked/challenger-logo.svg" },
-  ];
+  const milestones = RANK_TIERS.filter((t) => t.minPercent > 0).map((t) => ({
+    value: t.minPercent,
+    label: `${t.name} (${t.minPercent}%)`,
+    logoSvg: t.logoSvg,
+    logoScale: t.logoScale,
+  }));
 
   return (
     <div className="relative rounded-xl border bg-background/95 px-2 py-1.5 shadow-sm backdrop-blur-md dark:bg-background/95 sm:rounded-2xl sm:px-3 sm:py-2">
       {/* Top Header Row */}
       <div className="flex items-center justify-between gap-2 mb-0.5">
-        {/* Left: Progress Title */}
-        <div className="min-w-0 flex-1">
+        {/* Left: Progress Title + Animated Score Counter */}
+        <div className="min-w-0 flex-1 flex items-center gap-2">
           <p className="text-xs sm:text-sm font-medium truncate">
             {isAuthenticated && isRemoteAvailable
               ? dictionary.interview.syncedProgress
               : dictionary.interview.localProgress}
           </p>
+          <span className="hidden xs:inline-flex items-center gap-1 text-[11px] sm:text-xs font-mono font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-full">
+            <Sparkles className="size-3 fill-current text-amber-500" />
+            <NumberTicker value={currentScore} />
+            <span className="text-muted-foreground font-normal">/ {totalPossibleScore.toLocaleString()} PTS</span>
+          </span>
         </div>
 
         {/* Right: Rank Title + % + Tech Icon */}
@@ -187,7 +166,7 @@ export function ProgressSummary({ questions, category }: ProgressSummaryProps) {
           <span className="text-[11px] sm:text-xs font-semibold px-2 py-0.5 rounded-full border bg-muted/50 text-foreground truncate">
             {rank.title}
           </span>
-          <span className="text-xs sm:text-sm font-bold shrink-0">{progressValue}%</span>
+          <span className="text-xs sm:text-sm font-bold shrink-0">{progressPercentage}%</span>
           <div className="flex shrink-0 items-center justify-center size-5 sm:size-6">
             <TechIcon
               iconKey={meta.iconKey}
@@ -200,10 +179,19 @@ export function ProgressSummary({ questions, category }: ProgressSummaryProps) {
 
       {/* Progress Bar with Milestone Rank SVGs */}
       <div className="relative w-full my-1.5 pt-1 pb-0.5">
-        <Progress value={progressValue} className={cn("h-1.5 rounded-full", rank.barColorClass)} />
+        <Progress
+          value={progressPercentage}
+          className={cn(
+            "h-1.5 rounded-full [&>div]:transition-all [&>div]:duration-700 [&>div]:ease-out",
+            rank.barColorClass
+          )}
+        />
         <div className="absolute inset-y-0 left-0 right-0 flex items-center pointer-events-none">
           {milestones.map((m) => {
-            const isReached = progressValue >= m.value;
+            const isReached = progressPercentage >= m.value;
+            const targetScore = Math.ceil((m.value / 100) * totalPossibleScore);
+            const remainingPts = Math.max(0, targetScore - currentScore);
+
             return (
               <Tooltip key={m.value}>
                 <TooltipTrigger asChild>
@@ -219,18 +207,32 @@ export function ProgressSummary({ questions, category }: ProgressSummaryProps) {
                           : "opacity-30 grayscale contrast-75 hover:opacity-80 hover:grayscale-0"
                       )}
                     >
-                      <RankImage
-                        src={m.logoSvg}
-                        alt={m.label}
-                        width={28}
-                        height={28}
-                        className="size-full object-contain pointer-events-none"
-                      />
+                      <div
+                        style={{ transform: `scale(${m.logoScale})` }}
+                        className="size-full flex items-center justify-center pointer-events-none"
+                      >
+                        <RankImage
+                          src={m.logoSvg}
+                          alt={m.label}
+                          width={28}
+                          height={28}
+                          className="size-full object-contain pointer-events-none"
+                        />
+                      </div>
                     </div>
                   </div>
                 </TooltipTrigger>
-                <TooltipContent side="top" className="text-[10px] py-1 px-2 font-semibold">
-                  <span>{m.label}</span>
+                <TooltipContent side="top" className="text-[11px] py-1.5 px-2.5 font-semibold space-y-0.5">
+                  <div className="flex items-center gap-1">
+                    <span>{m.label}</span>
+                    {isReached && <CheckCircle2 className="size-3 text-emerald-400 fill-emerald-500/20" />}
+                  </div>
+                  <div className="text-[10px] text-muted-foreground font-mono">
+                    Target: <span className="font-bold text-amber-500">{targetScore.toLocaleString()} PTS</span>
+                    {!isReached && remainingPts > 0 && (
+                      <span className="block text-[9px] text-zinc-400">(cần thêm {remainingPts.toLocaleString()} PTS)</span>
+                    )}
+                  </div>
                 </TooltipContent>
               </Tooltip>
             );
@@ -257,10 +259,18 @@ export function ProgressSummary({ questions, category }: ProgressSummaryProps) {
             <span className="hidden sm:inline">{dictionary.interview.ignoredCount}</span>
           </span>
         )}
-        <span className="hidden sm:inline-flex ml-auto text-muted-foreground/60">
+        <div className="hidden md:inline-flex items-center gap-1.5 text-[10px] text-muted-foreground/70 font-mono ml-auto">
+          <span className="text-emerald-600 dark:text-emerald-400">Beg: +10</span>
+          <span>•</span>
+          <span className="text-sky-600 dark:text-sky-400">Int: +25</span>
+          <span>•</span>
+          <span className="text-purple-600 dark:text-purple-400">Adv: +45</span>
+        </div>
+        <span className="inline-flex md:hidden ml-auto text-muted-foreground/60">
           {activeQuestions.length} {dictionary.interview.visibleCount}
         </span>
       </div>
     </div>
   );
 }
+
