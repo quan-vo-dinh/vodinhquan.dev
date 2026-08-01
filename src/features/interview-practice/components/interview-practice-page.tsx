@@ -46,6 +46,8 @@ type InterviewPracticePageProps = {
   filterState: InterviewFilterState;
   initialLearningState: InterviewLearningStateSnapshot;
   questions: InterviewQuestionView[];
+  categoryQuestions: InterviewQuestionView[];
+  allQuestions: InterviewQuestionView[];
   subcategories: InterviewSubcategorySummary[];
   totalQuestions: number;
   viewer: CurrentViewer | null;
@@ -57,6 +59,8 @@ export function InterviewPracticePage({
   filterState,
   initialLearningState,
   questions,
+  categoryQuestions,
+  allQuestions,
   subcategories,
   totalQuestions,
   viewer,
@@ -68,6 +72,8 @@ export function InterviewPracticePage({
         categoryQuestionIds={categoryQuestionIds}
         filterState={filterState}
         questions={questions}
+        categoryQuestions={categoryQuestions}
+        allQuestions={allQuestions}
         subcategories={subcategories}
         totalQuestions={totalQuestions}
         viewer={viewer}
@@ -81,6 +87,8 @@ type InterviewPracticePageContentProps = {
   categoryQuestionIds: Record<string, number[]>;
   filterState: InterviewFilterState;
   questions: InterviewQuestionView[];
+  categoryQuestions: InterviewQuestionView[];
+  allQuestions: InterviewQuestionView[];
   subcategories: InterviewSubcategorySummary[];
   totalQuestions: number;
   viewer: CurrentViewer | null;
@@ -95,6 +103,8 @@ function InterviewPracticePageContent({
   categoryQuestionIds,
   filterState,
   questions,
+  categoryQuestions,
+  allQuestions,
   subcategories,
   totalQuestions,
   viewer,
@@ -133,12 +143,12 @@ function InterviewPracticePageContent({
   const hasHydratedCategoryProgressRef = useRef<Record<string, boolean>>({});
 
   const scoreResult = useMemo(
-    () => calculateCategoryScore(questions, learnedIds, ignoredIds),
-    [questions, learnedIds, ignoredIds]
+    () => calculateCategoryScore(categoryQuestions, learnedIds, ignoredIds),
+    [categoryQuestions, learnedIds, ignoredIds]
   );
   const categoryProgress = scoreResult.progressPercentage;
   const categoryLearnedCount = isReady
-    ? questions.filter((q) => learnedIds.has(q.id) && !ignoredIds.has(q.id)).length
+    ? categoryQuestions.filter((q) => learnedIds.has(q.id) && !ignoredIds.has(q.id)).length
     : 0;
 
   useEffect(() => {
@@ -428,7 +438,7 @@ function InterviewPracticePageContent({
           >
             <div className="flex flex-col gap-2">
               <LearningSyncBanner />
-              <ProgressSummary questions={questions} category={filterState.category} />
+              <ProgressSummary questions={categoryQuestions} category={filterState.category} />
             </div>
           </BlurFade>
 
@@ -447,7 +457,7 @@ function InterviewPracticePageContent({
       <CategoryProgressVertical
         categories={categories}
         categoryQuestionIds={categoryQuestionIds}
-        allQuestions={questions}
+        allQuestions={allQuestions}
         filterState={filterState}
         onNavigate={handleNavigate}
       />

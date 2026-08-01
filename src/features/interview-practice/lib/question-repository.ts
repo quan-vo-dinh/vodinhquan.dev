@@ -137,6 +137,26 @@ export function getFilteredInterviewQuestions(state: InterviewFilterState) {
     .map((question) => toQuestionView(question, state.locale));
 }
 
+export function getCategoryAllQuestions(
+  category: string,
+  target: InterviewTargetLevel = "senior",
+  locale: InterviewLocale = "vi"
+): InterviewQuestionView[] {
+  return questions
+    .filter((question) => filterByTargetLevel(question, target))
+    .filter((question) => question.category === category)
+    .map((question) => toQuestionView(question, locale));
+}
+
+export function getAllTargetInterviewQuestions(
+  target: InterviewTargetLevel = "senior",
+  locale: InterviewLocale = "vi"
+): InterviewQuestionView[] {
+  return questions
+    .filter((question) => filterByTargetLevel(question, target))
+    .map((question) => toQuestionView(question, locale));
+}
+
 export function getInterviewCategoryQuestionIds(target: InterviewTargetLevel = "senior"): Record<string, number[]> {
   const mapping: Record<string, number[]> = {};
 
