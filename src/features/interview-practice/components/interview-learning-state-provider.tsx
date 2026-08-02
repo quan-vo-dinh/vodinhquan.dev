@@ -133,6 +133,7 @@ export function InterviewLearningStateProvider({
     setBookmarkedIds(nextBookmarkedIds);
     setIgnoredIds(nextIgnoredIds);
     setPinnedCategoriesState(snapshot.pinnedCategories);
+    writeLocalNumberArray(IGNORED_STORAGE_KEY, combinedIgnored);
   }, []);
 
   useEffect(() => {

@@ -271,6 +271,17 @@ export async function setQuestionBookmarked(
   return finishMutation(supabase, userId, mutationError);
 }
 
+function isMissingIgnoredColumnError(error: { message?: string; code?: string } | null) {
+  if (!error) return false;
+  return (
+    Boolean(error.message?.includes("ignored_at")) ||
+    Boolean(error.message?.includes("p_ignored_ids")) ||
+    error.code === "PGRST204" ||
+    error.code === "42703" ||
+    error.code === "42883"
+  );
+}
+
 export async function setQuestionIgnored(
   input: unknown
 ): Promise<LearningStateActionResult> {
@@ -300,7 +311,9 @@ export async function setQuestionIgnored(
       .select("question_id");
 
     if (updateResult.error) {
-      mutationError = updateResult.error.message;
+      if (!isMissingIgnoredColumnError(updateResult.error)) {
+        mutationError = updateResult.error.message;
+      }
     } else if (updateResult.data.length === 0) {
       const { error: insertError } = await supabase
         .from("interview_question_progress")
@@ -309,7 +322,9 @@ export async function setQuestionIgnored(
           question_id: questionId,
           ignored_at: ignoredAt,
         });
-      mutationError = insertError?.message ?? null;
+      if (insertError && !isMissingIgnoredColumnError(insertError)) {
+        mutationError = insertError.message;
+      }
     }
   } else {
     const { error: deleteError } = await supabase
@@ -320,7 +335,7 @@ export async function setQuestionIgnored(
       .is("learned_at", null)
       .is("bookmarked_at", null);
 
-    if (deleteError) {
+    if (deleteError && !isMissingIgnoredColumnError(deleteError)) {
       mutationError = deleteError.message;
     } else {
       const { error: updateError } = await supabase
@@ -328,7 +343,9 @@ export async function setQuestionIgnored(
         .update({ ignored_at: null })
         .eq("user_id", userId)
         .eq("question_id", questionId);
-      mutationError = updateError?.message ?? null;
+      if (updateError && !isMissingIgnoredColumnError(updateError)) {
+        mutationError = updateError.message;
+      }
     }
   }
 
@@ -392,7 +409,7 @@ export async function syncLocalLearningState(
     return { ok: false, reason: "unauthorized", snapshot: null };
   }
 
-  const { data, error } = await context.supabase.rpc(
+  let { data, error } = await context.supabase.rpc(
     "merge_interview_learning_state",
     {
       p_learned_ids: parsed.data.learnedIds,
@@ -401,6 +418,19 @@ export async function syncLocalLearningState(
       p_pinned_categories: parsed.data.pinnedCategories,
     }
   );
+
+  if (error && isMissingIgnoredColumnError(error)) {
+    const fallbackRpc = await context.supabase.rpc(
+      "merge_interview_learning_state",
+      {
+        p_learned_ids: parsed.data.learnedIds,
+        p_bookmarked_ids: parsed.data.bookmarkedIds,
+        p_pinned_categories: parsed.data.pinnedCategories,
+      }
+    );
+    data = fallbackRpc.data;
+    error = fallbackRpc.error;
+  }
 
   if (error) {
     return finishMutation(context.supabase, context.userId, error.message);
