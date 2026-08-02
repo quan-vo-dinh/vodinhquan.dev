@@ -48,6 +48,7 @@ type InterviewLearningStateContextValue = {
   isRemoteAvailable: boolean;
   persistenceError: string | null;
   hasLocalProgressToSync: boolean;
+  syncSuccess: boolean;
   toggleBookmark: (id: number) => void;
   toggleLearned: (id: number) => void;
   toggleIgnored: (id: number) => void;
@@ -96,6 +97,7 @@ export function InterviewLearningStateProvider({
     initialState.pinnedCategories
   );
   const [hasLocalProgressToSync, setHasLocalProgressToSync] = useState(false);
+  const [syncSuccess, setSyncSuccess] = useState(false);
   const [persistenceError, setPersistenceError] = useState<string | null>(
     initialState.remoteStatus === "unavailable"
       ? "remote-progress-unavailable"
@@ -305,8 +307,11 @@ export function InterviewLearningStateProvider({
       () => {
         writeLocalNumberArray(LEARNED_STORAGE_KEY, []);
         writeLocalNumberArray(BOOKMARK_STORAGE_KEY, []);
+        writeLocalNumberArray(IGNORED_STORAGE_KEY, []);
         writeLocalStringArray(PINNED_CATEGORIES_STORAGE_KEY, []);
         setHasLocalProgressToSync(false);
+        setSyncSuccess(true);
+        setTimeout(() => setSyncSuccess(false), 5000);
       }
     );
   }, [enqueueRemoteMutation, isRemoteAvailable]);
@@ -324,6 +329,7 @@ export function InterviewLearningStateProvider({
       persistenceError,
       pinnedCategories,
       syncBrowserProgress,
+      syncSuccess,
       toggleBookmark,
       toggleIgnored,
       toggleLearned,
@@ -341,6 +347,7 @@ export function InterviewLearningStateProvider({
       persistenceError,
       pinnedCategories,
       syncBrowserProgress,
+      syncSuccess,
       toggleBookmark,
       toggleIgnored,
       toggleLearned,

@@ -1,6 +1,6 @@
 "use client";
 
-import { CloudOff, CloudUpload } from "lucide-react";
+import { CheckCircle2, CloudOff, CloudUpload } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
@@ -16,10 +16,23 @@ export function LearningSyncBanner() {
     isRemoteAvailable,
     persistenceError,
     syncBrowserProgress,
+    syncSuccess,
   } = useInterviewLearningState();
 
   if (!isAuthenticated) {
     return null;
+  }
+
+  if (syncSuccess) {
+    return (
+      <div className="flex items-center gap-3 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-sm text-emerald-900 dark:text-emerald-100 animate-in fade-in duration-300">
+        <CheckCircle2 className="size-5 shrink-0 text-emerald-500" />
+        <div>
+          <p className="font-semibold">Đồng bộ tiến độ thành công!</p>
+          <p className="text-xs opacity-80">Tất cả bài học và tiến độ trình duyệt đã được lưu an toàn vào tài khoản của bạn.</p>
+        </div>
+      </div>
+    );
   }
 
   if (!isRemoteAvailable) {
