@@ -237,23 +237,23 @@ function InterviewPracticePageContent({
               )}
             />
           </div>
-          <div className="relative z-10 grid gap-6 md:grid-cols-[1fr_auto] md:items-center">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <p className="mb-2 text-xs font-medium uppercase tracking-[0.24em] text-muted-foreground">
+          <div className="relative z-10 grid gap-3 sm:gap-4 lg:gap-6 lg:grid-cols-[1fr_auto] lg:items-center">
+            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between w-full min-w-0">
+              <div className="min-w-0 flex-1">
+                <p className="mb-1 text-[11px] sm:text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground truncate">
                   {dictionary.interview.eyebrow}
                 </p>
-                <h1 className="text-3xl font-semibold tracking-tight">
+                <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
                   <DiaTextReveal text={dictionary.interview.title} />
                 </h1>
-                <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+                <p className="mt-1 text-xs sm:text-sm text-muted-foreground max-w-2xl">
                   {dictionary.interview.description}
                 </p>
               </div>
-              <div className="flex flex-row flex-wrap items-center gap-3 shrink-0">
+              <div className="flex flex-wrap items-center gap-2.5 shrink-0">
                 {/* Target Level Switcher */}
-                <div className="flex items-center gap-2 rounded-2xl border bg-background/80 px-3.5 py-2.5 shadow-sm backdrop-blur">
-                  <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mr-1">
+                <div className="flex items-center gap-2 rounded-2xl border bg-background/80 px-3 py-1.5 sm:px-3.5 sm:py-2 shadow-sm backdrop-blur">
+                  <span className="text-[11px] sm:text-xs font-semibold text-muted-foreground uppercase tracking-wider mr-0.5">
                     {dictionary.interview.targetLevel}:
                   </span>
                   <div className="flex items-center gap-1.5">
@@ -271,7 +271,7 @@ function InterviewPracticePageContent({
                           size="sm"
                           variant={isActive ? "default" : "outline"}
                           className={cn(
-                            "h-7 px-3 text-xs font-medium rounded-full cursor-pointer transition-colors",
+                            "h-6 sm:h-7 px-2.5 sm:px-3 text-xs font-medium rounded-full cursor-pointer transition-colors",
                             !isActive && "bg-background/50 hover:bg-background/80"
                           )}
                         >
@@ -294,8 +294,8 @@ function InterviewPracticePageContent({
                 </div>
 
                 {/* Total Questions Box */}
-                <div className="flex items-center gap-3 rounded-2xl border bg-background/80 px-4 py-3 text-sm text-muted-foreground shadow-sm backdrop-blur sm:flex-col sm:items-start sm:gap-0">
-                  <span className="text-2xl font-semibold tracking-tight text-foreground sm:block">
+                <div className="flex items-center gap-2 rounded-2xl border bg-background/80 px-3 py-1.5 sm:px-3.5 sm:py-2 text-xs text-muted-foreground shadow-sm backdrop-blur">
+                  <span className="text-base sm:text-lg font-bold tracking-tight text-foreground">
                     <NumberTicker value={totalQuestions} />
                   </span>
                   <span>{dictionary.interview.questions}</span>
@@ -303,7 +303,7 @@ function InterviewPracticePageContent({
               </div>
             </div>
 
-            <BlurFade delay={BLUR_FADE_DELAY * 2} yOffset={8}>
+            <BlurFade delay={BLUR_FADE_DELAY * 2} yOffset={8} className="shrink-0 w-full lg:w-auto">
               <InterviewProfileCard
                 categoryProgress={categoryProgress}
                 learnedCount={categoryLearnedCount}
