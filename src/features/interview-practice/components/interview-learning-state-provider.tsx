@@ -120,11 +120,7 @@ export function InterviewLearningStateProvider({
   const applySnapshot = useCallback((snapshot: LearningProgressSnapshot) => {
     const nextLearnedIds = toSet(snapshot.learnedIds);
     const nextBookmarkedIds = toSet(snapshot.bookmarkedIds);
-    const localIgnored = readLocalNumberArray(IGNORED_STORAGE_KEY);
-    const combinedIgnored = Array.from(
-      new Set([...(snapshot.ignoredIds ?? []), ...localIgnored])
-    );
-    const nextIgnoredIds = toSet(combinedIgnored);
+    const nextIgnoredIds = toSet(snapshot.ignoredIds ?? []);
 
     learnedIdsRef.current = nextLearnedIds;
     bookmarkedIdsRef.current = nextBookmarkedIds;
@@ -135,25 +131,18 @@ export function InterviewLearningStateProvider({
     setBookmarkedIds(nextBookmarkedIds);
     setIgnoredIds(nextIgnoredIds);
     setPinnedCategoriesState(snapshot.pinnedCategories);
-    writeLocalNumberArray(IGNORED_STORAGE_KEY, combinedIgnored);
   }, []);
 
   useEffect(() => {
-    const localIgnored = readLocalNumberArray(IGNORED_STORAGE_KEY);
-    if (localIgnored.length > 0) {
-      const set = toSet(localIgnored);
-      ignoredIdsRef.current = set;
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setIgnoredIds(set);
-    }
-
     if (isRemoteAvailable) {
       // localStorage is an external store and must be inspected after SSR hydration.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setHasLocalProgressToSync(hasStoredBrowserProgress());
       setIsReady(true);
       return;
     }
 
+    const localIgnored = readLocalNumberArray(IGNORED_STORAGE_KEY);
     applySnapshot({
       learnedIds: readLocalNumberArray(LEARNED_STORAGE_KEY),
       bookmarkedIds: readLocalNumberArray(BOOKMARK_STORAGE_KEY),
@@ -256,9 +245,9 @@ export function InterviewLearningStateProvider({
       const { enabled, next } = toggleNumberSet(ignoredIdsRef.current, id);
       ignoredIdsRef.current = next;
       setIgnoredIds(next);
-      writeLocalNumberArray(IGNORED_STORAGE_KEY, Array.from(next));
 
       if (!isRemoteAvailable) {
+        writeLocalNumberArray(IGNORED_STORAGE_KEY, Array.from(next));
         return;
       }
 
