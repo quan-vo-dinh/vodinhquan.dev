@@ -20,7 +20,7 @@ export function InterviewMarkdown({
   return (
     <div
       className={cn(
-        "prose prose-sm sm:prose-base max-w-full text-zinc-800 dark:text-zinc-200 dark:prose-invert w-full min-w-0 overflow-hidden",
+        "prose prose-base sm:prose-sm max-w-full text-zinc-900 dark:text-zinc-100 dark:prose-invert w-full min-w-0 overflow-hidden leading-relaxed sm:leading-normal",
         "prose-pre:max-w-full prose-pre:overflow-x-auto",
         "prose-p:my-2 prose-ul:my-2 prose-ol:my-2 prose-li:my-1 sm:prose-p:my-3",
         "prose-pre:p-0 prose-pre:m-0 prose-pre:border-none prose-pre:bg-transparent",

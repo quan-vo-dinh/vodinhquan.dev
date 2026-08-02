@@ -89,7 +89,7 @@ export function FlashcardDeck({ questions: rawQuestions }: FlashcardDeckProps) {
             {currentQuestion.level}
           </span>
         </div>
-        <CardTitle className="text-lg font-bold leading-snug text-zinc-950 dark:text-zinc-50 sm:text-2xl">
+        <CardTitle className="text-xl font-extrabold leading-relaxed text-zinc-950 dark:text-zinc-50 sm:text-xl md:text-2xl sm:font-bold sm:leading-snug">
           {currentQuestion.question}
         </CardTitle>
       </CardHeader>

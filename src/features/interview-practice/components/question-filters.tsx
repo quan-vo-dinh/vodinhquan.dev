@@ -148,7 +148,7 @@ export function QuestionFilters({
             />
             <Input
               aria-label={dictionary.interview.searchAria}
-              className="h-8 rounded-xl pl-9 text-xs"
+              className="h-9 sm:h-8 rounded-xl pl-9 text-xs"
               defaultValue={filterState.query}
               name="q"
               placeholder={dictionary.interview.search}
@@ -170,7 +170,7 @@ export function QuestionFilters({
                   asChild
                   size="sm"
                   variant={isActive ? "default" : "outline"}
-                  className="h-8 px-2.5 text-xs font-medium"
+                  className="h-9 px-3 text-xs sm:h-8 sm:px-2.5 font-medium"
                 >
                   <Link
                     href={levelHref}
@@ -195,7 +195,7 @@ export function QuestionFilters({
               asChild
               size="sm"
               variant={filterState.mode === "list" ? "default" : "outline"}
-              className="h-8 px-2.5 text-xs font-medium"
+              className="h-9 px-3 text-xs sm:h-8 sm:px-2.5 font-medium"
             >
               <Link
                 href={createInterviewHref({ mode: "list" }, filterState)}
@@ -208,7 +208,7 @@ export function QuestionFilters({
                 prefetch={false}
                 className="inline-flex items-center gap-1.5"
               >
-                <List className="size-3.5" />
+                <List className="size-4 sm:size-3.5" />
                 <span>{dictionary.interview.list}</span>
               </Link>
             </Button>
@@ -218,7 +218,7 @@ export function QuestionFilters({
               variant={
                 filterState.mode === "flashcards" ? "default" : "outline"
               }
-              className="h-8 px-2.5 text-xs font-medium"
+              className="h-9 px-3 text-xs sm:h-8 sm:px-2.5 font-medium"
             >
               <Link
                 href={createInterviewHref({ mode: "flashcards" }, filterState)}
@@ -231,7 +231,7 @@ export function QuestionFilters({
                 prefetch={false}
                 className="inline-flex items-center gap-1.5"
               >
-                <SquareStack className="size-3.5" />
+                <SquareStack className="size-4 sm:size-3.5" />
                 <span>{dictionary.interview.flashcards}</span>
               </Link>
             </Button>
@@ -239,7 +239,7 @@ export function QuestionFilters({
               asChild
               size="sm"
               variant="outline"
-              className="h-8 px-2.5 text-xs font-medium"
+              className="h-9 px-3 text-xs sm:h-8 sm:px-2.5 font-medium"
             >
               <Link
                 href={createInterviewHref(
@@ -260,7 +260,7 @@ export function QuestionFilters({
                 prefetch={false}
                 className="inline-flex items-center gap-1.5"
               >
-                <Languages className="size-3.5" />
+                <Languages className="size-4 sm:size-3.5" />
                 <span>{filterState.locale === "vi" ? "EN" : "VI"}</span>
               </Link>
             </Button>

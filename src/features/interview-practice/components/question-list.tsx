@@ -177,56 +177,56 @@ export function QuestionList({ questions }: QuestionListProps) {
             <AccordionTrigger className="gap-2 py-3 hover:no-underline sm:gap-3 sm:py-4 [&>svg]:hidden">
               <div className="flex w-full min-w-0 max-w-full flex-col gap-2 text-left sm:gap-3 overflow-hidden">
                 <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-                  <span className="font-mono text-xs text-muted-foreground">
+                  <span className="font-mono text-xs sm:text-[10px] font-semibold text-muted-foreground">
                     #{String(index + 1).padStart(2, "0")}
                   </span>
-                  <Badge variant="outline" className="font-mono text-[10px] text-muted-foreground/80">
+                  <Badge variant="outline" className="font-mono text-xs sm:text-[10px] text-muted-foreground/80">
                     ID: {question.id}
                   </Badge>
                   <Badge
                     variant="outline"
-                    className={levelClassName(question.level)}
+                    className={cn(levelClassName(question.level), "text-xs sm:text-[10px] font-medium")}
                   >
                     {levelLabels[question.level]}
                   </Badge>
                   <Badge
                     variant="outline"
-                    className="font-mono text-[10px] border-amber-500/30 bg-amber-500/5 text-amber-600 dark:text-amber-400 font-semibold"
+                    className="font-mono text-xs sm:text-[10px] border-amber-500/30 bg-amber-500/5 text-amber-600 dark:text-amber-400 font-semibold"
                   >
                     +{getQuestionPoints(question.level)} PTS
                   </Badge>
-                  <Badge variant="outline" className="max-w-full truncate">{question.subcategory}</Badge>
+                  <Badge variant="outline" className="max-w-full truncate text-xs sm:text-[10px]">{question.subcategory}</Badge>
                   {isLearned && isReady ? (
                     <Badge
                       variant="outline"
-                      className="border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px]"
+                      className="border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs sm:text-[10px] font-medium"
                     >
-                      <CheckCircle2 className="mr-1 size-3" />
+                      <CheckCircle2 className="mr-1 size-3.5 sm:size-3" />
                       {dictionary.interview.learned}
                     </Badge>
                   ) : null}
                   {isBookmarked && isReady ? (
                     <Badge
                       variant="outline"
-                      className="border-amber-500/20 bg-amber-500/10 text-amber-600 dark:text-amber-400 text-[10px]"
+                      className="border-amber-500/20 bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs sm:text-[10px] font-medium"
                     >
-                      <Bookmark className="mr-1 size-3 fill-current" />
+                      <Bookmark className="mr-1 size-3.5 sm:size-3 fill-current" />
                       {dictionary.interview.saved}
                     </Badge>
                   ) : null}
                   {isIgnored && isReady ? (
                     <Badge
                       variant="outline"
-                      className="border-zinc-500/30 bg-zinc-500/10 text-zinc-500 text-[10px]"
+                      className="border-zinc-500/30 bg-zinc-500/10 text-zinc-500 text-xs sm:text-[10px] font-medium"
                     >
-                      <EyeOff className="mr-1 size-3" />
+                      <EyeOff className="mr-1 size-3.5 sm:size-3" />
                       {dictionary.interview.ignoredFilter}
                     </Badge>
                   ) : null}
                 </div>
                 <span
                   className={cn(
-                    "break-words text-[15px] font-bold leading-snug text-zinc-950 dark:text-zinc-50 sm:text-base md:text-lg",
+                    "break-words text-lg sm:text-base md:text-lg font-bold leading-relaxed sm:leading-snug text-zinc-950 dark:text-zinc-50",
                     isLearned &&
                       "text-muted-foreground line-through decoration-muted-foreground decoration-[1.5px]",
                     isIgnored && "text-muted-foreground/80 font-medium"
