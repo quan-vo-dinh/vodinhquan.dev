@@ -52,7 +52,7 @@ async function readCanonicalSnapshot(
   const [progressResult, preferencesResult] = await Promise.all([
     supabase
       .from("interview_question_progress")
-      .select("question_id, learned_at, bookmarked_at")
+      .select("question_id, learned_at, bookmarked_at, ignored_at")
       .eq("user_id", userId),
     supabase
       .from("interview_user_preferences")
@@ -76,7 +76,10 @@ async function readCanonicalSnapshot(
       progressResult.data
         ?.filter((row) => row.bookmarked_at !== null)
         .map((row) => row.question_id) ?? [],
-    ignoredIds: [],
+    ignoredIds:
+      progressResult.data
+        ?.filter((row) => row.ignored_at !== null)
+        .map((row) => row.question_id) ?? [],
     pinnedCategories: preferencesResult.data?.pinned_categories ?? [],
   });
 
@@ -261,8 +264,53 @@ export async function setQuestionIgnored(
     return { ok: false, reason: "unauthorized", snapshot: null };
   }
 
+  const { enabled, questionId } = parsed.data;
   const { supabase, userId } = context;
-  return finishMutation(supabase, userId, null);
+  let mutationError: string | null = null;
+
+  if (enabled) {
+    const ignoredAt = new Date().toISOString();
+    const updateResult = await supabase
+      .from("interview_question_progress")
+      .update({ ignored_at: ignoredAt })
+      .eq("user_id", userId)
+      .eq("question_id", questionId)
+      .select("question_id");
+
+    if (updateResult.error) {
+      mutationError = updateResult.error.message;
+    } else if (updateResult.data.length === 0) {
+      const { error: insertError } = await supabase
+        .from("interview_question_progress")
+        .insert({
+          user_id: userId,
+          question_id: questionId,
+          ignored_at: ignoredAt,
+        });
+      mutationError = insertError?.message ?? null;
+    }
+  } else {
+    const { error: deleteError } = await supabase
+      .from("interview_question_progress")
+      .delete()
+      .eq("user_id", userId)
+      .eq("question_id", questionId)
+      .is("learned_at", null)
+      .is("bookmarked_at", null);
+
+    if (deleteError) {
+      mutationError = deleteError.message;
+    } else {
+      const { error: updateError } = await supabase
+        .from("interview_question_progress")
+        .update({ ignored_at: null })
+        .eq("user_id", userId)
+        .eq("question_id", questionId);
+      mutationError = updateError?.message ?? null;
+    }
+  }
+
+  return finishMutation(supabase, userId, mutationError);
 }
 
 export async function setPinnedCategories(
@@ -327,6 +375,7 @@ export async function syncLocalLearningState(
     {
       p_learned_ids: parsed.data.learnedIds,
       p_bookmarked_ids: parsed.data.bookmarkedIds,
+      p_ignored_ids: parsed.data.ignoredIds ?? [],
       p_pinned_categories: parsed.data.pinnedCategories,
     }
   );

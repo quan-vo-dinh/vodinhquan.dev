@@ -183,6 +183,7 @@ export type Database = {
           question_id: number;
           learned_at: string | null;
           bookmarked_at: string | null;
+          ignored_at: string | null;
           last_reviewed_at: string | null;
           created_at: string;
           updated_at: string;
@@ -192,6 +193,7 @@ export type Database = {
           question_id: number;
           learned_at?: string | null;
           bookmarked_at?: string | null;
+          ignored_at?: string | null;
           last_reviewed_at?: string | null;
           created_at?: string;
           updated_at?: string;
@@ -199,6 +201,7 @@ export type Database = {
         Update: {
           learned_at?: string | null;
           bookmarked_at?: string | null;
+          ignored_at?: string | null;
           last_reviewed_at?: string | null;
           updated_at?: string;
         };

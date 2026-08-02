@@ -26,7 +26,7 @@ export async function getCurrentUserInterviewLearningState(): Promise<InterviewL
   const [progressResult, preferencesResult] = await Promise.all([
     supabase
       .from("interview_question_progress")
-      .select("question_id, learned_at, bookmarked_at")
+      .select("question_id, learned_at, bookmarked_at, ignored_at")
       .eq("user_id", user.id),
     supabase
       .from("interview_user_preferences")
@@ -51,6 +51,10 @@ export async function getCurrentUserInterviewLearningState(): Promise<InterviewL
     bookmarkedIds:
       progressResult.data
         ?.filter((row) => row.bookmarked_at !== null)
+        .map((row) => row.question_id) ?? [],
+    ignoredIds:
+      progressResult.data
+        ?.filter((row) => row.ignored_at !== null)
         .map((row) => row.question_id) ?? [],
     pinnedCategories: preferencesResult.data?.pinned_categories ?? [],
   });

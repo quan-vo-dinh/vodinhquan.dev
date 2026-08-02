@@ -71,6 +71,7 @@ function hasStoredBrowserProgress() {
   return (
     readLocalNumberArray(LEARNED_STORAGE_KEY).length > 0 ||
     readLocalNumberArray(BOOKMARK_STORAGE_KEY).length > 0 ||
+    readLocalNumberArray(IGNORED_STORAGE_KEY).length > 0 ||
     readLocalStringArray(PINNED_CATEGORIES_STORAGE_KEY).length > 0
   );
 }
