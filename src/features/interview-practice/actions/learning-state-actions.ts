@@ -49,37 +49,59 @@ async function readCanonicalSnapshot(
   supabase: ServerSupabaseClient,
   userId: string
 ) {
-  const [progressResult, preferencesResult] = await Promise.all([
-    supabase
-      .from("interview_question_progress")
-      .select("question_id, learned_at, bookmarked_at, ignored_at")
-      .eq("user_id", userId),
-    supabase
-      .from("interview_user_preferences")
-      .select("pinned_categories")
-      .eq("user_id", userId)
-      .maybeSingle(),
-  ]);
+  let progressRows: Array<{
+    question_id: number;
+    learned_at: string | null;
+    bookmarked_at: string | null;
+    ignored_at?: string | null;
+  }> = [];
+  let queryError: string | null = null;
 
-  const error = progressResult.error ?? preferencesResult.error;
+  const fullResult = await supabase
+    .from("interview_question_progress")
+    .select("question_id, learned_at, bookmarked_at, ignored_at")
+    .eq("user_id", userId);
+
+  if (fullResult.error) {
+    if (fullResult.error.message.includes("ignored_at") || fullResult.error.code === "PGRST204") {
+      const fallbackResult = await supabase
+        .from("interview_question_progress")
+        .select("question_id, learned_at, bookmarked_at")
+        .eq("user_id", userId);
+      queryError = fallbackResult.error?.message ?? null;
+      progressRows = fallbackResult.data ?? [];
+    } else {
+      queryError = fullResult.error.message;
+    }
+  } else {
+    progressRows = fullResult.data ?? [];
+  }
+
+  const preferencesResult = await supabase
+    .from("interview_user_preferences")
+    .select("pinned_categories")
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  const error = queryError ?? preferencesResult.error?.message ?? null;
 
   if (error) {
-    return { error: error.message, snapshot: null };
+    return { error, snapshot: null };
   }
 
   const snapshot = learningProgressSnapshotSchema.parse({
     learnedIds:
-      progressResult.data
-        ?.filter((row) => row.learned_at !== null)
-        .map((row) => row.question_id) ?? [],
+      progressRows
+        .filter((row) => row.learned_at !== null)
+        .map((row) => row.question_id),
     bookmarkedIds:
-      progressResult.data
-        ?.filter((row) => row.bookmarked_at !== null)
-        .map((row) => row.question_id) ?? [],
+      progressRows
+        .filter((row) => row.bookmarked_at !== null)
+        .map((row) => row.question_id),
     ignoredIds:
-      progressResult.data
-        ?.filter((row) => row.ignored_at !== null)
-        .map((row) => row.question_id) ?? [],
+      progressRows
+        .filter((row) => Boolean(row.ignored_at))
+        .map((row) => row.question_id),
     pinnedCategories: preferencesResult.data?.pinned_categories ?? [],
   });
 
