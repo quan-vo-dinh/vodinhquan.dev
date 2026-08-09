@@ -1,4 +1,4 @@
-import type { InterviewQuestionView } from "../types";
+import type { InterviewQuestionProgressMeta } from "../types";
 
 export const QUESTION_LEVEL_POINTS = {
   beginner: 10,
@@ -30,7 +30,7 @@ export type CategoryScoreResult = {
 };
 
 export function calculateCategoryScore(
-  questions: InterviewQuestionView[],
+  questions: InterviewQuestionProgressMeta[],
   learnedIds: Set<number>,
   ignoredIds: Set<number>
 ): CategoryScoreResult {

@@ -31,6 +31,20 @@ export type InterviewQuestionView = {
   answer: string;
 };
 
+/**
+ * The only question fields needed to calculate learning progress. The category
+ * is represented by the key in `InterviewCategoryQuestionProgress`.
+ */
+export type InterviewQuestionProgressMeta = Pick<
+  InterviewQuestionView,
+  "id" | "level"
+>;
+
+export type InterviewCategoryQuestionProgress = Record<
+  string,
+  InterviewQuestionProgressMeta[]
+>;
+
 export type InterviewCategorySummary = {
   name: string;
   count: number;

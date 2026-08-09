@@ -22,6 +22,7 @@ import { calculateCategoryScore } from "../lib/question-points";
 
 import type { CurrentViewer } from "@/features/auth/types";
 import type {
+  InterviewCategoryQuestionProgress,
   InterviewCategorySummary,
   InterviewFilterState,
   InterviewQuestionView,
@@ -42,12 +43,10 @@ import { useI18n } from "@/i18n/locale-provider";
 
 type InterviewPracticePageProps = {
   categories: InterviewCategorySummary[];
-  categoryQuestionIds: Record<string, number[]>;
+  categoryQuestionProgress: InterviewCategoryQuestionProgress;
   filterState: InterviewFilterState;
   initialLearningState: InterviewLearningStateSnapshot;
   questions: InterviewQuestionView[];
-  categoryQuestions: InterviewQuestionView[];
-  allQuestions: InterviewQuestionView[];
   subcategories: InterviewSubcategorySummary[];
   totalQuestions: number;
   viewer: CurrentViewer | null;
@@ -55,12 +54,10 @@ type InterviewPracticePageProps = {
 
 export function InterviewPracticePage({
   categories,
-  categoryQuestionIds,
+  categoryQuestionProgress,
   filterState,
   initialLearningState,
   questions,
-  categoryQuestions,
-  allQuestions,
   subcategories,
   totalQuestions,
   viewer,
@@ -69,11 +66,9 @@ export function InterviewPracticePage({
     <InterviewLearningStateProvider initialState={initialLearningState}>
       <InterviewPracticePageContent
         categories={categories}
-        categoryQuestionIds={categoryQuestionIds}
+        categoryQuestionProgress={categoryQuestionProgress}
         filterState={filterState}
         questions={questions}
-        categoryQuestions={categoryQuestions}
-        allQuestions={allQuestions}
         subcategories={subcategories}
         totalQuestions={totalQuestions}
         viewer={viewer}
@@ -84,11 +79,9 @@ export function InterviewPracticePage({
 
 type InterviewPracticePageContentProps = {
   categories: InterviewCategorySummary[];
-  categoryQuestionIds: Record<string, number[]>;
+  categoryQuestionProgress: InterviewCategoryQuestionProgress;
   filterState: InterviewFilterState;
   questions: InterviewQuestionView[];
-  categoryQuestions: InterviewQuestionView[];
-  allQuestions: InterviewQuestionView[];
   subcategories: InterviewSubcategorySummary[];
   totalQuestions: number;
   viewer: CurrentViewer | null;
@@ -100,11 +93,9 @@ const RANK_MILESTONES = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100] as const;
 
 function InterviewPracticePageContent({
   categories,
-  categoryQuestionIds,
+  categoryQuestionProgress,
   filterState,
   questions,
-  categoryQuestions,
-  allQuestions,
   subcategories,
   totalQuestions,
   viewer,
@@ -141,14 +132,26 @@ function InterviewPracticePageContent({
   const [rankUpData, setRankUpData] = useState<{ oldRank: RankTier; newRank: RankTier; category: string } | null>(null);
   const prevCategoryProgressRef = useRef<Record<string, number>>({});
   const hasHydratedCategoryProgressRef = useRef<Record<string, boolean>>({});
+  const currentCategoryQuestionProgress = useMemo(
+    () => categoryQuestionProgress[filterState.category] ?? [],
+    [categoryQuestionProgress, filterState.category]
+  );
 
   const scoreResult = useMemo(
-    () => calculateCategoryScore(categoryQuestions, learnedIds, ignoredIds),
-    [categoryQuestions, learnedIds, ignoredIds]
+    () =>
+      calculateCategoryScore(
+        currentCategoryQuestionProgress,
+        learnedIds,
+        ignoredIds
+      ),
+    [currentCategoryQuestionProgress, learnedIds, ignoredIds]
   );
   const categoryProgress = scoreResult.progressPercentage;
   const categoryLearnedCount = isReady
-    ? categoryQuestions.filter((q) => learnedIds.has(q.id) && !ignoredIds.has(q.id)).length
+    ? currentCategoryQuestionProgress.filter(
+        (question) =>
+          learnedIds.has(question.id) && !ignoredIds.has(question.id)
+      ).length
     : 0;
 
   useEffect(() => {
@@ -438,7 +441,10 @@ function InterviewPracticePageContent({
           >
             <div className="flex flex-col gap-2">
               <LearningSyncBanner />
-              <ProgressSummary questions={categoryQuestions} category={filterState.category} />
+              <ProgressSummary
+                category={filterState.category}
+                questionProgress={currentCategoryQuestionProgress}
+              />
             </div>
           </BlurFade>
 
@@ -456,8 +462,7 @@ function InterviewPracticePageContent({
       {/* Floating Category Progress Vertical Sidebar */}
       <CategoryProgressVertical
         categories={categories}
-        categoryQuestionIds={categoryQuestionIds}
-        allQuestions={allQuestions}
+        categoryQuestionProgress={categoryQuestionProgress}
         filterState={filterState}
         onNavigate={handleNavigate}
       />

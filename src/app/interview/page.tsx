@@ -4,12 +4,10 @@ import { InterviewPracticePage } from "@/features/interview-practice/components/
 import { withResolvedTaxonomy } from "@/features/interview-practice/lib/question-filters";
 import {
   getFilteredInterviewQuestions,
-  getCategoryAllQuestions,
-  getAllTargetInterviewQuestions,
   getInterviewCategories,
+  getInterviewCategoryQuestionProgress,
   getInterviewQuestionTotal,
   getInterviewSubcategories,
-  getInterviewCategoryQuestionIds,
 } from "@/features/interview-practice/lib/question-repository";
 import { parseInterviewSearchParams } from "@/features/interview-practice/lib/question-url-state";
 
@@ -46,9 +44,9 @@ export default async function InterviewPage({
   const state = withResolvedTaxonomy(rawState, categories, initialSubcategories);
   const subcategories = getInterviewSubcategories(state.category, state.target);
   const questions = getFilteredInterviewQuestions(state);
-  const categoryQuestions = getCategoryAllQuestions(state.category, state.target, state.locale);
-  const allQuestions = getAllTargetInterviewQuestions(state.target, state.locale);
-  const categoryQuestionIds = getInterviewCategoryQuestionIds(state.target);
+  const categoryQuestionProgress = getInterviewCategoryQuestionProgress(
+    state.target
+  );
 
   const [viewer, learningState] = await Promise.all([
     getCurrentViewer(),
@@ -58,12 +56,10 @@ export default async function InterviewPage({
   return (
     <InterviewPracticePage
       categories={categories}
-      categoryQuestionIds={categoryQuestionIds}
+      categoryQuestionProgress={categoryQuestionProgress}
       filterState={state}
       initialLearningState={learningState}
       questions={questions}
-      categoryQuestions={categoryQuestions}
-      allQuestions={allQuestions}
       subcategories={subcategories}
       totalQuestions={getInterviewQuestionTotal(state.target)}
       viewer={viewer}

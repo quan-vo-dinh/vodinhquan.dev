@@ -2,9 +2,11 @@ import "server-only";
 
 import rawQuestions from "../data/questions.json";
 import type {
+  InterviewCategoryQuestionProgress,
   InterviewCategorySummary,
   InterviewFilterState,
   InterviewLocale,
+  InterviewQuestionProgressMeta,
   InterviewQuestionRaw,
   InterviewQuestionView,
   InterviewSubcategorySummary,
@@ -45,6 +47,15 @@ function toQuestionView(
     level: question.level,
     question: locale === "en" ? question.q_en : question.q,
     answer: locale === "en" ? question.a_en : question.a,
+  };
+}
+
+function toQuestionProgressMeta(
+  question: InterviewQuestionRaw
+): InterviewQuestionProgressMeta {
+  return {
+    id: question.id,
+    level: question.level,
   };
 }
 
@@ -137,28 +148,10 @@ export function getFilteredInterviewQuestions(state: InterviewFilterState) {
     .map((question) => toQuestionView(question, state.locale));
 }
 
-export function getCategoryAllQuestions(
-  category: string,
-  target: InterviewTargetLevel = "senior",
-  locale: InterviewLocale = "vi"
-): InterviewQuestionView[] {
-  return questions
-    .filter((question) => filterByTargetLevel(question, target))
-    .filter((question) => question.category === category)
-    .map((question) => toQuestionView(question, locale));
-}
-
-export function getAllTargetInterviewQuestions(
-  target: InterviewTargetLevel = "senior",
-  locale: InterviewLocale = "vi"
-): InterviewQuestionView[] {
-  return questions
-    .filter((question) => filterByTargetLevel(question, target))
-    .map((question) => toQuestionView(question, locale));
-}
-
-export function getInterviewCategoryQuestionIds(target: InterviewTargetLevel = "senior"): Record<string, number[]> {
-  const mapping: Record<string, number[]> = {};
+export function getInterviewCategoryQuestionProgress(
+  target: InterviewTargetLevel = "senior"
+): InterviewCategoryQuestionProgress {
+  const mapping: InterviewCategoryQuestionProgress = {};
 
   for (const question of questions) {
     if (!filterByTargetLevel(question, target)) {
@@ -167,7 +160,7 @@ export function getInterviewCategoryQuestionIds(target: InterviewTargetLevel = "
     if (!mapping[question.category]) {
       mapping[question.category] = [];
     }
-    mapping[question.category].push(question.id);
+    mapping[question.category].push(toQuestionProgressMeta(question));
   }
 
   return mapping;

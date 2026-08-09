@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/tooltip";
 import { NumberTicker } from "@/components/ui/number-ticker";
 
-import type { InterviewQuestionView } from "../types";
+import type { InterviewQuestionProgressMeta } from "../types";
 import { useInterviewLearningState } from "./interview-learning-state-provider";
 import { getInterviewCategoryMeta } from "../lib/category-meta";
 import { TechIcon } from "./tech-icon";
@@ -22,7 +22,7 @@ import { useI18n } from "@/i18n/locale-provider";
 import { calculateCategoryScore } from "../lib/question-points";
 
 type ProgressSummaryProps = {
-  questions: InterviewQuestionView[];
+  questionProgress: InterviewQuestionProgressMeta[];
   category: string;
 };
 
@@ -90,7 +90,10 @@ function getDeveloperRank(percentage: number) {
   }
 }
 
-export function ProgressSummary({ questions, category }: ProgressSummaryProps) {
+export function ProgressSummary({
+  questionProgress,
+  category,
+}: ProgressSummaryProps) {
   const { dictionary } = useI18n();
   const {
     learnedIds,
@@ -101,20 +104,24 @@ export function ProgressSummary({ questions, category }: ProgressSummaryProps) {
     isRemoteAvailable,
   } = useInterviewLearningState();
 
-  const scoreResult = calculateCategoryScore(questions, learnedIds, ignoredIds);
+  const scoreResult = calculateCategoryScore(
+    questionProgress,
+    learnedIds,
+    ignoredIds
+  );
   const { currentScore, totalPossibleScore, progressPercentage } = scoreResult;
 
-  const activeQuestions = questions.filter((q) => !ignoredIds.has(q.id));
+  const activeQuestions = questionProgress.filter((q) => !ignoredIds.has(q.id));
 
-  const learnedCount = questions.filter(
+  const learnedCount = questionProgress.filter(
     (q) => learnedIds.has(q.id) && !ignoredIds.has(q.id)
   ).length;
 
-  const bookmarkedCount = questions.filter(
+  const bookmarkedCount = questionProgress.filter(
     (q) => bookmarkedIds.has(q.id) && !ignoredIds.has(q.id)
   ).length;
 
-  const ignoredCount = questions.filter((q) => ignoredIds.has(q.id)).length;
+  const ignoredCount = questionProgress.filter((q) => ignoredIds.has(q.id)).length;
 
   const meta = getInterviewCategoryMeta(category);
 
@@ -273,4 +280,3 @@ export function ProgressSummary({ questions, category }: ProgressSummaryProps) {
     </div>
   );
 }
-

@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo } from "react";
 
 import {
   Tooltip,
@@ -11,27 +10,29 @@ import {
 import { cn } from "@/lib/utils";
 
 import { getInterviewCategoryMeta } from "../lib/category-meta";
+import { calculateCategoryScore } from "../lib/question-points";
 import { createInterviewHref } from "../lib/question-url-state";
 import { getRankTier } from "../lib/rank-meta";
-import type { InterviewCategorySummary, InterviewFilterState, InterviewQuestionView } from "../types";
+import type {
+  InterviewCategoryQuestionProgress,
+  InterviewCategorySummary,
+  InterviewFilterState,
+} from "../types";
 import { useInterviewLearningState } from "./interview-learning-state-provider";
 import { RankImage } from "./rank-image";
 import { TechIcon } from "./tech-icon";
 import { useI18n } from "@/i18n/locale-provider";
-import { calculateCategoryScore } from "../lib/question-points";
 
 type CategoryProgressVerticalProps = {
   categories: InterviewCategorySummary[];
-  categoryQuestionIds: Record<string, number[]>;
-  allQuestions?: InterviewQuestionView[];
+  categoryQuestionProgress: InterviewCategoryQuestionProgress;
   filterState: InterviewFilterState;
   onNavigate?: (href: string) => void;
 };
 
 export function CategoryProgressVertical({
   categories,
-  categoryQuestionIds,
-  allQuestions = [],
+  categoryQuestionProgress,
   filterState,
   onNavigate,
 }: CategoryProgressVerticalProps) {
@@ -41,25 +42,13 @@ export function CategoryProgressVertical({
   const radius = 21;
   const circumference = 2 * Math.PI * radius;
 
-  const questionsByCategory = useMemo(() => {
-    const map: Record<string, InterviewQuestionView[]> = {};
-    for (const q of allQuestions) {
-      if (!map[q.category]) {
-        map[q.category] = [];
-      }
-      map[q.category].push(q);
-    }
-    return map;
-  }, [allQuestions]);
-
   if (!isReady) {
     return null;
   }
 
   const activeCategories = categories.filter((category) => {
-    const ids = categoryQuestionIds[category.name] || [];
-    const learnedCount = ids.filter((id) => learnedIds.has(id)).length;
-    return learnedCount > 0;
+    const questions = categoryQuestionProgress[category.name] ?? [];
+    return questions.some((question) => learnedIds.has(question.id));
   });
 
   if (activeCategories.length === 0) {
@@ -73,20 +62,14 @@ export function CategoryProgressVertical({
           {activeCategories.map((category) => {
             const meta = getInterviewCategoryMeta(category.name);
             const isActive = category.name === filterState.category;
-            const ids = categoryQuestionIds[category.name] || [];
-            const catQuestions = questionsByCategory[category.name] || [];
-
-            const scoreResult = catQuestions.length > 0
-              ? calculateCategoryScore(catQuestions, learnedIds, ignoredIds)
-              : null;
-
-            const percentage = scoreResult
-              ? scoreResult.progressPercentage
-              : ids.length === 0
-                ? 0
-                : Math.round((ids.filter((id) => learnedIds.has(id)).length / ids.length) * 100);
-
-            const learnedCount = ids.filter((id) => learnedIds.has(id)).length;
+            const categoryQuestions =
+              categoryQuestionProgress[category.name] ?? [];
+            const scoreResult = calculateCategoryScore(
+              categoryQuestions,
+              learnedIds,
+              ignoredIds
+            );
+            const percentage = scoreResult.progressPercentage;
             const strokeDashoffset =
               circumference - (percentage / 100) * circumference;
             const tier = getRankTier(percentage);
@@ -187,7 +170,7 @@ export function CategoryProgressVertical({
                     {category.name}
                   </span>
                   <span className="text-[10px] text-muted-foreground">
-                    {scoreResult ? `${scoreResult.currentScore} / ${scoreResult.totalPossibleScore} PTS` : `${learnedCount} / ${ids.length}`} ({percentage}%)
+                    {scoreResult.currentScore} / {scoreResult.totalPossibleScore} PTS ({percentage}%)
                   </span>
                   {percentage > 0 && (
                     <span className="text-[10px] font-semibold text-amber-500 dark:text-amber-400">
