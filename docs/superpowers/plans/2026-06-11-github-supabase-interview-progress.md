@@ -46,11 +46,11 @@ What appears already correct from the details you shared:
 
 - GitHub OAuth App exists: `Quan Portfolio Studio`.
 - GitHub OAuth callback URL points to Supabase Auth callback:
-  - `https://mqbeijnhwctgrxkqkgvh.supabase.co/auth/v1/callback`
+  - `https://your-project-ref.supabase.co/auth/v1/callback`
 - Supabase GitHub provider is enabled.
 - Supabase GitHub provider has the same GitHub Client ID configured.
 - Supabase project URL is known:
-  - `https://mqbeijnhwctgrxkqkgvh.supabase.co`
+  - `https://your-project-ref.supabase.co`
 - Supabase publishable key exists.
 - Supabase Data API appears available for the project.
 
@@ -60,7 +60,7 @@ Manual configuration still required or must be verified by you:
 - Add local environment variables in `.env.local` yourself:
 
 ```bash
-NEXT_PUBLIC_SUPABASE_URL="https://mqbeijnhwctgrxkqkgvh.supabase.co"
+NEXT_PUBLIC_SUPABASE_URL="https://your-project-ref.supabase.co"
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY="<copy Supabase publishable key from dashboard>"
 ```
 
@@ -370,7 +370,7 @@ touch .env.example
 Content:
 
 ```bash
-NEXT_PUBLIC_SUPABASE_URL="https://mqbeijnhwctgrxkqkgvh.supabase.co"
+NEXT_PUBLIC_SUPABASE_URL="https://your-project-ref.supabase.co"
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY="<copy-from-supabase-dashboard>"
 ```
 
@@ -379,7 +379,7 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY="<copy-from-supabase-dashboard>"
 The user must create `.env.local` with real values:
 
 ```bash
-NEXT_PUBLIC_SUPABASE_URL="https://mqbeijnhwctgrxkqkgvh.supabase.co"
+NEXT_PUBLIC_SUPABASE_URL="https://your-project-ref.supabase.co"
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY="<real-publishable-key>"
 ```
 
@@ -433,7 +433,7 @@ Choose one path:
 Path A: Supabase Dashboard
 1. Open Supabase SQL Editor.
 2. Paste the migration SQL.
-3. Run it against project mqbeijnhwctgrxkqkgvh.
+3. Run it against project your-project-ref.
 
 Path B: Supabase CLI
 1. Link this repo to the Supabase project.

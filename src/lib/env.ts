@@ -43,7 +43,7 @@ export function parseServerEnv(input: EnvInput) {
   const siteOwnerGitHubUsername =
     input.SITE_OWNER_GITHUB_USERNAME ??
     input.INTERVIEW_OWNER_GITHUB_USERNAME ??
-    "quan-vo-dinh";
+    "site-owner";
 
   return serverEnvSchema.parse({
     appOrigin: input.APP_ORIGIN ?? "https://vodinhquan.dev",

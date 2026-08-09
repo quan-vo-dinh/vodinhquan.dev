@@ -22,7 +22,7 @@ This update answers the product questions raised after the codebase refactor:
 | Should Moments be stored as MDX? | No. Keep MDX for long-form `/blog`; use database rows for photo sets. |
 | Should publishing happen through source code? | No for Moments. Build an owner-only UI because upload, reorder, cover selection, and captions are image-management tasks. |
 | Can the existing GitHub auth be reused? | Yes, but generalize the current Interview-owner naming into site-owner auth before adding Studio. |
-| Who is allowed to manage Moments? | Only the GitHub login `quan-vo-dinh`. Treat this as a username/login, not GitHub's numeric user id. |
+| Who is allowed to manage Moments? | Only the GitHub login `your-github-username`. Treat this as a username/login, not GitHub's numeric user id. |
 | Should Aceternity draggable cards handle real image ordering? | No. Use them only as decorative public UI; use accessible Studio controls for actual ordering. |
 
 ### Content Boundary
@@ -42,7 +42,7 @@ Do not retrofit `/blog` into a full CMS in this phase. The friction of source-co
 The first production slice should be small and verifiable:
 
 1. Generalize owner auth from Interview-only naming to site-owner naming.
-2. Configure `SITE_OWNER_GITHUB_USERNAME="quan-vo-dinh"` and update the Supabase owner seed/check.
+2. Configure `SITE_OWNER_GITHUB_USERNAME="your-github-username"` and update the Supabase owner seed/check.
 3. Add Cloudinary env validation and a signed upload route guarded by `getOwnerAuthUser()`.
 4. Add Moments tables/RLS and typed repositories.
 5. Ship public `/moments` read-only gallery from seeded/manual DB rows.
@@ -54,7 +54,7 @@ This keeps auth, storage, and rendering testable before the heavier Studio editi
 
 Completed in source on `2026-06-14`:
 
-- Added site-owner env/auth wiring for GitHub login `quan-vo-dinh`.
+- Added site-owner env/auth wiring for GitHub login `your-github-username`.
 - Added `cloudinary` dependency and a guarded `/api/studio/cloudinary/sign` route.
 - Added Supabase migration `202606140002_moments_owner_studio.sql`.
 - Added Moments schema, slug, mapper, repository, and server actions.
@@ -162,23 +162,23 @@ The existing GitHub/Supabase auth can be reused, but it should be generalized fr
 Required owner identity:
 
 ```txt
-SITE_OWNER_GITHUB_USERNAME="quan-vo-dinh"
+SITE_OWNER_GITHUB_USERNAME="your-github-username"
 ```
 
 Notes:
 
-- Treat `"quan-vo-dinh"` as the GitHub login/username, not GitHub's numeric internal ID.
+- Treat `"your-github-username"` as the GitHub login/username, not GitHub's numeric internal ID.
 - Current source still defaults `INTERVIEW_OWNER_GITHUB_USERNAME` to `vodinhquan`; that must be updated before implementing Studio.
-- `src/data/resume.tsx` already links GitHub to `https://github.com/quan-vo-dinh`, matching the requested owner username.
+- The public GitHub link in `src/data/resume.tsx` should match the configured owner username.
 - The existing `getOwnerAuthUser()` seam is correct, but the naming should become site-wide owner auth.
-- The SQL migration currently hardcodes `vodinhquan`; a follow-up migration should either seed `quan-vo-dinh` or introduce a generic `site_owner_accounts` model.
+- The SQL migration currently hardcodes `vodinhquan`; a follow-up migration should either seed `your-github-username` or introduce a generic `site_owner_accounts` model.
 
 Recommended migration path:
 
 1. Add compatibility support for `SITE_OWNER_GITHUB_USERNAME` while still reading `INTERVIEW_OWNER_GITHUB_USERNAME` for one deployment.
 2. Rename TypeScript helpers from `isInterviewOwner` toward `isSiteOwner` or wrap them behind site-owner names.
-3. Add a Supabase migration that creates or reuses a generic owner predicate, then updates the seed/check to `quan-vo-dinh`.
-4. Update tests to prove `quan-vo-dinh` is accepted and any other GitHub username is rejected.
+3. Add a Supabase migration that creates or reuses a generic owner predicate, then updates the seed/check to `your-github-username`.
+4. Update tests to prove `your-github-username` is accepted and any other GitHub username is rejected.
 5. Only then expose `/studio` routes and Cloudinary signing.
 
 ---
@@ -260,7 +260,7 @@ Old assumptions to remove:
 Updated direction:
 
 - Reuse `getOwnerAuthUser()` in every Studio page loader, server action, and route handler.
-- Generalize env naming to `SITE_OWNER_GITHUB_USERNAME="quan-vo-dinh"` while keeping a compatibility alias only if needed during migration.
+- Generalize env naming to `SITE_OWNER_GITHUB_USERNAME="your-github-username"` while keeping a compatibility alias only if needed during migration.
 - Add `/studio/:path*` and `/api/studio/:path*` to `proxy.ts` only when routes are implemented.
 - Keep `/moments` public and avoid proxy/auth work there.
 - Sign-in should reuse `/auth/sign-in/github?next=/studio/moments`.
@@ -270,7 +270,7 @@ Checklist:
 
 - [x] Add `requireOwner()` helper if repeated owner guards appear in 3+ modules.
 - [x] Rename or wrap Interview-specific owner env/function names behind site-owner names.
-- [x] Configure the allowed GitHub owner username as `quan-vo-dinh`.
+- [x] Configure the allowed GitHub owner username as `your-github-username`.
 - [x] Extend `proxy.ts` matcher to include Studio routes after creating them.
 - [x] Add tests for Studio redirect/authorization helpers.
 
@@ -299,7 +299,7 @@ Checklist:
 
 - [x] Update `src/lib/env.ts`.
 - [x] Update `.env.example` with placeholders.
-- [x] Replace the old Interview-owner default with the site owner username `quan-vo-dinh`.
+- [x] Replace the old Interview-owner default with the site owner username `your-github-username`.
 - [x] Ensure API secret is never exposed to client components.
 
 ### 3. Dependencies
@@ -408,7 +408,7 @@ RLS:
 Important naming note:
 
 - `is_interview_owner()` now protects the owner account globally. For this feature, either reuse it as-is to avoid migration churn, or introduce `is_site_owner()` and update Interview policies in a separate deliberate migration. Do not silently fork owner logic.
-- If reusing the current owner table temporarily, update the owner seed/check from `vodinhquan` to `quan-vo-dinh` before production use.
+- If reusing the current owner table temporarily, update the owner seed/check from `vodinhquan` to `your-github-username` before production use.
 
 Checklist:
 
@@ -611,7 +611,7 @@ Required tests:
 - owner repository can read drafts;
 - public route does not require auth;
 - Studio route redirects or errors for non-owner;
-- GitHub owner check accepts `quan-vo-dinh` and rejects other usernames;
+- GitHub owner check accepts `your-github-username` and rejects other usernames;
 - Moment create/update accepts title + ordered images without requiring MDX/prose.
 
 Checklist:
@@ -625,7 +625,7 @@ Checklist:
 Do this in order:
 
 1. Apply and verify `202606140001_secure_learning_progress.sql` if not already deployed.
-2. Generalize owner env/auth naming and configure `SITE_OWNER_GITHUB_USERNAME="quan-vo-dinh"`.
+2. Generalize owner env/auth naming and configure `SITE_OWNER_GITHUB_USERNAME="your-github-username"`.
 3. Add Cloudinary env values locally and in hosting provider.
 4. Add Cloudinary dependency/dependencies.
 5. Add Moments migration and update Supabase types.
@@ -705,4 +705,4 @@ Checked registry candidates:
 - `BLOCK001 [DEPLOYMENT_ORDER]` Apply the owner-only Supabase migration before deploying Studio writes.
 - `BLOCK002 [SECRET_BOUNDARY]` Cloudinary API secret must stay server-only and be accessed only through validated env helpers.
 - `BLOCK003 [AUTH_BOUNDARY]` Studio routes and signature endpoints must require `getOwnerAuthUser()`.
-- `BLOCK004 [OWNER_IDENTITY]` Configure and test `quan-vo-dinh` as the only allowed GitHub owner before exposing Studio.
+- `BLOCK004 [OWNER_IDENTITY]` Configure and test `your-github-username` as the only allowed GitHub owner before exposing Studio.

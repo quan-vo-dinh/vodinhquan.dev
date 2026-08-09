@@ -46,11 +46,11 @@ Những phần có vẻ đã chính xác từ các chi tiết bạn đã chia s�
 
 - GitHub OAuth App đã tồn tại: `Quan Portfolio Studio`.
 - URL gọi lại GitHub OAuth trỏ đến URL gọi lại của Supabase Auth:
-  - `https://mqbeijnhwctgrxkqkgvh.supabase.co/auth/v1/callback`
+  - `https://your-project-ref.supabase.co/auth/v1/callback`
 - Supabase GitHub provider đã được bật.
 - Supabase GitHub provider đã cấu hình cùng một GitHub Client ID.
 - URL dự án Supabase đã xác định:
-  - `https://mqbeijnhwctgrxkqkgvh.supabase.co`
+  - `https://your-project-ref.supabase.co`
 - Supabase publishable key đã tồn tại.
 - Supabase Data API có vẻ đã khả dụng cho dự án.
 
@@ -60,7 +60,7 @@ Cấu hình thủ công vẫn được yêu cầu hoặc phải được xác mi
 - Tự thêm các biến môi trường cục bộ vào tệp `.env.local`:
 
 ```bash
-NEXT_PUBLIC_SUPABASE_URL="https://mqbeijnhwctgrxkqkgvh.supabase.co"
+NEXT_PUBLIC_SUPABASE_URL="https://your-project-ref.supabase.co"
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY="<copy Supabase publishable key from dashboard>"
 ```
 
@@ -370,7 +370,7 @@ touch .env.example
 Nội dung:
 
 ```bash
-NEXT_PUBLIC_SUPABASE_URL="https://mqbeijnhwctgrxkqkgvh.supabase.co"
+NEXT_PUBLIC_SUPABASE_URL="https://your-project-ref.supabase.co"
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY="<copy-from-supabase-dashboard>"
 ```
 
@@ -379,7 +379,7 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY="<copy-from-supabase-dashboard>"
 Người dùng phải tạo tệp `.env.local` với các giá trị thực tế:
 
 ```bash
-NEXT_PUBLIC_SUPABASE_URL="https://mqbeijnhwctgrxkqkgvh.supabase.co"
+NEXT_PUBLIC_SUPABASE_URL="https://your-project-ref.supabase.co"
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY="<real-publishable-key>"
 ```
 
@@ -433,7 +433,7 @@ Chọn một trong hai cách:
 Cách A: Bảng điều khiển Supabase (Supabase Dashboard)
 1. Mở SQL Editor trong Supabase.
 2. Dán mã SQL di chuyển.
-3. Chạy nó trên dự án mqbeijnhwctgrxkqkgvh.
+3. Chạy nó trên dự án your-project-ref.
 
 Cách B: Supabase CLI
 1. Liên kết (link) kho lưu trữ này với dự án Supabase.

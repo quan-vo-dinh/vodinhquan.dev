@@ -8,9 +8,9 @@ describe("environment parsing", () => {
     NEXT_PUBLIC_SUPABASE_URL: "https://example.supabase.co",
   };
 
-  it("defaults the site owner to the configured GitHub login", () => {
+  it("defaults the site owner to a neutral placeholder", () => {
     expect(parseServerEnv(baseEnv).siteOwnerGitHubUsername).toBe(
-      "quan-vo-dinh"
+      "site-owner"
     );
   });
 
@@ -18,10 +18,10 @@ describe("environment parsing", () => {
     expect(
       parseServerEnv({
         ...baseEnv,
-        SITE_OWNER_GITHUB_USERNAME: "quan-vo-dinh",
+        SITE_OWNER_GITHUB_USERNAME: "site-owner",
         INTERVIEW_OWNER_GITHUB_USERNAME: "legacy-owner",
       }).interviewOwnerGitHubUsername
-    ).toBe("quan-vo-dinh");
+    ).toBe("site-owner");
   });
 
   it("parses Cloudinary URL credentials without exposing them as public env", () => {

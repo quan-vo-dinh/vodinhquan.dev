@@ -16,16 +16,16 @@ describe("GitHub owner authorization", () => {
 
   it("matches the configured owner case-insensitively", () => {
     expect(
-      isSiteOwner({ user_name: "Quan-Vo-Dinh" }, "quan-vo-dinh")
+      isSiteOwner({ user_name: "Site-Owner" }, "site-owner")
     ).toBe(true);
     expect(
-      isSiteOwner({ user_name: "someone-else" }, "quan-vo-dinh")
+      isSiteOwner({ user_name: "someone-else" }, "site-owner")
     ).toBe(false);
   });
 
   it("keeps the Interview owner alias wired to the site owner check", () => {
     expect(
-      isInterviewOwner({ preferred_username: "QUAN-VO-DINH" }, "quan-vo-dinh")
+      isInterviewOwner({ preferred_username: "SITE-OWNER" }, "site-owner")
     ).toBe(true);
   });
 });
