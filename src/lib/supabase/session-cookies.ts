@@ -1,5 +1,7 @@
 const SUPABASE_AUTH_COOKIE_PREFIX = "sb-";
 const SUPABASE_AUTH_COOKIE_SUFFIX = "-auth-token";
+export const STALE_SUPABASE_SESSION_HEADER =
+  "x-internal-supabase-stale-session";
 const STALE_REFRESH_TOKEN_MESSAGES = [
   "Invalid Refresh Token",
   "Refresh Token Not Found",
