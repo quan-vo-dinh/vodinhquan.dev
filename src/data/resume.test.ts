@@ -18,4 +18,20 @@ describe("localized resume data", () => {
     expect(resume.description).toContain("Developer");
     expect(resume.education[0]?.degree).toBe("Information Systems");
   });
+
+  it("keeps each project linked to its source repository", () => {
+    const expectedProjectLinks = [
+      "https://github.com/quan-vo-dinh/saas-pos-microservices-qrtable",
+      "https://github.com/quan-vo-dinh/multi-vendor-api",
+      "https://github.com/quan-vo-dinh/kicks-shoes",
+      "https://github.com/quan-vo-dinh/car-garage-management",
+    ];
+
+    expect(getResumeData("en").projects.map((project) => project.href)).toEqual(
+      expectedProjectLinks
+    );
+    expect(getResumeData("vi").projects.map((project) => project.href)).toEqual(
+      expectedProjectLinks
+    );
+  });
 });

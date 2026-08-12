@@ -150,7 +150,7 @@ export const DATA = {
   projects: [
     {
       title: "QRTable – Microservices-Based SaaS POS",
-      href: "#",
+      href: "https://github.com/quan-vo-dinh/saas-pos-microservices-qrtable",
       dates: "Jan 2026 - Jun 2026",
       active: true,
       description:
@@ -174,7 +174,7 @@ export const DATA = {
     },
     {
       title: "Multi Vendor API",
-      href: "#",
+      href: "https://github.com/quan-vo-dinh/multi-vendor-api",
       dates: "2025",
       active: true,
       description:
@@ -197,7 +197,7 @@ export const DATA = {
     },
     {
       title: "Kicks Shoes",
-      href: "#",
+      href: "https://github.com/quan-vo-dinh/kicks-shoes",
       dates: "2024",
       active: true,
       description:
@@ -209,7 +209,7 @@ export const DATA = {
     },
     {
       title: "Car Garage Management",
-      href: "#",
+      href: "https://github.com/quan-vo-dinh/car-garage-management",
       dates: "2023",
       active: true,
       description:

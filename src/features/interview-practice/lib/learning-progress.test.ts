@@ -21,6 +21,7 @@ describe("mergeLearningStateSnapshots", () => {
     ).toEqual({
       bookmarkedIds: [1, 3],
       learnedIds: [2],
+      ignoredIds: [],
       pinnedCategories: ["React", "TypeScript"],
     });
   });
@@ -42,6 +43,7 @@ describe("mergeLearningStateSnapshots", () => {
     expect(merged).toEqual({
       bookmarkedIds: [42],
       learnedIds: [42],
+      ignoredIds: [],
       pinnedCategories: [],
     });
   });
@@ -63,6 +65,7 @@ describe("mergeLearningStateSnapshots", () => {
     expect(merged).toEqual({
       bookmarkedIds: [7],
       learnedIds: [7],
+      ignoredIds: [],
       pinnedCategories: [],
     });
   });
@@ -109,6 +112,7 @@ describe("learning progress command validation", () => {
     expect(parsed).toEqual({
       bookmarkedIds: [3],
       learnedIds: [2],
+      ignoredIds: [],
       pinnedCategories: ["React"],
     });
 
