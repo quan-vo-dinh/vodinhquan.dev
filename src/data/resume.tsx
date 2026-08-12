@@ -37,7 +37,7 @@ export const DATA = {
   description:
     "Full-stack Developer building scalable applications with Next.js & NestJS.",
   summary:
-    "Final-year Information Systems student passionate about modern web development in the JavaScript and TypeScript ecosystem. Experienced in building full-stack applications with Next.js and NestJS. I place a high emphasis on code quality, clean architecture, and writing clean, scalable, and maintainable code.",
+    "Graduating Information Systems student passionate about modern web development in the JavaScript and TypeScript ecosystem. Experienced in building full-stack applications with Next.js and NestJS. I place a high emphasis on code quality, clean architecture, and writing clean, scalable, and maintainable code.",
   avatarUrl: "/me.jpg",
   skills: [
     { name: "TypeScript", icon: Typescript },
@@ -144,7 +144,7 @@ export const DATA = {
       degree: "Information Systems",
       logoUrl: "uit.png",
       start: "Sep 2022",
-      end: "Sep 2026",
+      end: "Oct 2026",
     },
   ],
   projects: [
