@@ -2,7 +2,6 @@
 
 import { usePathname } from "next/navigation";
 import { Dock, DockIcon } from "@/components/magicui/dock";
-import { ModeToggle } from "@/components/mode-toggle";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -21,7 +20,6 @@ export default function Navbar() {
   const hasSocials = Object.entries(DATA.contact.social).some(([_, social]) => social.navbar);
   const navigationLabels: Record<string, string> = {
     "/": dictionary.common.home,
-    "/blog": dictionary.common.blog,
     "/interview": dictionary.common.interview,
     "/moments": dictionary.common.moments,
     "/studio": dictionary.common.studio,

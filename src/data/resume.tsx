@@ -4,7 +4,6 @@ import {
   CameraIcon,
   FolderKanbanIcon,
   HomeIcon,
-  NotebookIcon,
 } from "lucide-react";
 import { ReactLight } from "@/components/ui/svgs/reactLight";
 import { NextjsIconDark } from "@/components/ui/svgs/nextjsIconDark";
@@ -57,7 +56,6 @@ export const DATA = {
   ] as { name: string; icon?: any }[],
   navbar: [
     { href: "/", icon: HomeIcon, label: "Home" },
-    { href: "/blog", icon: NotebookIcon, label: "Blog" },
     { href: "/moments", icon: CameraIcon, label: "Moments" },
     { href: "/studio", icon: FolderKanbanIcon, label: "Studio" },
     { href: "/interview", icon: BrainCircuitIcon, label: "Interview" },

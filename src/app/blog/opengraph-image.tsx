@@ -107,6 +107,11 @@ const styles = {
 } as const;
 
 export default async function Image() {
+    const hiddenRouteResponse = new Response(null, { status: 404 });
+    if (hiddenRouteResponse.status === 404) {
+        return hiddenRouteResponse;
+    }
+
     try {
         const fontData = await getFontData();
         const { dictionary } = await getServerI18n();
@@ -172,4 +177,3 @@ export default async function Image() {
         );
     }
 }
-

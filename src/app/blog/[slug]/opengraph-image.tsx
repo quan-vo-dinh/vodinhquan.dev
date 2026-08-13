@@ -129,6 +129,11 @@ export default async function Image({
 }: {
     params: Promise<{ slug: string }>;
 }) {
+    const hiddenRouteResponse = new Response(null, { status: 404 });
+    if (hiddenRouteResponse.status === 404) {
+        return hiddenRouteResponse;
+    }
+
     try {
         const fontData = await getFontData();
         const { dictionary, locale } = await getServerI18n();
@@ -235,4 +240,3 @@ export default async function Image({
         );
     }
 }
-
