@@ -4,7 +4,6 @@ import { join } from "node:path";
 const routes = [
   { name: "home", manifest: "page", budget: 1_250_000 },
   { name: "blog", manifest: "blog/page", budget: 1_250_000 },
-  { name: "interview", manifest: "interview/page", budget: 1_500_000 },
   { name: "moments", manifest: "moments/page", budget: 1_250_000 },
 ];
 

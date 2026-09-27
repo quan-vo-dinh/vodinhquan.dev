@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 
 import {
   getGitHubUsername,
-  isInterviewOwner,
   isSiteOwner,
 } from "./auth-authorization";
 
@@ -21,11 +20,5 @@ describe("GitHub owner authorization", () => {
     expect(
       isSiteOwner({ user_name: "someone-else" }, "site-owner")
     ).toBe(false);
-  });
-
-  it("keeps the Interview owner alias wired to the site owner check", () => {
-    expect(
-      isInterviewOwner({ preferred_username: "SITE-OWNER" }, "site-owner")
-    ).toBe(true);
   });
 });

@@ -21,7 +21,6 @@ export default function Navbar() {
   const navigationLabels: Record<string, string> = {
     "/": dictionary.common.home,
     "/blog": dictionary.common.blog,
-    "/interview": dictionary.common.interview,
     "/moments": dictionary.common.moments,
     "/studio": dictionary.common.studio,
   };

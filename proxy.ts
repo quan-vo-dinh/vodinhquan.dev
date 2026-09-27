@@ -10,7 +10,6 @@ export const config = {
   matcher: [
     "/api/studio/:path*",
     "/auth/:path*",
-    "/interview/:path*",
     "/studio/:path*",
   ],
 };

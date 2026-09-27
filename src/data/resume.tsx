@@ -1,6 +1,5 @@
 import { Icons } from "@/components/icons";
 import {
-  BrainCircuitIcon,
   BookOpenIcon,
   CameraIcon,
   FolderKanbanIcon,
@@ -60,7 +59,6 @@ export const DATA = {
     { href: "/moments", icon: CameraIcon, label: "Moments" },
     { href: "/studio", icon: FolderKanbanIcon, label: "Studio" },
     { href: "/blog", icon: BookOpenIcon, label: "Blog" },
-    { href: "/interview", icon: BrainCircuitIcon, label: "Interview" },
   ],
   contact: {
     email: "vodinhquan2707.it@gmail.com",

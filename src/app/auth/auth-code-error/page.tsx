@@ -30,7 +30,7 @@ export default async function AuthCodeErrorPage({
         </p>
       </div>
       <Button asChild>
-        <Link href="/interview">{dictionary.auth.backToInterview}</Link>
+        <Link href="/studio">{dictionary.auth.backToStudio}</Link>
       </Button>
     </main>
   );

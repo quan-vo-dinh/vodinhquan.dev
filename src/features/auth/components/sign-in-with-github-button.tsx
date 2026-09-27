@@ -9,7 +9,7 @@ type SignInWithGitHubButtonProps = {
 };
 
 export function SignInWithGitHubButton({
-  next = "/interview",
+  next = "/studio",
 }: SignInWithGitHubButtonProps) {
   const { dictionary } = useI18n();
 

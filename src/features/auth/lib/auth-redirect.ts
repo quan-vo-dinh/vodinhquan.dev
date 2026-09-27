@@ -1,4 +1,4 @@
-const DEFAULT_AUTH_PATH = "/interview";
+const DEFAULT_AUTH_PATH = "/studio";
 
 type ResolveAuthOriginInput = {
   configuredOrigin: string;

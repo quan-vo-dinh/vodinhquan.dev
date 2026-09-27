@@ -19,13 +19,13 @@ describe("environment parsing", () => {
     );
   });
 
-  it("keeps the Interview owner alias aligned with the site owner", () => {
+  it("prioritizes the current site owner env over the legacy owner env", () => {
     expect(
       parseServerEnv({
         ...baseEnv,
         SITE_OWNER_GITHUB_USERNAME: "site-owner",
         INTERVIEW_OWNER_GITHUB_USERNAME: "legacy-owner",
-      }).interviewOwnerGitHubUsername
+      }).siteOwnerGitHubUsername
     ).toBe("site-owner");
   });
 

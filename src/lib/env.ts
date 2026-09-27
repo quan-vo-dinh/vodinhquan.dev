@@ -2,7 +2,6 @@ import { z } from "zod";
 
 const serverEnvSchema = z.object({
   appOrigin: z.string().url(),
-  interviewOwnerGitHubUsername: z.string().trim().min(1),
   isDevelopment: z.boolean(),
   siteOwnerGitHubUsername: z.string().trim().min(1),
   supabasePublishableKey: z.string().trim().min(1),
@@ -61,7 +60,6 @@ export function parseServerEnv(input: EnvInput) {
 
   return serverEnvSchema.parse({
     appOrigin: input.APP_ORIGIN ?? "https://vodinhquan.dev",
-    interviewOwnerGitHubUsername: siteOwnerGitHubUsername,
     isDevelopment: input.NODE_ENV === "development",
     siteOwnerGitHubUsername,
     supabasePublishableKey: input.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,

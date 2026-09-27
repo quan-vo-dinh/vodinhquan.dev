@@ -4,10 +4,10 @@ import { resolveAuthOrigin, safeNextPath } from "./auth-redirect";
 
 describe("safeNextPath", () => {
   it.each([
-    [null, "/interview"],
-    ["https://evil.example", "/interview"],
-    ["//evil.example/path", "/interview"],
-    ["/interview?mode=flashcards", "/interview?mode=flashcards"],
+    [null, "/studio"],
+    ["https://evil.example", "/studio"],
+    ["//evil.example/path", "/studio"],
+    ["/studio/moments", "/studio/moments"],
   ])("normalizes %s to %s", (value, expected) => {
     expect(safeNextPath(value)).toBe(expected);
   });

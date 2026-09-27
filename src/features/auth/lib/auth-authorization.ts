@@ -19,5 +19,3 @@ export function isSiteOwner(
     ownerGitHubUsername.toLocaleLowerCase()
   );
 }
-
-export const isInterviewOwner = isSiteOwner;
