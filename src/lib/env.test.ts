@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 
-import { parseCloudinaryEnv, parseServerEnv } from "./env";
+import {
+  parseCloudinaryEnv,
+  parseMediaCleanupEndpointEnv,
+  parseMediaCleanupWorkerEnv,
+  parseServerEnv,
+} from "./env";
 
 describe("environment parsing", () => {
   const baseEnv = {
@@ -36,5 +41,18 @@ describe("environment parsing", () => {
       cloudinaryMomentsFolder: "moments",
     });
     expect(env).not.toHaveProperty("cloudinaryMomentsUploadPreset");
+  });
+
+  it("keeps cleanup credentials server-only and validates the endpoint secret", () => {
+    expect(
+      parseMediaCleanupWorkerEnv({
+        SUPABASE_SERVICE_ROLE_KEY: "service-role-key",
+      })
+    ).toEqual({ supabaseServiceRoleKey: "service-role-key" });
+    expect(
+      parseMediaCleanupEndpointEnv({
+        MEDIA_CLEANUP_SECRET: "a".repeat(32),
+      })
+    ).toEqual({ mediaCleanupSecret: "a".repeat(32) });
   });
 });

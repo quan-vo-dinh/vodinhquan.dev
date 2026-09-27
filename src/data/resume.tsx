@@ -1,6 +1,7 @@
 import { Icons } from "@/components/icons";
 import {
   BrainCircuitIcon,
+  BookOpenIcon,
   CameraIcon,
   FolderKanbanIcon,
   HomeIcon,
@@ -58,6 +59,7 @@ export const DATA = {
     { href: "/", icon: HomeIcon, label: "Home" },
     { href: "/moments", icon: CameraIcon, label: "Moments" },
     { href: "/studio", icon: FolderKanbanIcon, label: "Studio" },
+    { href: "/blog", icon: BookOpenIcon, label: "Blog" },
     { href: "/interview", icon: BrainCircuitIcon, label: "Interview" },
   ],
   contact: {
@@ -111,12 +113,28 @@ export const DATA = {
 
   work: [
     {
+      company: "i-Soft",
+      companyContext: "A VULETECH company",
+      href: "https://i-soft.com.vn/",
+      badges: ["Full-time"],
+      location: "Ho Chi Minh City, VN",
+      title: "Software Engineer",
+      logoUrl: "/iSOFT_LOGO-nobackground.png",
+      logoClassName: "bg-[#0B67B2] p-0.5",
+      start: "Sep 2026",
+      end: undefined,
+      description:
+        "• Build and maintain full-stack applications for factory digitization, developing ASP.NET Core/.NET 8 services and React.js operational interfaces.\n• Work with Entity Framework Core, PostgreSQL/MySQL, Redis, and REST APIs to implement maintainable backend capabilities and business workflows.\n• Contribute to frontend and backend features across applications, most of which follow a microservices architecture; use Socket.IO where appropriate to support real-time operational updates and shop-floor data flows that improve production-data visibility and daily decisions.",
+    },
+    {
       company: "WM Media",
+      companyContext: undefined,
       href: "#",
       badges: ["Freelance"],
       location: "Remote",
       title: "Freelance Full-stack",
       logoUrl: "wm.png",
+      logoClassName: undefined,
       start: "Nov 2025",
       end: "Jan 2026",
       description:
@@ -124,11 +142,13 @@ export const DATA = {
     },
     {
       company: "GEEK Up",
+      companyContext: undefined,
       href: "https://geekup.vn",
       badges: ["Internship"],
       location: "Ho Chi Minh City, VN",
       title: "Frontend Intern",
       logoUrl: "/geekup.jpg",
+      logoClassName: undefined,
       start: "Jun 2025",
       end: "Sep 2025",
       description:
@@ -167,7 +187,7 @@ export const DATA = {
         "Docker",
       ],
       links: [],
-      image: "/qrtable.png",
+      image: "/qrtable.webp",
       video: "",
     },
     {
@@ -190,7 +210,7 @@ export const DATA = {
         "SePay",
       ],
       links: [],
-      image: "/multi-vendor.jpg",
+      image: "/multi-vendor.webp",
       video: "",
     },
     {
@@ -202,7 +222,7 @@ export const DATA = {
         "👟 Sleek and modern e-commerce shoe store website built with React and Laravel, designed for showcasing and selling shoes.",
       technologies: ["JavaScript", "React.js", "Laravel", "MySQL"],
       links: [],
-      image: "/kick.png",
+      image: "/kick.webp",
       video: "",
     },
     {
@@ -214,7 +234,7 @@ export const DATA = {
         "A desktop application built entirely in Java and Java Swing for managing car garage operations, customer records, and inventory.",
       technologies: ["Java", "Java Swing", "MySQL"],
       links: [],
-      image: "/car-garage.png",
+      image: "/car-garage.webp",
       video: "",
     },
   ],
@@ -289,6 +309,16 @@ const VI_RESUME_COPY = {
   summary:
     "Sinh ziên năm cuối ngành Hệ thống Thông tin có niềm đam mê mãnh liệt với code dạo và xây dựng các sản phẩm web xịn xò. Đang 'tu luyện' trong hệ sinh thái JavaScript/TypeScript và đã có kinh nghiệm thực chiến làm app full-stack từ Next.js đến NestJS. Dị ứng với code dơ, code bẩn, luôn hướng tới viết code sạch (clean code) cùng những kiến trúc hệ thống đẹp đẽ, dễ mở rộng.",
   work: [
+    {
+      badges: ["Toàn thời gian"],
+      companyContext: "Một công ty thuộc VULETECH",
+      location: "TP. Hồ Chí Minh, Việt Nam",
+      title: "Kỹ sư Phần mềm",
+      start: "09/2026",
+      end: undefined,
+      description:
+        "• Xây dựng và duy trì ứng dụng web full-stack cho bài toán số hóa vận hành nhà máy; phát triển dịch vụ ASP.NET Core/.NET 8 cùng giao diện vận hành bằng React.js.\n• Làm việc với Entity Framework Core, PostgreSQL/MySQL, Redis và REST API để triển khai các năng lực backend và luồng nghiệp vụ dễ bảo trì.\n• Phát triển tính năng frontend/backend trên nhiều ứng dụng, trong đó phần lớn theo kiến trúc microservices; sử dụng Socket.IO khi phù hợp để hỗ trợ cập nhật vận hành theo thời gian thực và luồng dữ liệu tại xưởng, giúp minh bạch dữ liệu sản xuất và hỗ trợ quyết định hằng ngày.",
+    },
     {
       badges: ["Freelance"],
       location: "Từ xa",

@@ -12,8 +12,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { FocusCards } from "@/components/ui/focus-cards";
+import { Button } from "@/components/ui/button";
 import { DATA } from "@/data/resume";
 import { getServerI18n } from "@/i18n/server";
+import Link from "next/link";
+import { ChevronRight } from "lucide-react";
 
 import { MomentDataUnavailable } from "./moment-data-unavailable";
 import { formatPhotoCount } from "../lib/moment-copy";
@@ -24,9 +27,11 @@ const BLUR_FADE_DELAY = 0.04;
 
 export async function MomentsIndexPage({
   moments,
+  nextCursor,
   status,
 }: {
   moments: MomentSummaryView[];
+  nextCursor: string | null;
   status: MomentFeedState["status"];
 }) {
   const { dictionary } = await getServerI18n();
@@ -99,6 +104,19 @@ export async function MomentsIndexPage({
               title: moment.title,
             }))}
           />
+          {nextCursor ? (
+            <nav
+              aria-label={dictionary.moments.paginationAria}
+              className="mt-6 flex justify-center"
+            >
+              <Button asChild variant="outline">
+                <Link href={`/moments?cursor=${encodeURIComponent(nextCursor)}`}>
+                  {dictionary.moments.nextPage}
+                  <ChevronRight className="ml-2 size-4" aria-hidden />
+                </Link>
+              </Button>
+            </nav>
+          ) : null}
         </BlurFade>
       )}
     </section>

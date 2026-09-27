@@ -58,6 +58,11 @@ function normalizeSubcategory(
   return value && value.trim().length > 0 ? value.trim() : "all";
 }
 
+function normalizePage(value: string | undefined) {
+  const page = Number(value);
+  return Number.isInteger(page) && page > 0 ? page : 1;
+}
+
 export function parseInterviewSearchParams(
   searchParams: RawSearchParams
 ): InterviewFilterState {
@@ -69,6 +74,7 @@ export function parseInterviewSearchParams(
     query: firstParam(searchParams.q)?.trim() || "",
     locale: normalizeLocale(firstParam(searchParams.lang)),
     mode: normalizeMode(firstParam(searchParams.mode)),
+    page: normalizePage(firstParam(searchParams.page)),
     target: normalizeTarget(firstParam(searchParams.target)),
   };
 }
@@ -77,7 +83,18 @@ export function createInterviewHref(
   nextState: Partial<InterviewFilterState>,
   currentState: InterviewFilterState
 ) {
-  const state = { ...currentState, ...nextState };
+  const changesResultSet = [
+    "category",
+    "subcategory",
+    "level",
+    "query",
+    "target",
+  ].some((key) => key in nextState);
+  const state = {
+    ...currentState,
+    ...nextState,
+    page: changesResultSet && nextState.page === undefined ? 1 : nextState.page ?? currentState.page,
+  };
   const params = new URLSearchParams();
 
   params.set("category", state.category);
@@ -104,6 +121,10 @@ export function createInterviewHref(
 
   if (state.target !== "senior") {
     params.set("target", state.target);
+  }
+
+  if (state.page > 1) {
+    params.set("page", String(state.page));
   }
 
   return `/interview?${params.toString()}`;

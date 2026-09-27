@@ -4,6 +4,7 @@ import type {
   MomentSummaryView,
   OwnerMomentView,
 } from "../types";
+import { getCloudinaryImageDeliveryUrl } from "./cloudinary-delivery";
 
 type MomentLike = {
   cover_asset_id: string | null;
@@ -28,22 +29,26 @@ type AssetLike = {
   width: number | null;
 };
 
-export function mapMomentAsset(asset: AssetLike): MomentAssetView {
+export function mapMomentAsset(
+  asset: AssetLike,
+  maxWidth = 1600
+): MomentAssetView {
   return {
     alt: asset.alt,
     caption: asset.caption,
     height: asset.height,
     id: asset.id,
-    secureUrl: asset.secure_url,
+    secureUrl: getCloudinaryImageDeliveryUrl(asset.secure_url, maxWidth),
     width: asset.width,
   };
 }
 
 export function mapMomentSummary(
   moment: Omit<MomentLike, "note_markdown">,
-  assets: AssetLike[]
+  assets: AssetLike[],
+  photoCount = assets.length
 ): MomentSummaryView {
-  const mappedAssets = assets.map(mapMomentAsset);
+  const mappedAssets = assets.map((asset) => mapMomentAsset(asset, 1200));
   const cover =
     mappedAssets.find((asset) => asset.id === moment.cover_asset_id) ??
     mappedAssets[0] ??
@@ -54,7 +59,7 @@ export function mapMomentSummary(
     description: moment.description,
     location: moment.location,
     occurredAt: moment.occurred_at,
-    photoCount: mappedAssets.length,
+    photoCount,
     publishedAt: moment.published_at,
     slug: moment.slug,
     title: moment.title,
@@ -67,7 +72,7 @@ export function mapMomentDetail(
 ): MomentDetailView {
   return {
     ...mapMomentSummary(moment, assets),
-    assets: assets.map(mapMomentAsset),
+    assets: assets.map((asset) => mapMomentAsset(asset, 1600)),
     id: moment.id,
     noteMarkdown: moment.note_markdown ?? null,
   };

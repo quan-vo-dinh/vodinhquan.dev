@@ -29,7 +29,6 @@ export function RankImage({
       height={height}
       priority={priority}
       sizes={sizes}
-      unoptimized
       className={cn("object-contain", className)}
     />
   );

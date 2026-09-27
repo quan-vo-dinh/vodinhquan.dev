@@ -16,10 +16,24 @@ const cloudinaryEnvSchema = z.object({
   cloudinaryMomentsFolder: z.string().trim().min(1),
 });
 
+const mediaCleanupWorkerEnvSchema = z.object({
+  supabaseServiceRoleKey: z.string().trim().min(1),
+});
+
+const mediaCleanupEndpointEnvSchema = z.object({
+  mediaCleanupSecret: z.string().trim().min(32),
+});
+
 type EnvInput = Record<string, string | undefined>;
 
 let cachedServerEnv: z.infer<typeof serverEnvSchema> | null = null;
 let cachedCloudinaryEnv: z.infer<typeof cloudinaryEnvSchema> | null = null;
+let cachedMediaCleanupWorkerEnv: z.infer<
+  typeof mediaCleanupWorkerEnvSchema
+> | null = null;
+let cachedMediaCleanupEndpointEnv: z.infer<
+  typeof mediaCleanupEndpointEnvSchema
+> | null = null;
 
 function parseCloudinaryUrl(cloudinaryUrl: string | undefined) {
   if (!cloudinaryUrl) {
@@ -69,6 +83,18 @@ export function parseCloudinaryEnv(input: EnvInput) {
   });
 }
 
+export function parseMediaCleanupWorkerEnv(input: EnvInput) {
+  return mediaCleanupWorkerEnvSchema.parse({
+    supabaseServiceRoleKey: input.SUPABASE_SERVICE_ROLE_KEY,
+  });
+}
+
+export function parseMediaCleanupEndpointEnv(input: EnvInput) {
+  return mediaCleanupEndpointEnvSchema.parse({
+    mediaCleanupSecret: input.MEDIA_CLEANUP_SECRET,
+  });
+}
+
 export function getServerEnv() {
   cachedServerEnv ??= parseServerEnv(process.env);
   return cachedServerEnv;
@@ -77,4 +103,14 @@ export function getServerEnv() {
 export function getCloudinaryEnv() {
   cachedCloudinaryEnv ??= parseCloudinaryEnv(process.env);
   return cachedCloudinaryEnv;
+}
+
+export function getMediaCleanupWorkerEnv() {
+  cachedMediaCleanupWorkerEnv ??= parseMediaCleanupWorkerEnv(process.env);
+  return cachedMediaCleanupWorkerEnv;
+}
+
+export function getMediaCleanupEndpointEnv() {
+  cachedMediaCleanupEndpointEnv ??= parseMediaCleanupEndpointEnv(process.env);
+  return cachedMediaCleanupEndpointEnv;
 }

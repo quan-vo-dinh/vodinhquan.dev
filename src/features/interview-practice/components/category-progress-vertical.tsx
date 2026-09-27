@@ -19,7 +19,6 @@ import type {
   InterviewFilterState,
 } from "../types";
 import { useInterviewLearningState } from "./interview-learning-state-provider";
-import { RankImage } from "./rank-image";
 import { TechIcon } from "./tech-icon";
 import { useI18n } from "@/i18n/locale-provider";
 
@@ -144,18 +143,12 @@ export function CategoryProgressVertical({
                       {/* Mini rank logo badge — bottom-right corner, only when progress > 0 */}
                       {percentage > 0 && (
                         <div className="absolute -bottom-1.5 -right-1.5 size-7 rounded-full bg-card/90 border border-border/50 shadow-sm flex items-center justify-center overflow-hidden pointer-events-none">
-                          <div
-                            style={{ transform: `scale(${tier.logoScale * 0.9})` }}
-                            className="size-full flex items-center justify-center"
+                          <span
+                            aria-hidden
+                            className="font-mono text-[9px] font-black text-muted-foreground"
                           >
-                            <RankImage
-                              src={tier.logoSvg}
-                              alt={tier.name}
-                              width={28}
-                              height={28}
-                              className="size-full object-contain"
-                            />
-                          </div>
+                            {tier.name.slice(0, 2).toUpperCase()}
+                          </span>
                         </div>
                       )}
                     </div>

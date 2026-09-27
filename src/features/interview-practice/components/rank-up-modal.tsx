@@ -167,36 +167,36 @@ export function RankUpModal({ oldRank, newRank, category, onClose }: RankUpModal
         {/* ── Transparent Video Stage (Large & Prominent) ─────────────────── */}
         <div className="relative w-full h-[250px] sm:h-[280px] flex items-center justify-center overflow-visible -my-2 sm:-my-4">
           {/* FROM video — departure animation */}
-          {fromVid && (
+          {phase === "from" && fromVid && (
             <video
               ref={fromVideoRef}
               src={fromVid}
               autoPlay
               muted
               playsInline
-              preload="auto"
+              preload="metadata"
               onEnded={handleFromEnded}
               onError={handleFromEnded}
               className={cn(
                 "absolute inset-0 w-full h-full object-contain scale-155 sm:scale-175 md:scale-185 transition-opacity duration-300 filter drop-shadow-[0_12px_30px_rgba(0,0,0,0.85)]",
-                phase === "from" ? "opacity-100" : "opacity-0 pointer-events-none",
+                "opacity-100",
               )}
             />
           )}
 
           {/* TO video — target rank reveal animation */}
-          {toVid && (
+          {phase === "to" && toVid && (
             <video
               ref={toVideoRef}
               src={toVid}
               muted
               playsInline
-              preload="auto"
+              preload="metadata"
               onEnded={handleToEnded}
               onError={handleToEnded}
               className={cn(
                 "absolute inset-0 w-full h-full object-contain scale-155 sm:scale-175 md:scale-185 transition-opacity duration-300 filter drop-shadow-[0_12px_30px_rgba(0,0,0,0.85)]",
-                phase !== "from" ? "opacity-100" : "opacity-0 pointer-events-none",
+                "opacity-100",
               )}
             />
           )}

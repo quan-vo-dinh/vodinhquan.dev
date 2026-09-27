@@ -3,13 +3,17 @@ import { z } from "zod";
 
 import type { getCloudinaryEnv } from "@/lib/env";
 
+import { MOMENT_UPLOAD_ALLOWED_FORMATS } from "./moment-upload-policy";
+
 const UPLOAD_TAGS = "moments,owner-studio";
 
 type CloudinaryEnv = ReturnType<typeof getCloudinaryEnv>;
 
 type CloudinaryUploadParams = {
+  allowed_formats: string;
   context?: string;
   folder: string;
+  overwrite: boolean;
   public_id?: string;
   tags: string;
   timestamp: number;
@@ -43,8 +47,10 @@ export function buildMomentUploadSignatureParams(
   now = new Date()
 ): CloudinaryUploadParams {
   return {
+    allowed_formats: MOMENT_UPLOAD_ALLOWED_FORMATS.join(","),
     ...(input.context ? { context: input.context } : {}),
     folder: env.cloudinaryMomentsFolder,
+    overwrite: true,
     ...(input.publicId ? { public_id: input.publicId } : {}),
     tags: UPLOAD_TAGS,
     timestamp: Math.floor(now.getTime() / 1000),

@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
@@ -11,7 +11,10 @@ import {
   cloudinaryUploadResultSchema,
   momentFormSchema,
 } from "../lib/moment-schema";
+import { PUBLIC_MOMENTS_CACHE_TAG } from "../lib/moment-cache";
 import { createMomentSlug } from "../lib/moment-slug";
+import { verifyMomentCloudinaryUpload } from "../lib/cloudinary-media";
+import { schedulePendingMediaCleanup } from "../lib/media-cleanup";
 
 type ServerSupabaseClient = Awaited<
   ReturnType<typeof createSupabaseServerClient>
@@ -119,6 +122,7 @@ async function getMomentSlugById(
 }
 
 function revalidateMomentPaths(slug?: string | null) {
+  revalidateTag(PUBLIC_MOMENTS_CACHE_TAG, "max");
   revalidatePath("/moments");
   revalidatePath("/studio/moments");
 
@@ -262,17 +266,17 @@ export async function deleteMomentAction(momentId: string) {
     redirect("/auth/sign-in/github?next=/studio/moments");
   }
 
-  const slug = await getMomentSlugById(context.supabase, parsedMomentId);
-  const { error } = await context.supabase
-    .from("moments")
-    .delete()
-    .eq("id", parsedMomentId);
+  const { data, error } = await context.supabase.rpc(
+    "delete_moment_and_enqueue_cleanup",
+    { p_moment_id: parsedMomentId }
+  );
 
-  if (error) {
-    throw new Error(error.message);
+  if (error || !data?.[0]) {
+    throw new Error(error?.message ?? "Moment not found.");
   }
 
-  revalidateMomentPaths(slug);
+  revalidateMomentPaths(data[0].slug);
+  schedulePendingMediaCleanup();
   redirect("/studio/moments");
 }
 
@@ -292,7 +296,7 @@ export async function addMomentAssetAction(
   }
 
   const { momentId, upload } = parsed.data;
-  const [momentResult, lastAssetResult] = await Promise.all([
+  const [momentResult, lastAssetResult, existingAssetResult] = await Promise.all([
     context.supabase
       .from("moments")
       .select("cover_asset_id, slug")
@@ -305,6 +309,11 @@ export async function addMomentAssetAction(
       .order("sort_order", { ascending: false })
       .limit(1)
       .maybeSingle(),
+    context.supabase
+      .from("moment_media_assets")
+      .select("moment_id")
+      .eq("cloudinary_public_id", upload.public_id)
+      .maybeSingle(),
   ]);
 
   if (momentResult.error || !momentResult.data) {
@@ -315,27 +324,59 @@ export async function addMomentAssetAction(
     return { ok: false, reason: "asset-order-unavailable" };
   }
 
+  if (existingAssetResult.error) {
+    return { ok: false, reason: "existing-asset-unavailable" };
+  }
+
+  if (existingAssetResult.data) {
+    return existingAssetResult.data.moment_id === momentId
+      ? { ok: true, reason: null }
+      : { ok: false, reason: "asset-conflict" };
+  }
+
+  let verifiedUpload;
+
+  try {
+    const { getCloudinaryEnv } = await import("@/lib/env");
+    verifiedUpload = await verifyMomentCloudinaryUpload(upload, {
+      env: getCloudinaryEnv(),
+    });
+  } catch (error) {
+    console.error("Cloudinary upload verification failed:", error);
+    return { ok: false, reason: "upload-verification-failed" };
+  }
+
   const nextSortOrder = (lastAssetResult.data?.sort_order ?? -1) + 1;
   const { data: asset, error } = await context.supabase
     .from("moment_media_assets")
     .insert({
-      alt: upload.original_filename ?? null,
-      bytes: upload.bytes,
-      cloudinary_asset_id: upload.asset_id ?? null,
-      cloudinary_public_id: upload.public_id,
+      alt: verifiedUpload.original_filename ?? null,
+      bytes: verifiedUpload.bytes,
+      cloudinary_asset_id: verifiedUpload.asset_id ?? null,
+      cloudinary_public_id: verifiedUpload.public_id,
       created_by: context.userId,
-      format: upload.format,
-      height: upload.height,
+      format: verifiedUpload.format,
+      height: verifiedUpload.height,
       moment_id: momentId,
-      resource_type: upload.resource_type,
-      secure_url: upload.secure_url,
+      resource_type: verifiedUpload.resource_type,
+      secure_url: verifiedUpload.secure_url,
       sort_order: nextSortOrder,
-      width: upload.width,
+      width: verifiedUpload.width,
     })
     .select("id")
     .single();
 
   if (error) {
+    const { data: existingAsset } = await context.supabase
+      .from("moment_media_assets")
+      .select("moment_id")
+      .eq("cloudinary_public_id", verifiedUpload.public_id)
+      .maybeSingle();
+
+    if (existingAsset?.moment_id === momentId) {
+      return { ok: true, reason: null };
+    }
+
     return { ok: false, reason: error.message };
   }
 
@@ -432,24 +473,19 @@ export async function deleteMomentAssetAction(
     redirect("/auth/sign-in/github?next=/studio/moments");
   }
 
-  const slug = await getMomentSlugById(context.supabase, parsedMomentId);
+  const { data, error } = await context.supabase.rpc(
+    "delete_moment_asset_and_enqueue_cleanup",
+    {
+      p_asset_id: parsedAssetId,
+      p_moment_id: parsedMomentId,
+    }
+  );
 
-  await context.supabase
-    .from("moments")
-    .update({ cover_asset_id: null })
-    .eq("id", parsedMomentId)
-    .eq("cover_asset_id", parsedAssetId);
-
-  const { error } = await context.supabase
-    .from("moment_media_assets")
-    .delete()
-    .eq("id", parsedAssetId)
-    .eq("moment_id", parsedMomentId);
-
-  if (error) {
-    throw new Error(error.message);
+  if (error || !data?.[0]) {
+    throw new Error(error?.message ?? "Moment asset not found.");
   }
 
-  revalidateMomentPaths(slug);
+  revalidateMomentPaths(data[0].slug);
+  schedulePendingMediaCleanup();
   redirect(`/studio/moments/${parsedMomentId}/edit`);
 }

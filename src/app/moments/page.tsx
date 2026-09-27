@@ -2,10 +2,8 @@ import type { Metadata } from "next";
 
 import { MomentsIndexPage } from "@/features/moments/components/moments-index-page";
 import { loadMomentFeedState } from "@/features/moments/lib/moment-feed-state";
-import { getPublishedMomentSummaries } from "@/features/moments/lib/moment-repository";
+import { getPublishedMomentPage } from "@/features/moments/lib/moment-repository";
 import { getServerI18n } from "@/i18n/server";
-
-export const dynamic = "force-dynamic";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { dictionary } = await getServerI18n();
@@ -25,8 +23,20 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function MomentsPage() {
-  const feed = await loadMomentFeedState(getPublishedMomentSummaries);
+export default async function MomentsPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const params = await searchParams;
+  const cursor = Array.isArray(params.cursor) ? params.cursor[0] : params.cursor;
+  const feed = await loadMomentFeedState(() => getPublishedMomentPage(cursor ?? null));
 
-  return <MomentsIndexPage moments={feed.moments} status={feed.status} />;
+  return (
+    <MomentsIndexPage
+      moments={feed.moments}
+      nextCursor={feed.nextCursor}
+      status={feed.status}
+    />
+  );
 }

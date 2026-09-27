@@ -1,7 +1,7 @@
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
-import { CodeBlock } from "@/components/mdx/code-block";
+import { ClientCodeBlock } from "@/components/mdx/client-code-block";
 import { cn } from "@/lib/utils";
 
 import { formatInterviewAnswer } from "../lib/format-interview-answer";
@@ -32,7 +32,7 @@ export function InterviewMarkdown({
       <Markdown
         remarkPlugins={[remarkGfm]}
         components={{
-          pre: ({ node, ...props }) => <CodeBlock {...props} />,
+          pre: ({ node, ...props }) => <ClientCodeBlock {...props} />,
           // Inline code: render as span to completely bypass .prose :not(pre) > code background box in globals.css
           code: ({ node, className: codeClass, children: codeChildren, ...props }) => {
             // Block code (inside fenced ``` blocks) has a language- className — pass through

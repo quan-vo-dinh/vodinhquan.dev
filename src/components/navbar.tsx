@@ -20,6 +20,7 @@ export default function Navbar() {
   const hasSocials = Object.entries(DATA.contact.social).some(([_, social]) => social.navbar);
   const navigationLabels: Record<string, string> = {
     "/": dictionary.common.home,
+    "/blog": dictionary.common.blog,
     "/interview": dictionary.common.interview,
     "/moments": dictionary.common.moments,
     "/studio": dictionary.common.studio,
@@ -39,6 +40,7 @@ export default function Navbar() {
               <TooltipTrigger asChild>
                 <a
                   href={item.href}
+                  aria-label={navigationLabels[item.href] ?? item.label}
                   target={isExternal ? "_blank" : undefined}
                   rel={isExternal ? "noopener noreferrer" : undefined}
                 >

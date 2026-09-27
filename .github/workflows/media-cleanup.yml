@@ -1,0 +1,25 @@
+name: Media cleanup
+
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  drain-media-cleanup-queue:
+    if: ${{ secrets.MEDIA_CLEANUP_URL != '' && secrets.MEDIA_CLEANUP_SECRET != '' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    concurrency:
+      group: media-cleanup
+      cancel-in-progress: false
+
+    steps:
+      - name: Drain pending Cloudinary cleanup jobs
+        env:
+          MEDIA_CLEANUP_SECRET: ${{ secrets.MEDIA_CLEANUP_SECRET }}
+          MEDIA_CLEANUP_URL: ${{ secrets.MEDIA_CLEANUP_URL }}
+        run: |
+          curl --fail-with-body --retry 2 --retry-all-errors --request POST --header "Authorization: Bearer ${MEDIA_CLEANUP_SECRET}" "${MEDIA_CLEANUP_URL}/api/internal/media-cleanup"

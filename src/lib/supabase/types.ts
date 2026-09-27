@@ -9,6 +9,54 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      media_cleanup_jobs: {
+        Row: {
+          id: string;
+          provider: "cloudinary";
+          action: "destroy";
+          public_id: string;
+          resource_type: "image" | "raw" | "video";
+          status: "queued" | "processing" | "completed" | "failed";
+          attempt_count: number;
+          next_attempt_at: string | null;
+          locked_at: string | null;
+          last_error: string | null;
+          completed_at: string | null;
+          created_by: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          provider?: "cloudinary";
+          action?: "destroy";
+          public_id: string;
+          resource_type?: "image" | "raw" | "video";
+          status?: "queued" | "processing" | "completed" | "failed";
+          attempt_count?: number;
+          next_attempt_at?: string | null;
+          locked_at?: string | null;
+          last_error?: string | null;
+          completed_at?: string | null;
+          created_by: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          provider?: "cloudinary";
+          action?: "destroy";
+          public_id?: string;
+          resource_type?: "image" | "raw" | "video";
+          status?: "queued" | "processing" | "completed" | "failed";
+          attempt_count?: number;
+          next_attempt_at?: string | null;
+          locked_at?: string | null;
+          last_error?: string | null;
+          completed_at?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       moment_media_assets: {
         Row: {
           id: string;
@@ -238,6 +286,40 @@ export type Database = {
     };
     Views: Record<string, never>;
     Functions: {
+      claim_media_cleanup_jobs: {
+        Args: {
+          p_limit?: number;
+        };
+        Returns: Database["public"]["Tables"]["media_cleanup_jobs"]["Row"][];
+      };
+      complete_media_cleanup_job: {
+        Args: {
+          p_job_id: string;
+        };
+        Returns: undefined;
+      };
+      delete_moment_and_enqueue_cleanup: {
+        Args: {
+          p_moment_id: string;
+        };
+        Returns: { slug: string }[];
+      };
+      delete_moment_asset_and_enqueue_cleanup: {
+        Args: {
+          p_asset_id: string;
+          p_moment_id: string;
+        };
+        Returns: { slug: string }[];
+      };
+      fail_media_cleanup_job: {
+        Args: {
+          p_error: string;
+          p_job_id: string;
+          p_retry_at: string;
+          p_terminal: boolean;
+        };
+        Returns: undefined;
+      };
       is_owner: {
         Args: Record<PropertyKey, never>;
         Returns: boolean;

@@ -8,8 +8,6 @@ import { loadMomentDetailState } from "@/features/moments/lib/moment-feed-state"
 import { getPublishedMomentBySlug } from "@/features/moments/lib/moment-repository";
 import { getServerI18n } from "@/i18n/server";
 
-export const dynamic = "force-dynamic";
-
 export async function generateMetadata({
   params,
 }: {

@@ -46,5 +46,11 @@ jobs:
           APP_ORIGIN: https://example.com
           INTERVIEW_OWNER_GITHUB_USERNAME: vodinhquan
 
+      - name: Check public asset budget
+        run: pnpm check:assets
+
+      - name: Check route bundle budgets
+        run: pnpm check:bundles
+
       - name: Audit production dependencies
         run: pnpm audit --prod

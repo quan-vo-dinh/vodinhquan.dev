@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef, useTransition, useMemo } from "react";
 import { createPortal } from "react-dom";
 import { ChevronDown, Menu, X, Loader2 } from "lucide-react";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import BlurFade from "@/components/magicui/blur-fade";
@@ -14,7 +15,6 @@ import Link from "next/link";
 import { DiaTextReveal } from "@/components/ui/dia-text-reveal";
 import { getRankTier, RankTier } from "../lib/rank-meta";
 import { RankImage } from "./rank-image";
-import { RankUpModal } from "./rank-up-modal";
 import { InterviewProfileCard } from "./interview-profile-card";
 import { LearningSyncBanner } from "./learning-sync-banner";
 import { createInterviewHref } from "../lib/question-url-state";
@@ -25,7 +25,7 @@ import type {
   InterviewCategoryQuestionProgress,
   InterviewCategorySummary,
   InterviewFilterState,
-  InterviewQuestionView,
+  InterviewQuestionPage,
   InterviewSubcategorySummary,
 } from "../types";
 import { CategoryNav } from "./category-nav";
@@ -34,6 +34,7 @@ import { FlashcardDeck } from "./flashcard-deck";
 import { ProgressSummary } from "./progress-summary";
 import { QuestionFilters } from "./question-filters";
 import { QuestionList } from "./question-list";
+import { QuestionPagination } from "./question-pagination";
 import type { InterviewLearningStateSnapshot } from "../lib/learning-state-types";
 import {
   InterviewLearningStateProvider,
@@ -46,7 +47,7 @@ type InterviewPracticePageProps = {
   categoryQuestionProgress: InterviewCategoryQuestionProgress;
   filterState: InterviewFilterState;
   initialLearningState: InterviewLearningStateSnapshot;
-  questions: InterviewQuestionView[];
+  questionPage: InterviewQuestionPage;
   subcategories: InterviewSubcategorySummary[];
   totalQuestions: number;
   viewer: CurrentViewer | null;
@@ -57,7 +58,7 @@ export function InterviewPracticePage({
   categoryQuestionProgress,
   filterState,
   initialLearningState,
-  questions,
+  questionPage,
   subcategories,
   totalQuestions,
   viewer,
@@ -68,7 +69,7 @@ export function InterviewPracticePage({
         categories={categories}
         categoryQuestionProgress={categoryQuestionProgress}
         filterState={filterState}
-        questions={questions}
+        questionPage={questionPage}
         subcategories={subcategories}
         totalQuestions={totalQuestions}
         viewer={viewer}
@@ -81,7 +82,7 @@ type InterviewPracticePageContentProps = {
   categories: InterviewCategorySummary[];
   categoryQuestionProgress: InterviewCategoryQuestionProgress;
   filterState: InterviewFilterState;
-  questions: InterviewQuestionView[];
+  questionPage: InterviewQuestionPage;
   subcategories: InterviewSubcategorySummary[];
   totalQuestions: number;
   viewer: CurrentViewer | null;
@@ -89,17 +90,25 @@ type InterviewPracticePageContentProps = {
 
 const BLUR_FADE_DELAY = 0.04;
 const RANK_MILESTONES = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100] as const;
+const RankUpModal = dynamic(
+  () =>
+    import("./rank-up-modal").then(({ RankUpModal: RankUpModalComponent }) =>
+      RankUpModalComponent
+    ),
+  { ssr: false }
+);
 
 
 function InterviewPracticePageContent({
   categories,
   categoryQuestionProgress,
   filterState,
-  questions,
+  questionPage,
   subcategories,
   totalQuestions,
   viewer,
 }: InterviewPracticePageContentProps) {
+  const questions = questionPage.questions;
   const { dictionary, locale } = useI18n();
   const targetOptions = [
     { label: dictionary.interview.junior, value: "junior" as const },
@@ -218,11 +227,12 @@ function InterviewPracticePageContent({
           {/* Centered Top Rank Emblem SVG sitting absolute on the top rim */}
           <div className="absolute -top-12 sm:-top-16 md:-top-18 left-1/2 -translate-x-1/2 z-30 pointer-events-none select-none flex items-center justify-center">
             <RankImage
-              src={currentTier.svg}
+              src={currentTier.imageSrc}
               alt={currentTier.name}
-              width={280}
-              height={280}
+              width={640}
+              height={266}
               priority
+              sizes="(min-width: 768px) 640px, 100vw"
               className="h-24 sm:h-32 md:h-36 w-auto object-contain filter drop-shadow-[0_6px_16px_rgba(0,0,0,0.7)] dark:drop-shadow-[0_8px_24px_rgba(0,0,0,0.9)]"
             />
           </div>
@@ -351,10 +361,10 @@ function InterviewPracticePageContent({
                   {filterState.category}
                 </p>
                 <h2 className="text-xl font-semibold tracking-tight">
-                  {questions.length.toLocaleString(
+                  {questionPage.pagination.totalItems.toLocaleString(
                     locale === "vi" ? "vi-VN" : "en-US",
                   )}{" "}
-                  {dictionary.interview.visibleQuestions}
+                  {dictionary.interview.filteredQuestions}
                 </h2>
               </div>
               <Button
@@ -373,7 +383,7 @@ function InterviewPracticePageContent({
           <BlurFade delay={BLUR_FADE_DELAY * 5} yOffset={10}>
             <QuestionFilters
               filterState={filterState}
-              resultCount={questions.length}
+              resultCount={questionPage.pagination.totalItems}
               subcategories={subcategories}
               variant="filters-only"
               onNavigate={handleNavigate}
@@ -423,7 +433,7 @@ function InterviewPracticePageContent({
                 <div className="overflow-hidden">
                   <QuestionFilters
                     filterState={filterState}
-                    resultCount={questions.length}
+                    resultCount={questionPage.pagination.totalItems}
                     subcategories={subcategories}
                     variant="topics-only"
                     onNavigate={handleNavigate}
@@ -452,9 +462,21 @@ function InterviewPracticePageContent({
             {filterState.mode === "flashcards" ? (
               <FlashcardDeck questions={questions} />
             ) : (
-              <QuestionList questions={questions} />
+              <QuestionList
+                questions={questions}
+                startIndex={
+                  (questionPage.pagination.page - 1) *
+                  questionPage.pagination.pageSize
+                }
+              />
             )}
           </BlurFade>
+
+          <QuestionPagination
+            filterState={filterState}
+            onNavigate={handleNavigate}
+            pagination={questionPage.pagination}
+          />
         </div>
 
       </section>

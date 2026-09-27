@@ -2,6 +2,7 @@ export const INTERVIEW_LEVELS = ["beginner", "intermediate", "advanced"] as cons
 export const INTERVIEW_TARGET_LEVELS = ["junior", "senior"] as const;
 export const INTERVIEW_LOCALES = ["vi", "en"] as const;
 export const INTERVIEW_MODES = ["list", "flashcards"] as const;
+export const INTERVIEW_QUESTION_PAGE_SIZE = 24;
 
 export type InterviewLevel = (typeof INTERVIEW_LEVELS)[number];
 export type InterviewTargetLevel = (typeof INTERVIEW_TARGET_LEVELS)[number];
@@ -29,6 +30,18 @@ export type InterviewQuestionView = {
   level: InterviewLevel;
   question: string;
   answer: string;
+};
+
+export type InterviewQuestionPage = {
+  questions: InterviewQuestionView[];
+  pagination: {
+    hasNextPage: boolean;
+    hasPreviousPage: boolean;
+    page: number;
+    pageSize: number;
+    totalItems: number;
+    totalPages: number;
+  };
 };
 
 /**
@@ -62,5 +75,6 @@ export type InterviewFilterState = {
   query: string;
   locale: InterviewLocale;
   mode: InterviewMode;
+  page: number;
   target: InterviewTargetLevel;
 };

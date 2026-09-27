@@ -17,17 +17,17 @@ vi.mock("@/i18n/locale-provider", () => ({
 }));
 
 describe("CodeBlock", () => {
-  it("keeps controls outside the semantic pre and code elements", () => {
+  it("keeps controls outside the semantic pre and code elements", async () => {
+    const block = await CodeBlock({
+      children: createElement(
+        "code",
+        { className: "language-ts" },
+        "const answer: number = 42;"
+      ),
+      className: "source-pre",
+    });
     const html = renderToStaticMarkup(
-      createElement(
-        CodeBlock,
-        { className: "source-pre" },
-        createElement(
-          "code",
-          { className: "language-ts" },
-          "const answer: number = 42;"
-        )
-      )
+      block
     );
 
     const preMarkup = html.match(/<pre[\s\S]*?<\/pre>/)?.[0];

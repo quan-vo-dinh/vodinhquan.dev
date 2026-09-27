@@ -1,9 +1,7 @@
-import { bundledLanguages } from "shiki/bundle/web";
-
 const LANGUAGE_ALIASES: Record<string, string> = {
   coffeescript: "coffee",
   dockerfile: "bash",
-  golang: "bash",
+  golang: "go",
   js: "javascript",
   md: "markdown",
   mdx: "markdown",
@@ -19,31 +17,18 @@ const LANGUAGE_ALIASES: Record<string, string> = {
 };
 
 const UNSUPPORTED_LANGUAGE_FALLBACKS: Record<string, string> = {
-  dart: "javascript",
+  dart: "typescript",
   django: "python",
   erb: "html",
-  go: "bash",
-  gradle: "bash",
+  gradle: "groovy",
   kotlin: "java",
-  lua: "javascript",
-  properties: "bash",
-  ruby: "javascript",
-  swift: "javascript",
+  properties: "ini",
 };
-
-function isBundledLanguage(lang: string): boolean {
-  return lang in bundledLanguages;
-}
 
 export function normalizeShikiLanguage(lang: string | undefined): string {
   const raw = lang?.trim().toLowerCase().split(/\s+/)[0];
   if (!raw) return "plaintext";
 
   const aliased = LANGUAGE_ALIASES[raw] ?? raw;
-  if (isBundledLanguage(aliased)) return aliased;
-
-  const fallback = UNSUPPORTED_LANGUAGE_FALLBACKS[aliased];
-  if (fallback && isBundledLanguage(fallback)) return fallback;
-
-  return "plaintext";
+  return UNSUPPORTED_LANGUAGE_FALLBACKS[aliased] ?? aliased;
 }

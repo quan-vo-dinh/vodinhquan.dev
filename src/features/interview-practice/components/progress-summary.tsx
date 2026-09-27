@@ -17,7 +17,6 @@ import { getInterviewCategoryMeta } from "../lib/category-meta";
 import { TechIcon } from "./tech-icon";
 import { triggerConfetti } from "../lib/celebrate";
 import { getRankTier, RANK_TIERS } from "../lib/rank-meta";
-import { RankImage } from "./rank-image";
 import { useI18n } from "@/i18n/locale-provider";
 import { calculateCategoryScore } from "../lib/question-points";
 
@@ -146,8 +145,6 @@ export function ProgressSummary({
   const milestones = RANK_TIERS.filter((t) => t.minPercent > 0).map((t) => ({
     value: t.minPercent,
     label: `${t.name} (${t.minPercent}%)`,
-    logoSvg: t.logoSvg,
-    logoScale: t.logoScale,
   }));
 
   return (
@@ -214,18 +211,10 @@ export function ProgressSummary({
                           : "opacity-30 grayscale contrast-75 hover:opacity-80 hover:grayscale-0"
                       )}
                     >
-                      <div
-                        style={{ transform: `scale(${m.logoScale})` }}
-                        className="size-full flex items-center justify-center pointer-events-none"
-                      >
-                        <RankImage
-                          src={m.logoSvg}
-                          alt={m.label}
-                          width={28}
-                          height={28}
-                          className="size-full object-contain pointer-events-none"
-                        />
-                      </div>
+                      <span
+                        aria-hidden
+                        className="size-1.5 rounded-full bg-current"
+                      />
                     </div>
                   </div>
                 </TooltipTrigger>

@@ -3,9 +3,9 @@ import type { Metadata } from "next";
 import { InterviewPracticePage } from "@/features/interview-practice/components/interview-practice-page";
 import { withResolvedTaxonomy } from "@/features/interview-practice/lib/question-filters";
 import {
-  getFilteredInterviewQuestions,
   getInterviewCategories,
   getInterviewCategoryQuestionProgress,
+  getInterviewQuestionPage,
   getInterviewQuestionTotal,
   getInterviewSubcategories,
 } from "@/features/interview-practice/lib/question-repository";
@@ -43,7 +43,7 @@ export default async function InterviewPage({
   const initialSubcategories = getInterviewSubcategories(rawState.category, rawState.target);
   const state = withResolvedTaxonomy(rawState, categories, initialSubcategories);
   const subcategories = getInterviewSubcategories(state.category, state.target);
-  const questions = getFilteredInterviewQuestions(state);
+  const questionPage = getInterviewQuestionPage(state);
   const categoryQuestionProgress = getInterviewCategoryQuestionProgress(
     state.target
   );
@@ -59,7 +59,7 @@ export default async function InterviewPage({
       categoryQuestionProgress={categoryQuestionProgress}
       filterState={state}
       initialLearningState={learningState}
-      questions={questions}
+      questionPage={questionPage}
       subcategories={subcategories}
       totalQuestions={getInterviewQuestionTotal(state.target)}
       viewer={viewer}

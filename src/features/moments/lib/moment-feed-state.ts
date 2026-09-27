@@ -1,5 +1,6 @@
 import type {
   MomentDetailView,
+  MomentFeedPage,
   MomentSummaryView,
   OwnerMomentView,
 } from "../types";
@@ -8,24 +9,24 @@ import { isMomentsSchemaMissing } from "./moment-repository-error";
 export type MomentFeedState =
   | {
       moments: MomentSummaryView[];
+      nextCursor: string | null;
       status: "ready";
     }
   | {
       moments: [];
+      nextCursor: null;
       status: "unavailable";
     };
 
 export async function loadMomentFeedState(
-  loadMoments: () => Promise<MomentSummaryView[]>
+  loadMoments: () => Promise<MomentFeedPage>
 ): Promise<MomentFeedState> {
   try {
-    return {
-      moments: await loadMoments(),
-      status: "ready",
-    };
+    return { ...(await loadMoments()), status: "ready" };
   } catch {
     return {
       moments: [],
+      nextCursor: null,
       status: "unavailable",
     };
   }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import { Bookmark, CheckCircle2, Clipboard, LinkIcon, Check, EyeOff, Eye } from "lucide-react";
 
 import {
@@ -20,12 +20,18 @@ import { cn } from "@/lib/utils";
 import { useI18n } from "@/i18n/locale-provider";
 
 import type { InterviewQuestionView } from "../types";
-import { InterviewMarkdown } from "./interview-markdown";
 import { useInterviewLearningState } from "./interview-learning-state-provider";
 import { getQuestionPoints } from "../lib/question-points";
 
+const InterviewMarkdown = lazy(() =>
+  import("./interview-markdown").then(({ InterviewMarkdown: Markdown }) => ({
+    default: Markdown,
+  }))
+);
+
 type QuestionListProps = {
   questions: InterviewQuestionView[];
+  startIndex?: number;
 };
 
 function levelClassName(level: InterviewQuestionView["level"]) {
@@ -56,7 +62,7 @@ function createQuestionShareUrl(questionId: number) {
   return shareUrl.toString();
 }
 
-export function QuestionList({ questions }: QuestionListProps) {
+export function QuestionList({ questions, startIndex = 0 }: QuestionListProps) {
   const { dictionary } = useI18n();
   const levelLabels = {
     advanced: dictionary.interview.advanced,
@@ -178,7 +184,7 @@ export function QuestionList({ questions }: QuestionListProps) {
               <div className="flex w-full min-w-0 max-w-full flex-col gap-2 text-left sm:gap-3 overflow-hidden">
                 <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
                   <span className="font-mono text-xs sm:text-[10px] font-semibold text-muted-foreground">
-                    #{String(index + 1).padStart(2, "0")}
+                    #{String(startIndex + index + 1).padStart(2, "0")}
                   </span>
                   <Badge variant="outline" className="font-mono text-xs sm:text-[10px] text-muted-foreground/80">
                     ID: {question.id}
@@ -238,9 +244,18 @@ export function QuestionList({ questions }: QuestionListProps) {
             </AccordionTrigger>
             <AccordionContent className="space-y-3 pb-3 sm:space-y-4 sm:pb-4 w-full max-w-full min-w-0 overflow-hidden">
               {openValue === String(question.id) && (
-                <InterviewMarkdown className="w-full min-w-0 overflow-hidden [&_.group]:mx-0 [&_.group]:rounded-lg sm:[&_.group]:rounded-xl">
-                  {question.answer}
-                </InterviewMarkdown>
+                <Suspense
+                  fallback={
+                    <div
+                      aria-busy="true"
+                      className="h-20 animate-pulse rounded-lg bg-muted/50"
+                    />
+                  }
+                >
+                  <InterviewMarkdown className="w-full min-w-0 overflow-hidden [&_.group]:mx-0 [&_.group]:rounded-lg sm:[&_.group]:rounded-xl">
+                    {question.answer}
+                  </InterviewMarkdown>
+                </Suspense>
               )}
               <div className="flex flex-wrap gap-1.5 border-t pt-3 sm:gap-2">
                 <Tooltip>

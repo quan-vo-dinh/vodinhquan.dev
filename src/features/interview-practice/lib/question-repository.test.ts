@@ -4,6 +4,7 @@ vi.mock("server-only", () => ({}));
 
 import {
   getInterviewCategoryQuestionProgress,
+  getInterviewQuestionPage,
   getInterviewQuestionTotal,
 } from "./question-repository";
 
@@ -22,4 +23,26 @@ describe("getInterviewCategoryQuestionProgress", () => {
       }
     }
   );
+});
+
+describe("getInterviewQuestionPage", () => {
+  it("returns a bounded DTO page instead of every matching answer", () => {
+    const page = getInterviewQuestionPage(
+      {
+        category: "React",
+        level: "all",
+        locale: "en",
+        mode: "list",
+        page: 1,
+        query: "",
+        subcategory: "all",
+        target: "senior",
+      },
+      24
+    );
+
+    expect(page.questions).toHaveLength(24);
+    expect(page.pagination.totalItems).toBeGreaterThan(page.questions.length);
+    expect(page.pagination.totalPages).toBeGreaterThan(1);
+  });
 });

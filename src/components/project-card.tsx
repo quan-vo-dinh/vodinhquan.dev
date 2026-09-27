@@ -18,14 +18,16 @@ function ProjectImage({ src, alt }: { src: string; alt: string }) {
   }
 
   return (
-    <Image
-      src={normalizeImageSrc(src)}
-      alt={alt}
-      width={600}
-      height={192}
-      className="w-full h-48 object-cover"
-      onError={() => setImageError(true)}
-    />
+    <div className="relative h-48 w-full">
+      <Image
+        fill
+        sizes="(min-width: 640px) 400px, 100vw"
+        src={normalizeImageSrc(src)}
+        alt={alt}
+        className="object-cover"
+        onError={() => setImageError(true)}
+      />
+    </div>
   );
 }
 

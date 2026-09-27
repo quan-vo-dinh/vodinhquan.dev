@@ -13,28 +13,32 @@ describe("Moment feed state", () => {
 
     await expect(loadMomentFeedState(loadMoments)).resolves.toEqual({
       moments: [],
+      nextCursor: null,
       status: "unavailable",
     });
   });
 
   it("returns loaded moments when the data source is available", async () => {
-    const moments = [
-      {
-        cover: null,
-        description: null,
-        location: null,
-        occurredAt: null,
-        photoCount: 0,
-        publishedAt: null,
-        slug: "street-frames",
-        title: "Street Frames",
-      },
-    ];
+    const feed = {
+      moments: [
+        {
+          cover: null,
+          description: null,
+          location: null,
+          occurredAt: null,
+          photoCount: 0,
+          publishedAt: null,
+          slug: "street-frames",
+          title: "Street Frames",
+        },
+      ],
+      nextCursor: "next-page",
+    };
 
     await expect(
-      loadMomentFeedState(async () => moments)
+      loadMomentFeedState(async () => feed)
     ).resolves.toEqual({
-      moments,
+      ...feed,
       status: "ready",
     });
   });

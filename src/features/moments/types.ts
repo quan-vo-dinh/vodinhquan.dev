@@ -18,6 +18,11 @@ export type MomentSummaryView = {
   title: string;
 };
 
+export type MomentFeedPage = {
+  moments: MomentSummaryView[];
+  nextCursor: string | null;
+};
+
 export type MomentDetailView = MomentSummaryView & {
   assets: MomentAssetView[];
   id: string;

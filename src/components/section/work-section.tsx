@@ -14,24 +14,38 @@ import { useI18n } from "@/i18n/locale-provider";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-function LogoImage({ src, alt }: { src: string; alt: string }) {
+const logoFrameClassName =
+  "size-8 md:size-10 p-1 border rounded-full shadow ring-2 ring-border overflow-hidden bg-background flex-none";
+
+function LogoImage({
+  src,
+  alt,
+  logoClassName,
+}: {
+  src: string;
+  alt: string;
+  logoClassName?: string;
+}) {
   const [imageError, setImageError] = useState(false);
 
   if (!src || imageError) {
-    return (
-      <div className="size-8 md:size-10 p-1 border rounded-full shadow ring-2 ring-border bg-muted flex-none" />
-    );
+    return <div className={cn(logoFrameClassName, "bg-muted")} />;
   }
 
   return (
-    <Image
-      src={normalizeImageSrc(src)}
-      alt={alt}
-      width={40}
-      height={40}
-      className="size-8 md:size-10 p-1 border rounded-full shadow ring-2 ring-border overflow-hidden object-contain flex-none"
-      onError={() => setImageError(true)}
-    />
+    <div className={logoFrameClassName}>
+      <Image
+        src={normalizeImageSrc(src)}
+        alt={alt}
+        width={40}
+        height={40}
+        className={cn(
+          "size-full rounded-full object-contain",
+          logoClassName
+        )}
+        onError={() => setImageError(true)}
+      />
+    </div>
   );
 }
 
@@ -50,10 +64,19 @@ export default function WorkSection() {
           <AccordionTrigger className="hover:no-underline p-0 cursor-pointer transition-colors rounded-none group [&>svg]:hidden">
             <div className="flex items-center gap-x-3 justify-between w-full text-left">
               <div className="flex items-center gap-x-3 flex-1 min-w-0">
-                <LogoImage src={work.logoUrl} alt={work.company} />
+                <LogoImage
+                  src={work.logoUrl}
+                  alt={work.company}
+                  logoClassName={work.logoClassName}
+                />
                 <div className="flex-1 min-w-0 gap-0.5 flex flex-col">
-                  <div className="font-semibold leading-none flex items-center gap-2">
-                    {work.company}
+                  <div className="font-semibold leading-none flex flex-wrap items-center gap-x-2 gap-y-1">
+                    <span>{work.company}</span>
+                    {work.companyContext ? (
+                      <span className="text-[11px] font-normal leading-none text-muted-foreground">
+                        {work.companyContext}
+                      </span>
+                    ) : null}
                     <span className="relative inline-flex items-center w-3.5 h-3.5">
                       <ChevronRight
                         className={cn(

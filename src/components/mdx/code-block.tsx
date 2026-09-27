@@ -1,145 +1,60 @@
-"use client";
+import type { BundledLanguage } from "shiki";
+import { codeToHtml } from "shiki";
+import type { ComponentProps } from "react";
 
-import { useState, useRef, useEffect, type ComponentProps } from "react";
-import { Copy, Check } from "lucide-react";
-import { Button } from "../ui/button";
-import { useI18n } from "@/i18n/locale-provider";
-import { cn } from "@/lib/utils";
 import { normalizeShikiLanguage } from "@/lib/normalize-shiki-language";
+
+import { CodeCopyButton } from "./code-copy-button";
+import { addPreClassName, getCodeBlockDetails } from "./code-block-utils";
 
 type CodeBlockProps = ComponentProps<"pre">;
 
-function extractLanguage(className?: string): string {
-  if (!className) return "plaintext";
-  const match = className.match(/language-([a-z0-9-]+)/i);
-  return match ? match[1] : "plaintext";
+async function highlightCode(sourceCode: string, language: string) {
+  const render = (lang: string) =>
+    codeToHtml(sourceCode, {
+      defaultColor: false,
+      lang: lang as BundledLanguage,
+      themes: {
+        dark: "github-dark",
+        light: "github-light",
+      },
+    });
+
+  try {
+    return await render(normalizeShikiLanguage(language));
+  } catch {
+    return render("plaintext");
+  }
 }
 
-export function CodeBlock({ children, ...props }: CodeBlockProps) {
-  const { dictionary } = useI18n();
-  const [copyStatus, setCopyStatus] = useState<"error" | "idle" | "success">(
-    "idle"
+/**
+ * Blog MDX is rendered on the server, so syntax highlighting stays out of the
+ * browser bundle. The copy control is the only client boundary in this block.
+ */
+export async function CodeBlock({ children, ...props }: CodeBlockProps) {
+  const { language, sourceCode, title } = getCodeBlockDetails(children);
+
+  if (!sourceCode) {
+    return <pre {...props}>{children}</pre>;
+  }
+
+  const highlightedHtml = addPreClassName(
+    await highlightCode(sourceCode, language),
+    props.className
   );
-  const [{ html, className, title }, setRenderState] = useState<{
-    html: string;
-    className: string;
-    title: string | null;
-  }>({ html: "", className: "", title: null });
-  const [sourceCode, setSourceCode] = useState("");
-  const preRef = useRef<HTMLPreElement>(null);
-
-  useEffect(() => {
-    const pre = preRef.current;
-    const codeEl = pre?.querySelector("code");
-    if (!pre || !codeEl) return;
-
-    const codeText = codeEl.textContent || "";
-    const lang = normalizeShikiLanguage(extractLanguage(codeEl.className));
-    const nextTitle = codeEl.getAttribute("data-title");
-    const nextClassName = codeEl.className || "";
-    setSourceCode(codeText);
-
-    const highlight = async () => {
-      const { codeToHtml } = await import("shiki/bundle/web");
-      const html = await codeToHtml(codeText, {
-        lang,
-        themes: {
-          light: "github-light",
-          dark: "github-dark",
-        },
-        defaultColor: false,
-      });
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(html, "text/html");
-      setRenderState({
-        html: doc.querySelector("code")?.innerHTML ?? "",
-        className: nextClassName,
-        title: nextTitle,
-      });
-    };
-
-    highlight().catch((error) => {
-      console.error("Failed to highlight code:", error);
-      setRenderState({ html: "", className: nextClassName, title: nextTitle });
-    });
-  }, [children]);
-
-  const handleCopy = async () => {
-    const code =
-      sourceCode || preRef.current?.querySelector("code")?.textContent || "";
-
-    if (!code) {
-      setCopyStatus("error");
-      setTimeout(() => setCopyStatus("idle"), 2000);
-      return;
-    }
-
-    try {
-      await navigator.clipboard.writeText(code);
-      setCopyStatus("success");
-      setTimeout(() => setCopyStatus("idle"), 2000);
-    } catch (error) {
-      console.error("Failed to copy code:", error);
-      setCopyStatus("error");
-      setTimeout(() => setCopyStatus("idle"), 2000);
-    }
-  };
 
   return (
     <div className="not-prose group relative w-full max-w-full min-w-0 overflow-hidden rounded-xl border border-border bg-background">
-      {title && (
+      {title ? (
         <div className="border-b border-border bg-muted/50 px-3 py-2.5 pr-14 text-xs font-medium text-foreground">
           {title}
         </div>
-      )}
-
-      <Button
-        type="button"
-        onClick={handleCopy}
-        variant="outline"
-        size="icon"
-        className={cn(
-          "absolute right-3 z-10 size-8 cursor-pointer rounded-md border border-border bg-background/90 text-primary opacity-100 shadow-none transition-opacity hover:bg-muted lg:opacity-0 lg:group-focus-within:opacity-100 lg:group-hover:opacity-100",
-          title ? "top-11" : "top-3"
-        )}
-        aria-label={dictionary.mdx.copyCode}
-      >
-        {copyStatus === "success" ? (
-          <Check className="size-4 text-emerald-500" />
-        ) : (
-          <Copy
-            className={cn(
-              "size-4",
-              copyStatus === "error" && "text-destructive"
-            )}
-          />
-        )}
-      </Button>
-      <span className="sr-only" role="status" aria-live="polite">
-        {copyStatus === "success"
-          ? dictionary.mdx.copied
-          : copyStatus === "error"
-            ? dictionary.mdx.copyFailed
-            : ""}
-      </span>
-
-      <pre
-        ref={preRef}
-        {...props}
-        className={cn(
-          "m-0! w-full max-w-full overflow-x-auto bg-transparent! p-0! text-left font-mono! text-[13px]! leading-relaxed! [&>code]:block [&>code]:min-w-max [&>code]:border-0! [&>code]:bg-transparent! [&>code]:p-4 [&>code]:pr-14 [&>code]:whitespace-pre",
-          props.className
-        )}
-      >
-        {html && (
-          <code
-            className={cn("shiki", className)}
-            dangerouslySetInnerHTML={{ __html: html }}
-          />
-        )}
-
-        {!html && children}
-      </pre>
+      ) : null}
+      <CodeCopyButton hasTitle={Boolean(title)} sourceCode={sourceCode} />
+      <div
+        className="w-full overflow-x-auto [&_pre]:m-0! [&_pre]:w-full [&_pre]:max-w-full [&_pre]:overflow-x-auto [&_pre]:bg-transparent! [&_pre]:p-0! [&_pre]:text-left [&_pre]:font-mono! [&_pre]:text-[13px]! [&_pre]:leading-relaxed! [&_pre>code]:block [&_pre>code]:min-w-max [&_pre>code]:border-0! [&_pre>code]:bg-transparent! [&_pre>code]:p-4 [&_pre>code]:pr-14 [&_pre>code]:whitespace-pre"
+        dangerouslySetInnerHTML={{ __html: highlightedHtml }}
+      />
     </div>
   );
 }

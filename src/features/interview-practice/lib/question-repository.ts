@@ -1,12 +1,14 @@
 import "server-only";
 
 import rawQuestions from "../data/questions.json";
+import { INTERVIEW_QUESTION_PAGE_SIZE } from "../types";
 import type {
   InterviewCategoryQuestionProgress,
   InterviewCategorySummary,
   InterviewFilterState,
   InterviewLocale,
   InterviewQuestionProgressMeta,
+  InterviewQuestionPage,
   InterviewQuestionRaw,
   InterviewQuestionView,
   InterviewSubcategorySummary,
@@ -118,7 +120,7 @@ export function getInterviewSubcategories(
   );
 }
 
-export function getFilteredInterviewQuestions(state: InterviewFilterState) {
+function getFilteredRawInterviewQuestions(state: InterviewFilterState) {
   const normalizedQuery = state.query.toLowerCase();
 
   return questions
@@ -144,8 +146,38 @@ export function getFilteredInterviewQuestions(state: InterviewFilterState) {
       return `${localizedQuestion} ${localizedAnswer}`
         .toLowerCase()
         .includes(normalizedQuery);
-    })
-    .map((question) => toQuestionView(question, state.locale));
+    });
+}
+
+export function getFilteredInterviewQuestions(state: InterviewFilterState) {
+  return getFilteredRawInterviewQuestions(state).map((question) =>
+    toQuestionView(question, state.locale)
+  );
+}
+
+export function getInterviewQuestionPage(
+  state: InterviewFilterState,
+  pageSize = INTERVIEW_QUESTION_PAGE_SIZE
+): InterviewQuestionPage {
+  const filteredQuestions = getFilteredRawInterviewQuestions(state);
+  const totalItems = filteredQuestions.length;
+  const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
+  const page = Math.min(state.page, totalPages);
+  const startIndex = (page - 1) * pageSize;
+
+  return {
+    questions: filteredQuestions
+      .slice(startIndex, startIndex + pageSize)
+      .map((question) => toQuestionView(question, state.locale)),
+    pagination: {
+      hasNextPage: page < totalPages,
+      hasPreviousPage: page > 1,
+      page,
+      pageSize,
+      totalItems,
+      totalPages,
+    },
+  };
 }
 
 export function getInterviewCategoryQuestionProgress(

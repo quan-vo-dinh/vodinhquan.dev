@@ -29,7 +29,9 @@ vi.mock("@/features/moments/lib/cloudinary-signature", async (importOriginal) =>
       apiKey: "api-key",
       cloudName: "cloud-name",
       params: {
+        allowed_formats: "avif,jpeg,jpg,png,webp",
         folder: "moments",
+        overwrite: true,
         tags: "moments,owner-studio",
         timestamp: 1781395200,
       },

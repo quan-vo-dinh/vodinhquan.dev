@@ -46,6 +46,10 @@ export type LearningProgressSnapshot = z.infer<
   typeof learningProgressSnapshotSchema
 >;
 
+type LearningProgressSnapshotInput = z.input<
+  typeof learningProgressSnapshotSchema
+>;
+
 export type ToggleQuestionStateInput = z.infer<
   typeof toggleQuestionStateInputSchema
 >;
@@ -59,8 +63,8 @@ type LearningProgressReferenceValidation =
   | { ok: false; reason: "unknown-reference" };
 
 export function mergeLearningStateSnapshots(
-  remote: LearningProgressSnapshot,
-  local: LearningProgressSnapshot
+  remote: LearningProgressSnapshotInput,
+  local: LearningProgressSnapshotInput
 ): LearningProgressSnapshot {
   return {
     learnedIds: mergeNumbers(remote.learnedIds, local.learnedIds),
@@ -74,7 +78,7 @@ export function mergeLearningStateSnapshots(
 }
 
 export function validateLearningProgressReferences(
-  snapshot: LearningProgressSnapshot,
+  snapshot: LearningProgressSnapshotInput,
   knownQuestionIds: ReadonlySet<number>,
   knownCategories: ReadonlySet<string>
 ): LearningProgressReferenceValidation {

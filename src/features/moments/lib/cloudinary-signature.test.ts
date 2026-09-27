@@ -22,7 +22,9 @@ describe("Cloudinary moment upload signatures", () => {
     );
 
     expect(params).toEqual({
+      allowed_formats: "avif,jpeg,jpg,png,webp",
       folder: "moments",
+      overwrite: true,
       public_id: "street/saigon-001",
       tags: "moments,owner-studio",
       timestamp: 1781395200,
@@ -50,8 +52,10 @@ describe("Cloudinary moment upload signatures", () => {
       apiKey: "api-key",
       cloudName: "cloud-name",
       params: {
+        allowed_formats: "avif,jpeg,jpg,png,webp",
         context: "alt=Street photo",
         folder: "moments",
+        overwrite: true,
         tags: "moments,owner-studio",
         timestamp: 1781395200,
       },

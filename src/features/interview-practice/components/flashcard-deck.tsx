@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { lazy, Suspense, useMemo, useState } from "react";
 import {
   Bookmark,
   CheckCircle2,
@@ -16,8 +16,13 @@ import { useI18n } from "@/i18n/locale-provider";
 
 import type { InterviewQuestionView } from "../types";
 import { normalizeFlashcardIndex } from "../lib/flashcard-state";
-import { InterviewMarkdown } from "./interview-markdown";
 import { useInterviewLearningState } from "./interview-learning-state-provider";
+
+const InterviewMarkdown = lazy(() =>
+  import("./interview-markdown").then(({ InterviewMarkdown: Markdown }) => ({
+    default: Markdown,
+  }))
+);
 
 type FlashcardDeckProps = {
   questions: InterviewQuestionView[];
@@ -96,7 +101,16 @@ export function FlashcardDeck({ questions: rawQuestions }: FlashcardDeckProps) {
       <CardContent className="space-y-3 p-3 pt-0 sm:space-y-5 sm:p-5 sm:pt-0">
         <div className="min-h-36 rounded-xl border bg-card p-3 transition-all sm:min-h-40 sm:rounded-2xl sm:p-5">
           {isAnswerVisible ? (
-            <InterviewMarkdown>{currentQuestion.answer}</InterviewMarkdown>
+            <Suspense
+              fallback={
+                <div
+                  aria-busy="true"
+                  className="h-20 animate-pulse rounded-lg bg-muted/50"
+                />
+              }
+            >
+              <InterviewMarkdown>{currentQuestion.answer}</InterviewMarkdown>
+            </Suspense>
           ) : (
             <p className="text-base text-muted-foreground/80">
               {dictionary.interview.thinkFirst}

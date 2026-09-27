@@ -29,7 +29,6 @@ function getLoLProfileStyles(percentage: number, learnedCount: number) {
     case "iron":
       return {
         rankName: "Iron IV",
-        rankSvg: "/ranked/iron.svg",
         avatarRing: "ring-zinc-600 dark:ring-zinc-500 shadow-[0_0_8px_rgba(113,113,122,0.2)]",
         wingColor: "bg-zinc-600/10 dark:bg-zinc-500/10 border-zinc-600/20 text-zinc-500",
         badgeClass: "bg-muted text-muted-foreground border-muted-foreground/20",
@@ -43,7 +42,6 @@ function getLoLProfileStyles(percentage: number, learnedCount: number) {
     case "silver":
       return {
         rankName: "Silver IV",
-        rankSvg: "/ranked/sliver.svg",
         avatarRing: "ring-slate-400 dark:ring-slate-300 shadow-[0_0_8px_rgba(148,163,184,0.2)]",
         wingColor: "bg-slate-400/10 border-slate-400/30 text-slate-500",
         badgeClass: "bg-slate-400/10 text-slate-700 dark:text-slate-300 border-slate-400/20",
@@ -57,7 +55,6 @@ function getLoLProfileStyles(percentage: number, learnedCount: number) {
     case "bronze":
       return {
         rankName: "Bronze IV",
-        rankSvg: "/ranked/bronze.svg",
         avatarRing: "ring-slate-400 dark:ring-slate-300 shadow-[0_0_8px_rgba(148,163,184,0.2)]",
         wingColor: "bg-slate-400/10 border-slate-400/30 text-slate-500",
         badgeClass: "bg-slate-400/10 text-slate-700 dark:text-slate-300 border-slate-400/20",
@@ -71,7 +68,6 @@ function getLoLProfileStyles(percentage: number, learnedCount: number) {
     case "gold":
       return {
         rankName: "Gold IV",
-        rankSvg: "/ranked/gold.svg",
         avatarRing: "ring-yellow-500 shadow-[0_0_10px_rgba(234,179,8,0.3)]",
         wingColor: "bg-yellow-500/10 border-yellow-500/30 text-yellow-600",
         badgeClass: "bg-yellow-500/10 text-yellow-600 dark:text-yellow-500 border-yellow-500/20",
@@ -85,7 +81,6 @@ function getLoLProfileStyles(percentage: number, learnedCount: number) {
     case "platinum":
       return {
         rankName: "Platinum IV",
-        rankSvg: "/ranked/platinum.svg",
         avatarRing: "ring-teal-500 shadow-[0_0_10px_rgba(20,184,166,0.3)]",
         wingColor: "bg-teal-500/10 border-teal-500/30 text-teal-600",
         badgeClass: "bg-teal-500/10 text-teal-600 dark:text-teal-400 border-teal-500/20",
@@ -99,7 +94,6 @@ function getLoLProfileStyles(percentage: number, learnedCount: number) {
     case "emerald":
       return {
         rankName: "Emerald IV",
-        rankSvg: "/ranked/emerald.svg",
         avatarRing: "ring-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.3)]",
         wingColor: "bg-emerald-500/10 border-emerald-500/30 text-emerald-600",
         badgeClass: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20",
@@ -113,7 +107,6 @@ function getLoLProfileStyles(percentage: number, learnedCount: number) {
     case "diamond":
       return {
         rankName: "Diamond IV",
-        rankSvg: "/ranked/diamond.svg",
         avatarRing: "ring-blue-500 shadow-[0_0_12px_rgba(59,130,246,0.35)]",
         wingColor: "bg-blue-500/10 border-blue-500/30 text-blue-600",
         badgeClass: "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20",
@@ -127,7 +120,6 @@ function getLoLProfileStyles(percentage: number, learnedCount: number) {
     case "master":
       return {
         rankName: "Master",
-        rankSvg: "/ranked/master.svg",
         avatarRing: "ring-purple-600 shadow-[0_0_15px_rgba(147,51,234,0.4)]",
         wingColor: "bg-purple-600/10 border-purple-600/30 text-purple-600",
         badgeClass: "bg-purple-600/10 text-purple-600 dark:text-purple-400 border-purple-600/20",
@@ -141,7 +133,6 @@ function getLoLProfileStyles(percentage: number, learnedCount: number) {
     case "grandmaster":
       return {
         rankName: "Grandmaster",
-        rankSvg: "/ranked/grandmaster.svg",
         avatarRing: "ring-rose-600 shadow-[0_0_15px_rgba(225,29,72,0.45)]",
         wingColor: "bg-rose-600/10 border-rose-600/30 text-rose-600",
         badgeClass: "bg-rose-600/10 text-rose-600 dark:text-rose-400 border-rose-600/20",
@@ -156,7 +147,6 @@ function getLoLProfileStyles(percentage: number, learnedCount: number) {
     default:
       return {
         rankName: "Challenger 👑",
-        rankSvg: "/ranked/challenger.svg",
         avatarRing: "ring-amber-500 shadow-[0_0_20px_rgba(245,158,11,0.55)] animate-pulse",
         wingColor: "bg-amber-500/15 border-amber-500/40 text-amber-600 animate-pulse",
         badgeClass: "bg-amber-500/10 text-amber-600 dark:text-amber-500 border-amber-500/30 animate-pulse font-bold",
@@ -262,7 +252,7 @@ export function InterviewProfileCard({
                 width={280}
                 height={363}
                 priority
-                unoptimized
+                sizes="134px"
                 style={{
                   transform: `translate(-50%, calc(-50% + ${currentTier.iconBorderOffsetY ?? -6.5}%))`,
                 }}
