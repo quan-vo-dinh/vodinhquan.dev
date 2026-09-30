@@ -7,15 +7,17 @@ describe("localized resume data", () => {
     const resume = getResumeData("vi");
 
     expect(resume.description).toContain("dev");
-    expect(resume.summary).toContain("Sinh ziên");
-    expect(resume.work[0]?.description).toContain("Tham gia");
+    expect(resume.summary).toContain("Full-stack Engineer");
+    expect(resume.work[0]?.description).toContain("ASP.NET Core/.NET 8");
     expect(resume.education[0]?.degree).toBe("Hệ thống Thông tin");
   });
 
   it("keeps the English resume available", () => {
     const resume = getResumeData("en");
 
-    expect(resume.description).toContain("Developer");
+    expect(resume.description).toContain("Engineer");
+    expect(resume.summary).toContain("i-Soft");
+    expect(resume.summary.split(/\n\s*\n/)).toHaveLength(3);
     expect(resume.education[0]?.degree).toBe("Information Systems");
   });
 

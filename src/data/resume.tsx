@@ -34,9 +34,9 @@ export const DATA = {
   location: "Ho Chi Minh City, VN",
   locationLink: "https://www.google.com/maps/place/Ho+Chi+Minh+City,+Vietnam",
   description:
-    "Full-stack Developer building scalable applications with Next.js & NestJS.",
+    "Full-stack Engineer working with ASP.NET Core and React, with a foundation in Node.js, Next.js, and NestJS.",
   summary:
-    "Graduating Information Systems student passionate about modern web development in the JavaScript and TypeScript ecosystem. Experienced in building full-stack applications with Next.js and NestJS. I place a high emphasis on code quality, clean architecture, and writing clean, scalable, and maintainable code.",
+    "I began in frontend development and gradually expanded into backend engineering, building a full-stack foundation in the Node.js ecosystem, particularly Next.js and NestJS. That progression sparked an interest in how systems work beyond the interface: how services interact, how data flows, and how architecture evolves as requirements and complexity grow.\n\nI am focused on developing my system design skills and exploring approaches to distributed systems, including microservices, synchronous and asynchronous communication, event-driven architecture, and patterns such as Saga. I aim to understand the trade-offs behind architectural decisions and apply suitable technologies and patterns to complex, practical problems.\n\nAt i-Soft, I now work as a Full-stack Engineer with C#/ASP.NET Core and React, building applications for factory operations. Moving beyond my JavaScript and TypeScript background has broadened my technical perspective and given me new opportunities to strengthen my engineering judgment through real-world challenges.",
   avatarUrl: "/me.jpg",
   skills: [
     { name: "TypeScript", icon: Typescript },
@@ -116,7 +116,7 @@ export const DATA = {
       href: "https://i-soft.com.vn/",
       badges: ["Full-time"],
       location: "Ho Chi Minh City, VN",
-      title: "Software Engineer",
+      title: "Fullstack Engineer",
       logoUrl: "/iSOFT_LOGO-nobackground.png",
       logoClassName: "bg-[#0B67B2] p-0.5",
       start: "Sep 2026",
@@ -305,13 +305,13 @@ const VI_RESUME_COPY = {
     },
   ],
   summary:
-    "Sinh ziên năm cuối ngành Hệ thống Thông tin có niềm đam mê mãnh liệt với code dạo và xây dựng các sản phẩm web xịn xò. Đang 'tu luyện' trong hệ sinh thái JavaScript/TypeScript và đã có kinh nghiệm thực chiến làm app full-stack từ Next.js đến NestJS. Dị ứng với code dơ, code bẩn, luôn hướng tới viết code sạch (clean code) cùng những kiến trúc hệ thống đẹp đẽ, dễ mở rộng.",
+    "Khởi điểm từ Frontend, tui dần lấn sân sang Backend và phát triển theo hướng Full-stack Engineer trong hệ sinh thái Node.JS nói chung và Next.js/Nest.js nói riêng. Từ chuyện làm cho giao diện chạy đúng, tui bắt đầu tò mò về cả hệ thống phía sau: các dịch vụ phối hợp ra sao, dữ liệu đi đâu, và khi bài toán lớn lên thì kiến trúc cần thay đổi thế nào.\n\nTui thích đào sâu công nghệ mới, khám phá các hướng kiến trúc và cách giải quyết bài toán trong hệ thống phân tán: từ microservices, giao tiếp đồng bộ và bất đồng bộ, đến kiến trúc hướng sự kiện và các mẫu thiết kế như Saga. Mục tiêu là rèn tư duy thiết kế hệ thống, hiểu những đánh đổi của từng lựa chọn và biết áp dụng giải pháp phù hợp vào các bài toán phức tạp trong thực tế.\n\nRồi môi trường tư bản gọi tên. Tui bước ra khỏi vùng an toàn, tạm rời “tiếng mẹ đẻ” JavaScript/TypeScript để dấn thân vào hệ sinh thái C#/ASP.NET Core với vai trò Full-stack Engineer (.NET/React). Thêm một hệ sinh thái để khám phá, thêm những bài toán thực tế để học cách thiết kế hệ thống cho ra hồn.",
   work: [
     {
       badges: ["Toàn thời gian"],
       companyContext: "Một công ty thuộc VULETECH",
       location: "TP. Hồ Chí Minh, Việt Nam",
-      title: "Kỹ sư Phần mềm",
+      title: "Thợ đụng - Fullstack Engineer",
       start: "09/2026",
       end: undefined,
       description:

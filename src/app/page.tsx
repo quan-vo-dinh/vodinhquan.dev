@@ -13,12 +13,14 @@ import WorkSection from "@/components/section/work-section";
 import { ArrowUpRight } from "lucide-react";
 import Image from "next/image";
 import { normalizeImageSrc } from "@/lib/utils";
+import { ExpandableContent } from "@/components/expandable-content";
 
 const BLUR_FADE_DELAY = 0.04;
 
 export default async function Page() {
   const { dictionary, locale } = await getServerI18n();
   const data = getResumeData(locale);
+  const [summaryPreview, ...summaryDetails] = data.summary.split(/\n\s*\n/);
 
   return (
     <main className="min-h-dvh flex flex-col gap-14 relative">
@@ -64,9 +66,18 @@ export default async function Page() {
           </BlurFade>
           <BlurFade delay={BLUR_FADE_DELAY * 4}>
             <div className="prose max-w-full text-pretty font-sans leading-relaxed text-muted-foreground dark:prose-invert">
-              <Markdown>
-                {data.summary}
-              </Markdown>
+              {summaryDetails.length > 0 ? (
+                <ExpandableContent
+                  key={locale}
+                  preview={<Markdown>{summaryPreview}</Markdown>}
+                  showMoreLabel={dictionary.home.aboutShowMore}
+                  showLessLabel={dictionary.home.aboutShowLess}
+                >
+                  <Markdown>{summaryDetails.join("\n\n")}</Markdown>
+                </ExpandableContent>
+              ) : (
+                <Markdown>{data.summary}</Markdown>
+              )}
             </div>
           </BlurFade>
         </div>

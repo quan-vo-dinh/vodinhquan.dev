@@ -42,6 +42,8 @@ const vi = {
   home: {
     greeting: "Hi, tui là",
     about: "Về tui",
+    aboutShowMore: "Xem thêm",
+    aboutShowLess: "Thu gọn",
     work: "Kinh nghiệm",
     education: "Học vấn",
     certifications: "Chứng chỉ",
@@ -292,6 +294,8 @@ const en = {
   home: {
     greeting: "Hi, I'm",
     about: "About",
+    aboutShowMore: "Read more",
+    aboutShowLess: "Show less",
     work: "Work Experience",
     education: "Education",
     certifications: "Certifications",
